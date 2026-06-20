@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md"],
+  "agent": {
+    "systems-analyst": {"mode": "all", "temperature": 0.6, "permission": {"edit": "allow", "bash": "deny", "task": "deny", "webfetch": "allow", "websearch": "allow"}},
+    "architect": {"mode": "subagent", "temperature": 0.3, "permission": {"edit": {"*": "deny", "**/.opencode/workflow/STATE.md": "allow", "**/.opencode/workflow/history/*": "allow"}, "bash": "deny", "task": "deny", "webfetch": "deny", "websearch": "deny"}},
+    "builder": {"mode": "subagent", "permission": {"edit": "allow", "bash": "allow", "task": "deny", "webfetch": "deny", "websearch": "deny"}},
+    "reviewer": {"mode": "subagent", "temperature": 0.1, "permission": {"edit": "deny", "bash": "deny", "task": "deny", "webfetch": "deny", "websearch": "deny"}},
+    "tester": {"mode": "subagent", "temperature": 0.0, "permission": {"edit": {"*": "deny", "**/.opencode/workflow/STATE.md": "allow", "**/.opencode/workflow/history/*": "allow"}, "bash": {"*": "deny", "npm test*": "allow", "npm run test*": "allow"}, "task": "deny", "webfetch": "deny", "websearch": "deny"}},
+    "linter": {"mode": "subagent", "temperature": 0.0, "permission": {"edit": {"*": "deny", "**/.opencode/workflow/STATE.md": "allow", "**/.opencode/workflow/history/*": "allow"}, "bash": {"*": "deny", "npm run lint*": "allow", "npm run typecheck*": "allow", "npm run format*": "allow", "npm run check*": "allow"}, "task": "deny", "webfetch": "deny", "websearch": "deny"}},
+    "git-assistant": {"mode": "subagent", "temperature": 0.0, "permission": {"edit": "deny", "bash": {"*": "deny", "git *": "allow"}, "task": "deny", "webfetch": "deny", "websearch": "deny"}},
+    "pm-agent": {"mode": "subagent", "temperature": 0.3, "permission": {"edit": {"*": "deny"}, "bash": "deny", "task": "deny", "webfetch": "deny", "websearch": "deny"}},
+    "state-manager": {"mode": "subagent", "temperature": 0.2, "permission": {"edit": {"*": "deny", "**/.opencode/workflow/STATE.md": "allow", "**/.opencode/workflow/history/*": "allow"}, "bash": "deny", "task": "deny", "webfetch": "deny", "websearch": "deny"}}
+  },
+  "permission": {"edit": "allow", "bash": "allow", "task": "allow"}
+}
