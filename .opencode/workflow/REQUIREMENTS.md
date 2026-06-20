@@ -6,7 +6,7 @@ LoBeMo Seguridad Informatica es una empresa tucumana especializada en cibersegur
 
 Se desarrollara un sistema de gestion interno (web app) que permita a LoBeMo administrar sus proyectos de ciberseguridad, clientes, propuestas, recursos humanos y la trazabilidad completa del ciclo de vida de cada servicio. El sistema es single-tenant (solo para LoBeMo).
 
-**Stack tecnologico:** Next.js 15 App Router, Prisma, PostgreSQL (Neon serverless), Auth.js v5, TanStack Query, Tailwind CSS + shadcn/ui, TypeScript estricto.
+**Stack tecnologico:** Next.js 16 App Router, Prisma v7, PostgreSQL (Neon serverless), Auth.js v5, TanStack Query, Tailwind CSS + shadcn/ui, TypeScript estricto.
 **Arquitectura:** Hexagonal + DDD (dominio sin dependencias de infraestructura).
 **Deploy:** Vercel + GitHub (repositorio privado).
 
@@ -47,12 +47,121 @@ Se desarrollara un sistema de gestion interno (web app) que permita a LoBeMo adm
 
 #### US-021: Landing page con identidad visual LoBeMo (Tamano: M)
 **Como** visitante del sistema, **quiero** ver una landing page profesional con la identidad visual de LoBeMo **para** tener una presentacion atractiva de la empresa al acceder a la raiz del sitio.
-- AC-01: La pagina `/` debe aplicar el diseno del DESIGN_SYSTEM.md (dark mode, glassmorphism, geometria decorativa tipo Fortinet).
-- AC-02: Debe mostrar: logo/nombre de LoBeMo, descripcion del sistema, call-to-action para iniciar sesion.
-- AC-03: Si no hay superadmin registrado, debe mostrar tambien enlace a "Primer inicio" (registro).
-- AC-04: Debe incluir un footer con copyright y ano dinamico.
-- AC-05: Debe ser responsive (mobile-first).
-- AC-06: Debe usar los tokens de color, tipografia y espaciado definidos en DESIGN_SYSTEM.md.
+
+**Requerimientos de diseno general:**
+- RG-01: La pagina `/` debe aplicar estrictamente los tokens del DESIGN_SYSTEM.md: dark mode como modo principal (claro secundario), paleta teal+amber, tipografia Plus Jakarta Sans para headings e Inter para body.
+- RG-02: Debe usar glassmorphism en cards y contenedores (background semi-transparente + backdrop-blur + bordes sutiles).
+- RG-03: Debe incluir geometria decorativa tipo Fortinet: rombos/diamantes rotados 45°, rayos diagonales irradiando desde esquinas, triangulos superpuestos con opacidad 5-10% (SVG inline o pseudo-elementos con clip-path).
+- RG-04: Debe tener gradientes decorativos teal-amber en secciones destacadas.
+- RG-05: Debe ser fully responsive (mobile-first): 1 columna en mobile, layout expandido en desktop.
+- RG-06: Las animaciones deben ser suaves (transitions 200ms, fade-in en entrada de pagina).
+- RG-07: No debe requerir autenticacion para acceder - es la puerta de entrada al sistema.
+
+---
+
+**Secciones de la landing page:**
+
+##### Seccion 1: Hero - "Encabezado principal" (viewport completo)
+- Ocupa el 100% del viewport height (`min-h-screen`).
+- Fondo oscuro con geometria decorativa predominante: rombos animados en teal-dark y amber-dark, mas rayos diagonales desde esquina superior derecha (estilo radar Fortinet).
+- Logotipo LoBeMo centrado o en la parte superior (texto "LoBeMo Seguridad Informatica" con la palabra "LoBeMo" en teal primary y "Seguridad Informatica" en foreground).
+- Tagline principal: texto grande (h1) con peso bold, ej: "Seguridad informatica con identidad regional" o similar.
+- Descripcion breve: texto cuerpo (`max-w-2xl`) explicando que el sistema es la plataforma de gestion de proyectos de ciberseguridad de LoBeMo.
+- Call-to-action principal: Boton primary grande (teal) con texto "Iniciar Sesion" -> redirige a `/login`.
+- Call-to-action secundario: Si no existe ningun superadmin registrado en la base de datos, mostrar ademas un boton outline/accent con texto "Primer inicio - Registrar empresa" -> redirige a `/register`.
+- Mockup visual: Un mockup/imagen decorativa de un dashboard o interfaz de seguridad (SVG abstracto) a la derecha del texto en desktop, debajo en mobile.
+- Efecto de parallax sutil en la geometria de fondo (opcional, degrada performance si es excesivo).
+
+##### Seccion 2: Servicios - "Nuestros servicios" (glassmorphism cards grid)
+- Titulo h2: "Servicios de ciberseguridad" con un subrayado decorativo teal.
+- Grid de 6 cards en glassmorphism (3 columnas desktop, 2 tablet, 1 mobile).
+- Cada card representa un servicio de LoBeMo:
+  1. **Auditoria ISO 27001** - Icono: Shield (Lucide)
+  2. **Pentesting** - Icono: Bug (Lucide)
+  3. **Desarrollo Seguro** - Icono: Code (Lucide)
+  4. **Consultoria en Redes** - Icono: Network (Lucide)
+  5. **Capacitacion** - Icono: GraduationCap (Lucide)
+  6. **Soporte Tecnico** - Icono: Wrench (Lucide)
+- Cada card tiene: icono grande teal, titulo en semibold, descripcion corta, badge con precio base (si esta configurado) o "A consultar".
+- Al hacer hover: la card se eleva (`translateY -2px`), el borde se aclara, el icono cambia a amber sutil.
+- La grid usa `grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6`.
+
+##### Seccion 3: Cifras - "LoBeMo en numeros" (trust indicators)
+- Fondo con gradiente tenue `bg-gradient-to-b from-primary-dark/30 to-background`.
+- Titulo h2: "Confian en nosotros" o "Nuestra presencia".
+- 4 indicadores grandes con animacion de conteo (opcional, puede ser estatico):
+  - **X+ anos** de experiencia en ciberseguridad
+  - **Y+ clientes** en el NOA
+  - **Z+ proyectos** ejecutados
+  - **11 especialistas** en el equipo
+- Cada indicador: numero grande (`text-4xl`/`text-5xl`) en teal o amber, label debajo en `muted-foreground`.
+- Grid de 4 columnas desktop, 2 tablet, 1 mobile.
+- Nota: los numeros pueden ser hardcodeados como placeholder. Para MVP se usaran valores fijos representativos.
+
+##### Seccion 4: Diferenciadores - "Por que LoBeMo?" (features highlight)
+- Titulo h2: "Seguridad con identidad regional".
+- 3 columnas de features con icono + texto:
+  1. **Expertos en el NOA** - Conocemos el ecosistema tecnologico del noroeste argentino.
+  2. **Atencion personalizada** - Cada cliente recibe un plan a medida, sin soluciones genericas.
+  3. **Compromiso total** - Acompanamiento continuo desde el diagnostico hasta la implementacion.
+- Cada feature: icono grande (Lucide, tamano `h-12 w-12`) en un contenedor circular con fondo `primary-dark/30` y borde `teal/20`, titulo h3, descripcion body-sm.
+- Animacion de entrada: fade-in + slide-in-from-bottom para cada columna.
+
+##### Seccion 5: Contacto / CTA final (antes del footer)
+- Fondo oscuro con geometria decorativa sutil.
+- Titulo h2: "Listo para proteger tu organizacion?"
+- Boton primary grande: "Iniciar Sesion" (si ya hay superadmin) o "Comenzar ahora" (si no).
+- Texto secundario: "Accede al sistema de gestion de proyectos de LoBeMo."
+- Separacion visual con el footer mediante gradiente teal-transparente.
+
+##### Seccion 6: Footer
+- Fondo: `bg-surface` (modo oscuro) o `bg-muted` (modo claro).
+- Layout: 3 columnas en desktop, apiladas en mobile.
+  - **Columna 1**: Logo LoBeMo pequeno + breve descripcion de la empresa.
+  - **Columna 2**: Enlaces rapidos (Iniciar Sesion, Servicios - ambos internos, sin ruta definida aun). Para MVP: solo texto "Iniciar Sesion" y "Servicios" como placeholders.
+  - **Columna 3**: Contacto (Tucuman, Argentina) con iconos de MapPin, Mail, Phone (opcional - puede omitirse si no hay datos reales).
+- Linea divisoria con gradiente teal-transparente.
+- Copyright: "(c) {ano} LoBeMo Seguridad Informatica. Todos los derechos reservados." con ano dinamico via JavaScript (`new Date().getFullYear()`).
+- Texto en `muted-foreground`, tamano small/caption.
+
+---
+
+**Estados y condiciones:**
+- **Estado A (sin superadmin)**: Hero muestra ambos CTAs (Iniciar Sesion + Primer inicio). El boton "Primer inicio" debe destacar ligeramente (badge "Nuevo" o variante accent).
+- **Estado B (con superadmin)**: Hero muestra solo "Iniciar Sesion". No aparece el enlace de registro.
+- **Responsive**: En mobile (< 768px), el hero debe apilarse verticalmente. Las grids pasan a 1 columna. Los indicadores numericos se reducen a `text-2xl`. El layout se vuelve compacto.
+- **Loading**: Mientras se verifica si existe superadmin, mostrar un skeleton de la landing page (placeholder gris con `animate-pulse`).
+- **Error**: Si falla la verificacion de superadmin, mostrar un mensaje generico y ocultar el CTA de registro (mostrar solo "Iniciar Sesion" como fallback seguro).
+
+---
+
+**Criterios de aceptacion:**
+- AC-01: La pagina `/` debe aplicar el diseno del DESIGN_SYSTEM.md (dark mode, glassmorphism, geometria decorativa).
+- AC-02: Hero debe mostrar logo, tagline, descripcion, y boton CTA para iniciar sesion.
+- AC-03: Si no existe superadmin, debe mostrar boton "Primer inicio - Registrar empresa".
+- AC-04: La seccion de servicios debe renderizar 6 cards con iconos matching cada tipo de servicio.
+- AC-05: La seccion de cifras debe mostrar 4 indicadores de confianza con numeros estilizados.
+- AC-06: La seccion de diferenciadores debe mostrar 3 columnas con iconos.
+- AC-07: La seccion CTA final debe incluir un boton de login/registro.
+- AC-08: El footer debe incluir copyright dinamico con el ano actual y layout de 3 columnas en desktop.
+- AC-09: La pagina debe ser responsive (mobile-first): 1 columna en mobile, multi-columna en desktop.
+- AC-10: Todos los colores, tipografia y espaciado deben usar exclusivamente tokens del DESIGN_SYSTEM.md.
+
+---
+
+**Componentes especificos a crear:**
+
+| Componente | Archivo | Descripcion |
+|------------|---------|-------------|
+| `HeroSection` | `src/app/_components/landing/HeroSection.tsx` | Hero full-viewport con geometria decorativa, CTAs |
+| `ServicesSection` | `src/app/_components/landing/ServicesSection.tsx` | Grid de 6 servicios con glassmorphism cards |
+| `StatsSection` | `src/app/_components/landing/StatsSection.tsx` | Indicadores de confianza con numeros |
+| `FeaturesSection` | `src/app/_components/landing/FeaturesSection.tsx` | 3 diferenciadores con iconos |
+| `CtaSection` | `src/app/_components/landing/CtaSection.tsx` | Call-to-action final antes del footer |
+| `FooterSection` | `src/app/_components/landing/FooterSection.tsx` | Footer completo con copyright dinamico |
+| `GeometricBackground` | `src/app/_components/landing/GeometricBackground.tsx` | SVG/pseudo-elementos con rombos, rayos, triangulos decorativos |
+
+**Nota:** Todos los componentes deben usar exclusivamente los tokens del DESIGN_SYSTEM.md (variables CSS `hsl(var(--primary))`, clases de Tailwind mapeadas, etc.). No se permite CSS inline ni valores hardcodeados de color.
 
 #### US-001: Autenticacion y registro de empleados (Tamano: M)
 **Como** Gerente General, **quiero** iniciar sesion en el sistema y gestionar los empleados de LoBeMo **para** controlar quien accede al sistema y mantener actualizada la nomina del personal.
