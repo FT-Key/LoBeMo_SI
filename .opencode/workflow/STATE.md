@@ -11,16 +11,16 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 - **Deploy:** Vercel + GitHub (repositorio privado).
 
 ## Current US
-- **ID**: —
-- **Card**: —
-- **Status**: —
-- **Phase**: —
-- **Detail**: —
+- **ID**: US-001
+- **Card**: hYi3vqEW
+- **Status**: In Progress
+- **Phase**: P2 - Implement
+- **Detail**: .opencode/workflow/history/US-001.md
 
 ## History
 | US | Status | Branch | PR | Detail |
 |----|--------|--------|----|--------|
-| — | — | — | — | — |
+| US-001 | 🔄 In Progress | feat/US-001-autenticacion | — | .opencode/workflow/history/US-001.md |
 
 ## Project Status
 ✅ Fase de análisis de requisitos COMPLETA.
@@ -58,4 +58,5 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | 20 | US-020 | 🟢 Could Have | 70jfVId9 | https://trello.com/c/70jfVId9 |
 
 ## Next Steps
-1. Arrancar implementación con **US-001: Autenticación y registro de empleados** siguiendo el flujo multi-agente (AGENTS.md).
+1. Commit, push, crear PR a dev y mergear
+2. Crear PR de dev a main

@@ -1,6 +1,11 @@
-import Link from "next/link";
+import Link from "next/link"
+import { prisma } from "@/lib/prisma"
 
-export default function Home() {
+export default async function Home() {
+  const hasSuperAdmin = await prisma.empleado.findFirst({
+    where: { rol: "GERENTE_GENERAL" },
+  })
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="border-b">
@@ -20,21 +25,23 @@ export default function Home() {
         </h2>
         <p className="text-lg text-muted-foreground max-w-xl mb-8">
           Centralizá la administración y seguimiento de servicios de
-          ciberseguridad: clientes, proyectos, incidentes y soluciones.
+          ciberseguridad: clientes, proyectos, tareas y más.
         </p>
         <div className="flex gap-4">
           <Link
             href="/login"
             className="inline-flex h-10 items-center justify-center rounded-md bg-foreground px-8 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
           >
-            Comenzar
+            Iniciar sesión
           </Link>
-          <Link
-            href="/register"
-            className="inline-flex h-10 items-center justify-center rounded-md border border-input px-8 text-sm font-medium transition-colors hover:bg-accent"
-          >
-            Registrarse
-          </Link>
+          {!hasSuperAdmin && (
+            <Link
+              href="/register"
+              className="inline-flex h-10 items-center justify-center rounded-md border border-input px-8 text-sm font-medium transition-colors hover:bg-accent"
+            >
+              Primer inicio
+            </Link>
+          )}
         </div>
       </main>
 
@@ -44,5 +51,5 @@ export default function Home() {
         </div>
       </footer>
     </div>
-  );
+  )
 }
