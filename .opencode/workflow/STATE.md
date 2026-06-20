@@ -11,16 +11,16 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 - **Deploy:** Vercel + GitHub (repositorio privado).
 
 ## Current US
-- **ID**: US-001
-- **Card**: hYi3vqEW
-- **Status**: In Progress
-- **Phase**: P2 - Implement
-- **Detail**: .opencode/workflow/history/US-001.md
+- **ID**: —
+- **Card**: —
+- **Status**: —
+- **Phase**: —
+- **Detail**: —
 
 ## History
 | US | Status | Branch | PR | Detail |
 |----|--------|--------|----|--------|
-| US-001 | 🔄 In Progress | feat/US-001-autenticacion | — | .opencode/workflow/history/US-001.md |
+| US-001 | ✅ Done | feat/US-001-autenticacion | PR #1 → dev, PR #2 → main | .opencode/workflow/history/US-001.md |
 
 ## Project Status
 ✅ Fase de análisis de requisitos COMPLETA.
@@ -32,6 +32,7 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 ✅ 20 User Stories (9 MVP, 6 Should, 5 Could).
 ✅ Repositorio GitHub creado: https://github.com/FT-Key/LoBeMo_SI
 ✅ Tablero Trello creado: https://trello.com/b/Bjj0onFq
+✅ **US-001 implementada y mergeada a main.**
 
 ### Cards en Trello (Backlog)
 | # | US | Prioridad | Card ID | Trello Link |
@@ -58,5 +59,4 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | 20 | US-020 | 🟢 Could Have | 70jfVId9 | https://trello.com/c/70jfVId9 |
 
 ## Next Steps
-1. Commit, push, crear PR a dev y mergear
-2. Crear PR de dev a main
+1. Continuar con **US-002: Gestión de clientes**
