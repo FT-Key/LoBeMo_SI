@@ -1,0 +1,183 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md"],
+  "agent": {
+    "architect": {
+      "description": "Planificador tecnico: disena la arquitectura y crea planes detallados antes de implementar",
+      "mode": "subagent",
+      "temperature": 0.3,
+      "permission": {
+        "edit": { "*": "deny", "**/.opencode/workflow/STATE.md": "allow", "**/.opencode/workflow/history/*": "allow" },
+        "bash": "deny",
+        "task": "deny",
+        "webfetch": "deny",
+        "websearch": "deny"
+      }
+    },
+    "builder": {
+      "description": "Implementador: escribe codigo siguiendo el plan establecido y las skills cargadas",
+      "mode": "subagent",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "task": "deny",
+        "webfetch": "deny",
+        "websearch": "deny"
+      }
+    },
+    "reviewer": {
+      "description": "Code reviewer: revisa calidad, bugs, buenas practicas y seguridad del codigo",
+      "mode": "subagent",
+      "temperature": 0.1,
+      "permission": {
+        "edit": "deny",
+        "bash": "deny",
+        "task": "deny",
+        "webfetch": "deny",
+        "websearch": "deny"
+      }
+    },
+    "tester": {
+      "description": "Tester: ejecuta tests del proyecto y diagnostica fallos de forma precisa",
+      "mode": "subagent",
+      "temperature": 0.0,
+      "permission": {
+        "edit": { "*": "deny", "**/.opencode/workflow/STATE.md": "allow", "**/.opencode/workflow/history/*": "allow" },
+        "bash": {
+          "*": "deny",
+          "npm test*": "allow",
+          "npm run test*": "allow"
+        },
+        "task": "deny",
+        "webfetch": "deny",
+        "websearch": "deny"
+      }
+    },
+    "linter": {
+      "description": "Linter: ejecuta linting, typecheck y formato del proyecto",
+      "mode": "subagent",
+      "temperature": 0.0,
+      "permission": {
+        "edit": { "*": "deny", "**/.opencode/workflow/STATE.md": "allow", "**/.opencode/workflow/history/*": "allow" },
+        "bash": {
+          "*": "deny",
+          "npm run lint*": "allow",
+          "npm run typecheck*": "allow",
+          "npm run format*": "allow",
+          "npm run check*": "allow"
+        },
+        "task": "deny",
+        "webfetch": "deny",
+        "websearch": "deny"
+      }
+    },
+    "git-assistant": {
+      "description": "Git assistant: gestiona branches, commits convencionales y Pull Requests",
+      "mode": "subagent",
+      "temperature": 0.0,
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git branch*": "allow",
+          "git checkout*": "allow",
+          "git add*": "allow",
+          "git commit*": "allow",
+          "git push*": "allow",
+          "git pull*": "allow",
+          "git fetch*": "allow",
+          "git stash*": "allow",
+          "git rebase*": "ask",
+          "git reset*": "ask",
+          "git merge*": "ask"
+        },
+        "task": "deny",
+        "webfetch": "deny",
+        "websearch": "deny"
+      }
+    },
+    "systems-analyst": {
+      "description": "Analista de sistemas: conversa contigo para refinar ideas de negocio, define requisitos y escribe .opencode/workflow/REQUIREMENTS.md",
+      "mode": "all",
+      "temperature": 0.6,
+      "permission": {
+        "edit": { "*": "deny", "**/.opencode/workflow/REQUIREMENTS.md": "allow", "**/.opencode/workflow/STATE.md": "allow" },
+        "bash": "deny",
+        "task": "deny",
+        "webfetch": "allow",
+        "websearch": "allow"
+      }
+    },
+    "pm-agent": {
+      "description": "Project Management Agent: gestiona boards, cards y checklists en la herramienta PM del proyecto (Trello, Taiga, etc.). Los demas agentes le delegan operaciones PM via Task.",
+      "mode": "subagent",
+      "temperature": 0.3,
+      "permission": {
+        "edit": { "*": "deny" },
+        "bash": "deny",
+        "task": "deny",
+        "webfetch": "deny",
+        "websearch": "deny"
+      }
+    },
+    "design-strategist": {
+      "description": "Disenador UX/UI estrategico: conversa contigo para definir la vision de diseno, paleta de colores, tipografia y estilo visual. Escribe .opencode/workflow/DESIGN_SYSTEM.md.",
+      "mode": "all",
+      "temperature": 0.7,
+      "permission": {
+        "edit": { "*": "deny", "**/.opencode/workflow/DESIGN_SYSTEM.md": "allow", "**/.opencode/workflow/STATE.md": "allow" },
+        "bash": "deny",
+        "task": "deny",
+        "webfetch": "allow",
+        "websearch": "allow"
+      }
+    },
+    "designer": {
+      "description": "Disenador UX/UI tecnico: aplica los tokens de .opencode/workflow/DESIGN_SYSTEM.md, revisa fidelidad visual de componentes.",
+      "mode": "subagent",
+      "temperature": 0.4,
+      "permission": {
+        "edit": { "*": "deny", "**/.opencode/workflow/DESIGN_SYSTEM.md": "allow", "**/.opencode/workflow/STATE.md": "allow", "**/.opencode/workflow/history/*": "allow" },
+        "bash": "deny",
+        "task": "deny",
+        "webfetch": "allow",
+        "websearch": "allow"
+      }
+    },
+    "state-manager": {
+      "description": "State Manager: mantiene .opencode/workflow/STATE.md y .opencode/workflow/history/. Inicializa, actualiza fases, registra resultados de quality gates y escribe resumen final.",
+      "mode": "subagent",
+      "temperature": 0.2,
+      "permission": {
+        "edit": { "*": "deny", "**/.opencode/workflow/STATE.md": "allow", "**/.opencode/workflow/history/*": "allow" },
+        "bash": "deny",
+        "task": "deny",
+        "webfetch": "deny",
+        "websearch": "deny"
+      }
+    },
+    "git-specialist": {
+      "description": "Git Specialist - operador experto en Git local + GitHub remoto. NO explora codigo, solo Git y GitHub. Disponible para dialogo directo.",
+      "mode": "all",
+      "temperature": 0.0,
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny",
+          "git *": "allow"
+        },
+        "task": "deny",
+        "webfetch": "deny",
+        "websearch": "deny"
+      }
+    }
+  },
+  "permission": {
+    "edit": "allow",
+    "bash": "allow",
+    "task": "allow"
+  }
+}
