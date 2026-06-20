@@ -7,61 +7,212 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      String   @default("user")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  projects  Project[]
-
-  @@map("users")
+enum Rol {
+  GERENTE_GENERAL
+  ADMINISTRACION
+  VENTAS
+  CISO
+  ANALISTA_SEGURIDAD
+  DESARROLLADOR
+  ESPECIALISTA_REDES
+  PENTESTER
+  SOPORTE_TECNICO
+  AUDITOR
+  CAPACITADOR
 }
 
-model Client {
-  id        String    @id @default(cuid())
-  name      String
-  email     String?
-  phone     String?
-  company   String?
-  notes     String?
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  projects  Project[]
-
-  @@map("clients")
+enum Area {
+  GERENCIA
+  ADMINISTRACION
+  COMERCIAL
+  SISTEMAS
+  AUDITORIA
+  CAPACITACION
 }
 
-model Project {
+model Cliente {
+  id             String     @id @default(cuid())
+  razonSocial    String     @map("razon_social")
+  cuit           String     @unique
+  emailContacto  String?    @map("email_contacto")
+  telefono       String?
+  direccion      String?
+  sector         String?
+  activo         Boolean    @default(true)
+  fechaRegistro  DateTime   @default(now()) @map("fecha_registro")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+  proyectos      Proyecto[]
+
+  @@map("clientes")
+}
+
+model Servicio {
   id          String     @id @default(cuid())
-  name        String
-  description String?
-  status      String     @default("active")
-  clientId    String?    @map("client_id")
-  client      Client?    @relation(fields: [clientId], references: [id])
-  userId      String?    @map("user_id")
-  user        User?      @relation(fields: [userId], references: [id])
+  nombre      String     @unique
+  descripcion String?
+  precioBase  Decimal?   @map("precio_base")
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
-  incidents   Incident[]
+  proyectos   Proyecto[]
 
-  @@map("projects")
+  @@map("servicios")
 }
 
-model Incident {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  severity    String   @default("medium")
-  status      String   @default("open")
-  solution    String?
-  technology  String?
-  projectId   String   @map("project_id")
-  project     Project  @relation(fields: [projectId], references: [id])
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+model Proyecto {
+  id              String   @id @default(cuid())
+  nombre          String
+  descripcion     String?
+  estado          String   @default("RELEVAMIENTO")
+  fechaInicio     DateTime @default(now()) @map("fecha_inicio")
+  fechaEstimadaFin DateTime? @map("fecha_estimada_fin")
+  fechaEntregaReal DateTime? @map("fecha_entrega_real")
+  montoAcordado   Decimal? @map("monto_acordado")
+  clienteId       String   @map("cliente_id")
+  servicioId      String   @map("servicio_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
-  @@map("incidents")
+  cliente   Cliente   @relation(fields: [clienteId], references: [id])
+  servicio  Servicio  @relation(fields: [servicioId], references: [id])
+  propuestas Propuesta[]
+  asignaciones Asignacion[]
+  tareas    Tarea[]
+  hitos     Hito[]
+  documentos Documento[]
+
+  @@map("proyectos")
+}
+
+model Propuesta {
+  id              String   @id @default(cuid())
+  version         Int      @default(1)
+  montoTotal      Decimal  @map("monto_total")
+  detalleServicios Json?   @map("detalle_servicios")
+  fechaEmision    DateTime @map("fecha_emision")
+  fechaVencimiento DateTime @map("fecha_vencimiento")
+  estado          String   @default("ENVIADA")
+  proyectoId      String   @map("proyecto_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  proyecto Proyecto @relation(fields: [proyectoId], references: [id])
+
+  @@map("propuestas")
+}
+
+model Empleado {
+  id           String       @id @default(cuid())
+  nombre       String
+  apellido     String
+  email        String       @unique
+  password     String
+  rol          Rol
+  area         Area
+  activo       Boolean      @default(true)
+  fechaIngreso DateTime     @default(now()) @map("fecha_ingreso")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  asignaciones Asignacion[]
+  notificaciones Notificacion[]
+  auditLogs    AuditLog[]
+
+  @@map("empleados")
+}
+
+model Asignacion {
+  id             String   @id @default(cuid())
+  rolEnProyecto  String   @map("rol_en_proyecto")
+  fechaAsignacion DateTime @default(now()) @map("fecha_asignacion")
+  proyectoId     String   @map("proyecto_id")
+  empleadoId     String   @map("empleado_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  tareas         Tarea[]
+
+  proyecto Proyecto  @relation(fields: [proyectoId], references: [id])
+  empleado Empleado @relation(fields: [empleadoId], references: [id])
+
+  @@unique([proyectoId, empleadoId])
+  @@map("asignaciones")
+}
+
+model Tarea {
+  id          String       @id @default(cuid())
+  titulo      String
+  descripcion String?
+  estado      String       @default("PENDIENTE")
+  prioridad   String       @default("MEDIA")
+  fechaLimite DateTime?    @map("fecha_limite")
+  proyectoId  String?      @map("proyecto_id")
+  asignacionId String?     @map("asignacion_id")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  documentos  Documento[]
+
+  proyecto   Proyecto?   @relation(fields: [proyectoId], references: [id])
+  asignacion Asignacion? @relation(fields: [asignacionId], references: [id])
+
+  @@map("tareas")
+}
+
+model Hito {
+  id              String    @id @default(cuid())
+  nombre          String
+  descripcion     String?
+  fechaPrevista   DateTime  @map("fecha_prevista")
+  fechaReal       DateTime? @map("fecha_real")
+  completado      Boolean   @default(false)
+  proyectoId      String    @map("proyecto_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  proyecto Proyecto @relation(fields: [proyectoId], references: [id])
+
+  @@map("hitos")
+}
+
+model Documento {
+  id           String   @id @default(cuid())
+  nombreArchivo String  @map("nombre_archivo")
+  tipo         String
+  url          String
+  proyectoId   String?  @map("proyecto_id")
+  tareaId      String?  @map("tarea_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  proyecto Proyecto? @relation(fields: [proyectoId], references: [id])
+  tarea    Tarea?    @relation(fields: [tareaId], references: [id])
+
+  @@map("documentos")
+}
+
+model Notificacion {
+  id         String   @id @default(cuid())
+  titulo     String
+  mensaje    String
+  tipo       String
+  leida      Boolean  @default(false)
+  empleadoId String   @map("empleado_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  empleado Empleado @relation(fields: [empleadoId], references: [id])
+
+  @@map("notificaciones")
+}
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  accion     String
+  entidad    String
+  entidadId  String    @map("entidad_id")
+  detalle    Json?
+  empleadoId String?   @map("empleado_id")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  empleado Empleado? @relation(fields: [empleadoId], references: [id])
+
+  @@map("audit_logs")
 }
