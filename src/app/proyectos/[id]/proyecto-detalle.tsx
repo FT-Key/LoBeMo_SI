@@ -13,6 +13,20 @@ const ESTADO_BADGES: Record<string, string> = {
   CERRADO: "bg-muted text-muted-foreground border border-border",
 }
 
+const TAREA_ESTADO_BADGES: Record<string, string> = {
+  PENDIENTE: "bg-yellow-500/15 text-yellow-400 border border-yellow-500/25",
+  EN_PROGRESO: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
+  COMPLETADA: "bg-green-500/15 text-green-400 border border-green-500/25",
+  CANCELADA: "bg-muted text-muted-foreground border border-border",
+}
+
+const PRIORIDAD_BADGES: Record<string, string> = {
+  BAJA: "bg-gray-500/15 text-gray-400 border border-gray-500/25",
+  MEDIA: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
+  ALTA: "bg-orange-500/15 text-orange-400 border border-orange-500/25",
+  CRITICA: "bg-red-500/15 text-red-400 border border-red-500/25",
+}
+
 const NOMBRES_SERVICIOS: Record<string, string> = {
   AUDITORIA_ISO27001: "Auditoría ISO 27001",
   PENTESTING: "Pentesting",
@@ -44,14 +58,32 @@ type EmpleadoBrief = {
   area: string
 }
 
+type TareaAsignacion = {
+  id: string
+  empleado: { id: string; nombre: string; apellido: string; rol: string }
+}
+
+type TareaItem = {
+  id: string
+  titulo: string
+  descripcion: string | null
+  estado: string
+  prioridad: string
+  fechaLimite: string | null
+  createdAt: string
+  asignacion: TareaAsignacion | null
+  asignacionId: string | null
+}
+
 type ProyectoDetalleProps = {
   proyecto: Record<string, unknown>
   sessionRol: string
+  sessionUserId: string
   estadoLabels: Record<string, string>
   empleados: EmpleadoBrief[]
 }
 
-export function ProyectoDetalle({ proyecto, sessionRol, estadoLabels, empleados }: ProyectoDetalleProps) {
+export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLabels, empleados }: ProyectoDetalleProps) {
   const router = useRouter()
   const [transitioning, setTransitioning] = useState(false)
   const [error, setError] = useState("")
@@ -74,7 +106,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, estadoLabels, empleados 
       rolEnProyecto: string
       empleado: { id: string; nombre: string; apellido: string; rol: string }
     }>
-    tareas: Array<{ id: string; titulo: string; estado: string; prioridad: string }>
+    tareas: TareaItem[]
     hitos: Array<{ id: string; nombre: string; fechaPrevista: string; completado: boolean }>
     historialEstados: Array<{
       id: string
@@ -86,8 +118,12 @@ export function ProyectoDetalle({ proyecto, sessionRol, estadoLabels, empleados 
     _count: { tareas: number; asignaciones: number; propuestas: number; documentos: number }
   }
 
-  const puedeTransicionar = ["GERENTE_GENERAL", "CISO", "ADMINISTRACION", "VENTAS"].includes(sessionRol)
+  const esCisoOGerente = sessionRol === "CISO" || sessionRol === "GERENTE_GENERAL"
+  const estaAsignado = p.asignaciones.some((a) => a.empleado.id === sessionUserId)
+  const puedeGestionarTareas = esCisoOGerente || estaAsignado
   const esCerrado = p.estado === "CERRADO"
+
+  const puedeTransicionar = ["GERENTE_GENERAL", "CISO", "ADMINISTRACION", "VENTAS"].includes(sessionRol)
 
   const puedeAsignar = ["GERENTE_GENERAL", "CISO"].includes(sessionRol)
   const estadosAsignables = ["APROBADO", "EN_EJECUCION"]
@@ -99,6 +135,23 @@ export function ProyectoDetalle({ proyecto, sessionRol, estadoLabels, empleados 
   const [asignarError, setAsignarError] = useState("")
   const [asignarSuccess, setAsignarSuccess] = useState("")
   const [deletingId, setDeletingId] = useState("")
+
+  const [tareaTitulo, setTareaTitulo] = useState("")
+  const [tareaDescripcion, setTareaDescripcion] = useState("")
+  const [tareaPrioridad, setTareaPrioridad] = useState("MEDIA")
+  const [tareaFechaLimite, setTareaFechaLimite] = useState("")
+  const [tareaError, setTareaError] = useState("")
+  const [tareaSuccess, setTareaSuccess] = useState("")
+  const [creandoTarea, setCreandoTarea] = useState(false)
+
+  const [editandoTareaId, setEditandoTareaId] = useState<string | null>(null)
+  const [editandoEstado, setEditandoEstado] = useState("")
+  const [editandoPrioridad, setEditandoPrioridad] = useState("")
+  const [editandoTitulo, setEditandoTitulo] = useState("")
+  const [editandoDescripcion, setEditandoDescripcion] = useState("")
+  const [editandoFechaLimite, setEditandoFechaLimite] = useState("")
+  const [editandoLoading, setEditandoLoading] = useState(false)
+  const [eliminandoTareaId, setEliminandoTareaId] = useState<string | null>(null)
 
   const transicionesPosibles: Record<string, string[]> = {
     RELEVAMIENTO: ["PROPUESTA"],
@@ -187,6 +240,113 @@ export function ProyectoDetalle({ proyecto, sessionRol, estadoLabels, empleados 
       setError("Error de conexión")
     } finally {
       setDeletingId("")
+    }
+  }
+
+  async function handleCrearTarea(e: React.FormEvent) {
+    e.preventDefault()
+    setTareaError("")
+    setTareaSuccess("")
+
+    if (!tareaTitulo.trim()) {
+      setTareaError("El título es obligatorio")
+      return
+    }
+
+    setCreandoTarea(true)
+    try {
+      const res = await fetch("/api/tareas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          proyectoId: p.id,
+          titulo: tareaTitulo.trim(),
+          descripcion: tareaDescripcion.trim() || null,
+          prioridad: tareaPrioridad,
+          fechaLimite: tareaFechaLimite || null,
+        }),
+      })
+      const json = await res.json()
+      if (res.ok) {
+        setTareaSuccess("Tarea creada")
+        setTareaTitulo("")
+        setTareaDescripcion("")
+        setTareaPrioridad("MEDIA")
+        setTareaFechaLimite("")
+        router.refresh()
+      } else {
+        setTareaError(json.error || "Error al crear tarea")
+      }
+    } catch {
+      setTareaError("Error de conexión")
+    } finally {
+      setCreandoTarea(false)
+    }
+  }
+
+  function iniciarEdicion(t: TareaItem) {
+    setEditandoTareaId(t.id)
+    setEditandoEstado(t.estado)
+    setEditandoPrioridad(t.prioridad)
+    setEditandoTitulo(t.titulo)
+    setEditandoDescripcion(t.descripcion ?? "")
+    setEditandoFechaLimite(t.fechaLimite ? t.fechaLimite.split("T")[0] : "")
+    setEditandoLoading(false)
+  }
+
+  function cancelarEdicion() {
+    setEditandoTareaId(null)
+  }
+
+  async function handleGuardarTarea() {
+    if (!editandoTareaId) return
+    setEditandoLoading(true)
+    setError("")
+
+    const body: Record<string, unknown> = {}
+    if (editandoTitulo.trim()) body.titulo = editandoTitulo.trim()
+    body.descripcion = editandoDescripcion.trim() || null
+    body.estado = editandoEstado
+    body.prioridad = editandoPrioridad
+    body.fechaLimite = editandoFechaLimite || null
+
+    try {
+      const res = await fetch(`/api/tareas/${editandoTareaId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      const json = await res.json()
+      if (res.ok) {
+        setSuccess("Tarea actualizada")
+        setEditandoTareaId(null)
+        router.refresh()
+      } else {
+        setError(json.error || "Error al actualizar tarea")
+      }
+    } catch {
+      setError("Error de conexión")
+    } finally {
+      setEditandoLoading(false)
+    }
+  }
+
+  async function handleEliminarTarea(tareaId: string) {
+    setEliminandoTareaId(tareaId)
+    setError("")
+    try {
+      const res = await fetch(`/api/tareas/${tareaId}`, { method: "DELETE" })
+      if (res.ok) {
+        setSuccess("Tarea eliminada")
+        router.refresh()
+      } else {
+        const json = await res.json()
+        setError(json.error || "Error al eliminar tarea")
+      }
+    } catch {
+      setError("Error de conexión")
+    } finally {
+      setEliminandoTareaId("")
     }
   }
 
@@ -331,17 +491,171 @@ export function ProyectoDetalle({ proyecto, sessionRol, estadoLabels, empleados 
 
         <div className="rounded-lg border bg-surface-elevated/80 p-6">
           <h3 className="text-lg font-semibold mb-3">Tareas ({p._count.tareas})</h3>
+
+          {tareaError && (
+            <div className="rounded-md bg-red-500/15 border border-red-500/25 p-2 mb-3 text-xs text-red-400">{tareaError}</div>
+          )}
+          {tareaSuccess && (
+            <div className="rounded-md bg-green-500/15 border border-green-500/25 p-2 mb-3 text-xs text-green-400">{tareaSuccess}</div>
+          )}
+
+          {puedeGestionarTareas && !esCerrado && (
+            <form onSubmit={handleCrearTarea} className="mb-4 p-3 rounded-md bg-muted/30 space-y-2">
+              <p className="text-xs font-medium text-muted-foreground">Nueva tarea</p>
+              <input
+                type="text"
+                value={tareaTitulo}
+                onChange={(e) => setTareaTitulo(e.target.value)}
+                placeholder="Título de la tarea"
+                className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+              />
+              <textarea
+                value={tareaDescripcion}
+                onChange={(e) => setTareaDescripcion(e.target.value)}
+                placeholder="Descripción (opcional)"
+                rows={2}
+                className="w-full rounded-md border bg-background px-3 py-1.5 text-sm resize-none"
+              />
+              <div className="flex gap-2">
+                <select
+                  value={tareaPrioridad}
+                  onChange={(e) => setTareaPrioridad(e.target.value)}
+                  className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+                >
+                  <option value="BAJA">Baja</option>
+                  <option value="MEDIA">Media</option>
+                  <option value="ALTA">Alta</option>
+                  <option value="CRITICA">Crítica</option>
+                </select>
+                <input
+                  type="date"
+                  value={tareaFechaLimite}
+                  onChange={(e) => setTareaFechaLimite(e.target.value)}
+                  className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={creandoTarea}
+                className="inline-flex h-8 w-full items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
+              >
+                {creandoTarea ? "Creando..." : "Crear tarea"}
+              </button>
+            </form>
+          )}
+
           {p.tareas.length === 0 ? (
             <p className="text-sm text-muted-foreground">Sin tareas registradas</p>
           ) : (
-            <ul className="space-y-2">
-              {p.tareas.slice(0, 5).map((t) => (
-                <li key={t.id} className="text-sm flex items-center justify-between">
-                  <span>{t.titulo}</span>
-                  <span className="text-xs text-muted-foreground">{t.estado}</span>
-                </li>
+            <div className="space-y-3 max-h-[500px] overflow-y-auto">
+              {p.tareas.map((t) => (
+                <div key={t.id} className="rounded-md border bg-muted/10 p-3">
+                  {editandoTareaId === t.id ? (
+                    <div className="space-y-2">
+                      <input
+                        type="text"
+                        value={editandoTitulo}
+                        onChange={(e) => setEditandoTitulo(e.target.value)}
+                        className="w-full rounded-md border bg-background px-3 py-1.5 text-sm font-medium"
+                      />
+                      <textarea
+                        value={editandoDescripcion}
+                        onChange={(e) => setEditandoDescripcion(e.target.value)}
+                        rows={2}
+                        className="w-full rounded-md border bg-background px-3 py-1.5 text-sm resize-none"
+                      />
+                      <div className="flex gap-2">
+                        <select
+                          value={editandoEstado}
+                          onChange={(e) => setEditandoEstado(e.target.value)}
+                          className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+                        >
+                          <option value="PENDIENTE">Pendiente</option>
+                          <option value="EN_PROGRESO">En Progreso</option>
+                          <option value="COMPLETADA">Completada</option>
+                          <option value="CANCELADA">Cancelada</option>
+                        </select>
+                        <select
+                          value={editandoPrioridad}
+                          onChange={(e) => setEditandoPrioridad(e.target.value)}
+                          className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+                        >
+                          <option value="BAJA">Baja</option>
+                          <option value="MEDIA">Media</option>
+                          <option value="ALTA">Alta</option>
+                          <option value="CRITICA">Crítica</option>
+                        </select>
+                      </div>
+                      <input
+                        type="date"
+                        value={editandoFechaLimite}
+                        onChange={(e) => setEditandoFechaLimite(e.target.value)}
+                        className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleGuardarTarea}
+                          disabled={editandoLoading}
+                          className="inline-flex h-7 flex-1 items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
+                        >
+                          {editandoLoading ? "Guardando..." : "Guardar"}
+                        </button>
+                        <button
+                          onClick={cancelarEdicion}
+                          className="inline-flex h-7 flex-1 items-center justify-center rounded-md bg-muted px-3 text-xs font-medium hover:bg-muted/80"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-start justify-between mb-1">
+                        <span className="text-sm font-medium">{t.titulo}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${PRIORIDAD_BADGES[t.prioridad] ?? ""}`}>
+                            {t.prioridad}
+                          </span>
+                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${TAREA_ESTADO_BADGES[t.estado] ?? ""}`}>
+                            {t.estado.replace(/_/g, " ")}
+                          </span>
+                        </div>
+                      </div>
+                      {t.descripcion && (
+                        <p className="text-xs text-muted-foreground mb-1 line-clamp-2">{t.descripcion}</p>
+                      )}
+                      <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                        <span>
+                          {t.asignacion
+                            ? `${t.asignacion.empleado.nombre} ${t.asignacion.empleado.apellido}`
+                            : "Sin asignar"}
+                          {t.fechaLimite && ` — ${new Date(t.fechaLimite).toLocaleDateString("es-AR")}`}
+                        </span>
+                        <div className="flex gap-2">
+                          {puedeGestionarTareas && !esCerrado && (
+                            <button
+                              onClick={() => iniciarEdicion(t)}
+                              className="text-primary hover:underline"
+                            >
+                              Editar
+                            </button>
+                          )}
+                          {esCisoOGerente && !esCerrado && (
+                            <button
+                              onClick={() => handleEliminarTarea(t.id)}
+                              disabled={eliminandoTareaId === t.id}
+                              className="text-red-400 hover:text-red-300 disabled:opacity-50"
+                            >
+                              {eliminandoTareaId === t.id ? "..." : "✕"}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
       </div>
