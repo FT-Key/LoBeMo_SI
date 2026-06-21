@@ -107,7 +107,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
       empleado: { id: string; nombre: string; apellido: string; rol: string }
     }>
     tareas: TareaItem[]
-    hitos: Array<{ id: string; nombre: string; fechaPrevista: string; completado: boolean }>
+    hitos: Array<{ id: string; nombre: string; descripcion: string | null; fechaPrevista: string; fechaReal: string | null; completado: boolean }>
     historialEstados: Array<{
       id: string
       estadoAnterior: string | null
@@ -152,6 +152,22 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
   const [editandoFechaLimite, setEditandoFechaLimite] = useState("")
   const [editandoLoading, setEditandoLoading] = useState(false)
   const [eliminandoTareaId, setEliminandoTareaId] = useState<string | null>(null)
+
+  const [hitoNombre, setHitoNombre] = useState("")
+  const [hitoDescripcion, setHitoDescripcion] = useState("")
+  const [hitoFechaPrevista, setHitoFechaPrevista] = useState("")
+  const [hitoError, setHitoError] = useState("")
+  const [hitoSuccess, setHitoSuccess] = useState("")
+  const [creandoHito, setCreandoHito] = useState(false)
+
+  const [editandoHitoId, setEditandoHitoId] = useState<string | null>(null)
+  const [editHitoNombre, setEditHitoNombre] = useState("")
+  const [editHitoDescripcion, setEditHitoDescripcion] = useState("")
+  const [editHitoFechaPrevista, setEditHitoFechaPrevista] = useState("")
+  const [editHitoFechaReal, setEditHitoFechaReal] = useState("")
+  const [editHitoCompletado, setEditHitoCompletado] = useState(false)
+  const [editandoHitoLoading, setEditandoHitoLoading] = useState(false)
+  const [eliminandoHitoId, setEliminandoHitoId] = useState<string | null>(null)
 
   const transicionesPosibles: Record<string, string[]> = {
     RELEVAMIENTO: ["PROPUESTA"],
@@ -348,6 +364,119 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
     } finally {
       setEliminandoTareaId("")
     }
+  }
+
+  async function handleCrearHito(e: React.FormEvent) {
+    e.preventDefault()
+    setHitoError("")
+    setHitoSuccess("")
+
+    if (!hitoNombre.trim() || !hitoFechaPrevista) {
+      setHitoError("Nombre y fecha prevista son obligatorios")
+      return
+    }
+
+    setCreandoHito(true)
+    try {
+      const res = await fetch("/api/hitos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          proyectoId: p.id,
+          nombre: hitoNombre.trim(),
+          descripcion: hitoDescripcion.trim() || null,
+          fechaPrevista: hitoFechaPrevista,
+        }),
+      })
+      const json = await res.json()
+      if (res.ok) {
+        setHitoSuccess("Hito creado")
+        setHitoNombre("")
+        setHitoDescripcion("")
+        setHitoFechaPrevista("")
+        router.refresh()
+      } else {
+        setHitoError(json.error || "Error al crear hito")
+      }
+    } catch {
+      setHitoError("Error de conexión")
+    } finally {
+      setCreandoHito(false)
+    }
+  }
+
+  function iniciarEdicionHito(h: typeof p.hitos[0]) {
+    setEditandoHitoId(h.id)
+    setEditHitoNombre(h.nombre)
+    setEditHitoDescripcion(h.descripcion ?? "")
+    setEditHitoFechaPrevista(h.fechaPrevista.split("T")[0])
+    setEditHitoFechaReal(h.fechaReal ? h.fechaReal.split("T")[0] : "")
+    setEditHitoCompletado(h.completado)
+    setEditandoHitoLoading(false)
+  }
+
+  function cancelarEdicionHito() {
+    setEditandoHitoId(null)
+  }
+
+  async function handleGuardarHito() {
+    if (!editandoHitoId) return
+    setEditandoHitoLoading(true)
+    setError("")
+
+    const body: Record<string, unknown> = {}
+    if (editHitoNombre.trim()) body.nombre = editHitoNombre.trim()
+    body.descripcion = editHitoDescripcion.trim() || null
+    body.fechaPrevista = editHitoFechaPrevista
+    body.fechaReal = editHitoFechaReal || null
+    body.completado = editHitoCompletado
+
+    try {
+      const res = await fetch(`/api/hitos/${editandoHitoId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+      const json = await res.json()
+      if (res.ok) {
+        setSuccess("Hito actualizado")
+        setEditandoHitoId(null)
+        router.refresh()
+      } else {
+        setError(json.error || "Error al actualizar hito")
+      }
+    } catch {
+      setError("Error de conexión")
+    } finally {
+      setEditandoHitoLoading(false)
+    }
+  }
+
+  async function handleEliminarHito(hitoId: string) {
+    setEliminandoHitoId(hitoId)
+    setError("")
+    try {
+      const res = await fetch(`/api/hitos/${hitoId}`, { method: "DELETE" })
+      if (res.ok) {
+        setSuccess("Hito eliminado")
+        router.refresh()
+      } else {
+        const json = await res.json()
+        setError(json.error || "Error al eliminar hito")
+      }
+    } catch {
+      setError("Error de conexión")
+    } finally {
+      setEliminandoHitoId("")
+    }
+  }
+
+  function diasHastaFecha(fechaStr: string): number {
+    const hoy = new Date()
+    hoy.setHours(0, 0, 0, 0)
+    const fecha = new Date(fechaStr)
+    fecha.setHours(0, 0, 0, 0)
+    return Math.ceil((fecha.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24))
   }
 
   return (
@@ -658,6 +787,171 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
             </div>
           )}
         </div>
+      </div>
+
+      <div className="rounded-lg border bg-surface-elevated/80 p-6">
+        <h3 className="text-lg font-semibold mb-3">Hitos ({p.hitos.length})</h3>
+
+        {hitoError && (
+          <div className="rounded-md bg-red-500/15 border border-red-500/25 p-2 mb-3 text-xs text-red-400">{hitoError}</div>
+        )}
+        {hitoSuccess && (
+          <div className="rounded-md bg-green-500/15 border border-green-500/25 p-2 mb-3 text-xs text-green-400">{hitoSuccess}</div>
+        )}
+
+        {esCisoOGerente && !esCerrado && (
+          <form onSubmit={handleCrearHito} className="mb-4 p-3 rounded-md bg-muted/30 space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">Nuevo hito</p>
+            <input
+              type="text"
+              value={hitoNombre}
+              onChange={(e) => setHitoNombre(e.target.value)}
+              placeholder="Nombre del hito"
+              className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+            />
+            <textarea
+              value={hitoDescripcion}
+              onChange={(e) => setHitoDescripcion(e.target.value)}
+              placeholder="Descripción (opcional)"
+              rows={2}
+              className="w-full rounded-md border bg-background px-3 py-1.5 text-sm resize-none"
+            />
+            <div className="flex gap-2">
+              <input
+                type="date"
+                value={hitoFechaPrevista}
+                onChange={(e) => setHitoFechaPrevista(e.target.value)}
+                className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+              />
+              <button
+                type="submit"
+                disabled={creandoHito}
+                className="inline-flex h-8 flex-1 items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
+              >
+                {creandoHito ? "Creando..." : "Crear hito"}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {p.hitos.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Sin hitos registrados</p>
+        ) : (
+          <div className="space-y-3 max-h-[500px] overflow-y-auto">
+            {p.hitos.map((h) => {
+              const dias = diasHastaFecha(h.fechaPrevista)
+              const proximo = dias >= 0 && dias <= 3 && !h.completado
+
+              return (
+                <div key={h.id} className="rounded-md border bg-muted/10 p-3">
+                  {editandoHitoId === h.id ? (
+                    <div className="space-y-2">
+                      <input
+                        type="text"
+                        value={editHitoNombre}
+                        onChange={(e) => setEditHitoNombre(e.target.value)}
+                        className="w-full rounded-md border bg-background px-3 py-1.5 text-sm font-medium"
+                      />
+                      <textarea
+                        value={editHitoDescripcion}
+                        onChange={(e) => setEditHitoDescripcion(e.target.value)}
+                        rows={2}
+                        className="w-full rounded-md border bg-background px-3 py-1.5 text-sm resize-none"
+                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="date"
+                          value={editHitoFechaPrevista}
+                          onChange={(e) => setEditHitoFechaPrevista(e.target.value)}
+                          className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+                        />
+                        <input
+                          type="date"
+                          value={editHitoFechaReal}
+                          onChange={(e) => setEditHitoFechaReal(e.target.value)}
+                          placeholder="Fecha real"
+                          className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+                        />
+                      </div>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={editHitoCompletado}
+                          onChange={(e) => setEditHitoCompletado(e.target.checked)}
+                          className="rounded border-border"
+                        />
+                        Completado
+                      </label>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleGuardarHito}
+                          disabled={editandoHitoLoading}
+                          className="inline-flex h-7 flex-1 items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
+                        >
+                          {editandoHitoLoading ? "Guardando..." : "Guardar"}
+                        </button>
+                        <button
+                          onClick={cancelarEdicionHito}
+                          className="inline-flex h-7 flex-1 items-center justify-center rounded-md bg-muted px-3 text-xs font-medium hover:bg-muted/80"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-start justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className={`w-2 h-2 rounded-full ${h.completado ? "bg-green-400" : proximo ? "bg-yellow-400" : "bg-muted-foreground"}`} />
+                          <span className="text-sm font-medium">{h.nombre}</span>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                          {new Date(h.fechaPrevista).toLocaleDateString("es-AR")}
+                        </span>
+                      </div>
+                      {h.descripcion && (
+                        <p className="text-xs text-muted-foreground mb-1 line-clamp-2 ml-4">{h.descripcion}</p>
+                      )}
+                      <div className="flex items-center justify-between text-[10px] text-muted-foreground ml-4">
+                        <div className="flex items-center gap-2">
+                          {h.completado ? (
+                            <span className="text-green-400">Completado{h.fechaReal ? ` ${new Date(h.fechaReal).toLocaleDateString("es-AR")}` : ""}</span>
+                          ) : (
+                            <>
+                              <span className={dias <= 3 && dias >= 0 ? "text-yellow-400" : dias < 0 ? "text-red-400" : ""}>
+                                {dias < 0 ? `Vencido hace ${Math.abs(dias)} día(s)` : dias === 0 ? "Hoy" : `En ${dias} día(s)`}
+                              </span>
+                              {proximo && (
+                                <span className="bg-yellow-500/15 text-yellow-400 border border-yellow-500/25 rounded-full px-2 py-0.5">Próximo</span>
+                              )}
+                            </>
+                          )}
+                        </div>
+                        {esCisoOGerente && !esCerrado && (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => iniciarEdicionHito(h)}
+                              className="text-primary hover:underline"
+                            >
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => handleEliminarHito(h.id)}
+                              disabled={eliminandoHitoId === h.id}
+                              className="text-red-400 hover:text-red-300 disabled:opacity-50"
+                            >
+                              {eliminandoHitoId === h.id ? "..." : "✕"}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       <div className="rounded-lg border bg-surface-elevated/80 p-6">

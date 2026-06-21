@@ -27,6 +27,8 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | US-004 | ✅ Done | feat/US-004-ciclo-vida-proyecto | PR #7 → dev | .opencode/workflow/history/US-004.md |
 | US-005 | ✅ Done | feat/US-005-gestion-propuestas | PR #8 → dev | .opencode/workflow/history/US-005.md |
 | US-006 | ✅ Done | feat/US-006-asignaciones | PR #9 → dev | .opencode/workflow/history/US-006.md |
+| US-007 | ✅ Done | feat/US-007-gestion-tareas | PR #10 → dev | .opencode/workflow/history/US-007.md |
+| US-008 | ✅ Done | feat/US-008-gestion-hitos | PR #11 → dev | .opencode/workflow/history/US-008.md |
 
 ## Project Status
 ✅ Fase de análisis de requisitos COMPLETA.
@@ -70,4 +72,4 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | 21 | US-021 | 🔴 Must Have | hCrnRlEZ | https://trello.com/c/hCrnRlEZ |
 
 ## Next Steps
-1. **[PRÓXIMA] US-006: Asignación de empleados a proyectos**
+1. **[PRÓXIMA] US-009: Dashboard ejecutivo**
