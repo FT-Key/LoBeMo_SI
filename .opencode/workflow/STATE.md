@@ -22,6 +22,7 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 |----|--------|--------|----|--------|
 | US-001 | ✅ Done | feat/US-001-autenticacion | PR #1 → dev, PR #2 → main | .opencode/workflow/history/US-001.md |
 | US-021 | ✅ Done | feat/US-021-landing-page | PR #4 → dev | .opencode/workflow/history/US-021.md |
+| US-002 | ✅ Done | feat/US-002-gestion-clientes | PR #5 → dev | .opencode/workflow/history/US-002.md |
 
 ## Project Status
 ✅ Fase de análisis de requisitos COMPLETA.
@@ -34,6 +35,7 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 ✅ Repositorio GitHub creado: https://github.com/FT-Key/LoBeMo_SI
 ✅ Tablero Trello creado: https://trello.com/b/Bjj0onFq
 ✅ **US-001 implementada y mergeada a main.**
+✅ **US-002 implementada y mergeada a dev.**
 
 ### Cards en Trello (Backlog)
 | # | US | Prioridad | Card ID | Trello Link |
@@ -61,9 +63,56 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | 21 | US-021 | 🔴 Must Have | hCrnRlEZ | https://trello.com/c/hCrnRlEZ |
 
 ## Next Steps
-1. **[PRÓXIMA] US-021: Landing page con identidad visual LoBeMo** — prioritaria
-   - **6 secciones**: Hero (viewport completo), Servicios (6 glassmorphism cards), Cifras (4 indicadores), Diferenciadores (3 columnas), CTA final, Footer
-   - **7 componentes**: HeroSection, ServicesSection, StatsSection, FeaturesSection, CtaSection, FooterSection, GeometricBackground
-   - **10 criterios de aceptación** (AC-01 a AC-10)
-   - Tokens del DESIGN_SYSTEM.md obligatorios (dark mode, glassmorphism, geometría decorativa Fortinet)
-2. Continuar con **US-002: Gestión de clientes**
+1. **[EN REVISIÓN] US-003: Registro de servicios** — Code review completado con bloqueantes.
+   - ❌ AC-03: Frontend/Backend mismatch en delete eligibility
+   - ❌ PATCH sin validación de inputs
+   - Ver Trello card para detalle completo.
+
+## Review Findings
+
+### Bloqueantes
+
+1. **Frontend/Backend mismatch on delete eligibility (AC-03)**
+   - **Archivos**: `servicios-list.tsx:188`, `servicios/[id]/route.ts:103-105`
+   - Backend checks only non-CERRADO projects before allowing deletion. Frontend checks `s._count.proyectos === 0` (ALL projects, including CERRADO). A service with 2 closed projects shows `_count = 2`, hiding the "Eliminar" button even though the API would allow deletion.
+   - **Fix**: Use a filtered count: `_count: { select: { proyectos: { where: { estado: { not: "CERRADO" } } } } }` in the server query so frontend matches backend logic. The project count column should also reflect "active projects" or be adjusted.
+
+2. **No input validation on PATCH endpoint**
+   - **Archivo**: `servicios/[id]/route.ts:44-46`
+   - `descripcion` and `precioBase` accepted without type/schema validation. Sending `{ descripcion: { nested: "object" } }` or `{ precioBase: "not-a-number" }` causes unhandled Prisma errors → 500 response.
+   - **Fix**: Add validation guards:
+     ```ts
+     if (descripcion !== undefined && typeof descripcion !== "string") {
+       return NextResponse.json({ error: "Descripción inválida" }, { status: 400 })
+     }
+     if (precioBase !== undefined && precioBase !== null && typeof precioBase !== "number") {
+       return NextResponse.json({ error: "Precio base inválido" }, { status: 400 })
+     }
+     ```
+
+### Recomendaciones
+
+1. **Navigation "Empleados" link inconsistency** (`servicios/page.tsx:27` vs `clientes/page.tsx:26`)
+   - Servicios page: visible solo para GERENTE_GENERAL. Clientes page: visible para GERENTE_GENERAL | ADMINISTRACION | VENTAS. Unificar criterios entre páginas.
+
+2. **`editPrecio` falsy edge case** (`servicios-list.tsx:75`)
+   - `editPrecio ? parseFloat(editPrecio) : null` — typing `0` sends `null` because `0` is falsy. Use `editPrecio !== "" ? parseFloat(editPrecio) : null` instead.
+
+3. **Search without debounce** (`servicios-list.tsx:112`)
+   - API call on every keystroke. Add 300ms debounce (same pattern exists in clientes-list.tsx — pre-existing).
+
+4. **Hardcoded `take: 10`** (`servicios/page.tsx:13`)
+   - Limit duplicated in server and client. Extract to shared constant in both endpoints.
+
+5. **`Record<string, unknown>` type safety** (`servicios/route.ts:16`, `servicios/[id]/route.ts:53`)
+   - Pre-existing pattern from clientes, but loses TypeScript safety. Use `Prisma.ServicioWhereInput` / `Prisma.ServicioUpdateInput` instead.
+
+### AC Verification Summary
+| Criterion | Status | Notes |
+|-----------|--------|-------|
+| AC-01: 6 servicios predefinidos | ✅ | Seeded correctamente con nombres y descripciones |
+| AC-02: Editar descripción y precio base | ⚠️ | Funciona, pero falta validación de inputs (Bloqueante #2) |
+| AC-03: No eliminar con proyectos asociados | ⚠️ | Backend correcto, frontend bloquea incorrectamente (Bloqueante #1) |
+| AuditLog en UPDATE/DELETE | ✅ | Registrado correctamente |
+| Solo GERENTE_GENERAL edita/elimina | ✅ | Backend enforce correcto |
+| Consistencia con API clientes | ✅ | Mismos patrones de paginación, auth, error handling |
