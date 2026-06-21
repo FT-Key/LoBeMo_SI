@@ -11,16 +11,17 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 - **Deploy:** Vercel + GitHub (repositorio privado).
 
 ## Current US
-- **ID**: US-021
-- **Card**: hCrnRlEZ
-- **Status**: In Progress
-- **Phase**: P2 - Implement
-- **Detail**: Landing page con identidad visual LoBeMo
+- **ID**: —
+- **Card**: —
+- **Status**: —
+- **Phase**: —
+- **Detail**: —
 
 ## History
 | US | Status | Branch | PR | Detail |
 |----|--------|--------|----|--------|
 | US-001 | ✅ Done | feat/US-001-autenticacion | PR #1 → dev, PR #2 → main | .opencode/workflow/history/US-001.md |
+| US-021 | ✅ Done | feat/US-021-landing-page | PR #4 → dev | .opencode/workflow/history/US-021.md |
 
 ## Project Status
 ✅ Fase de análisis de requisitos COMPLETA.
