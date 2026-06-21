@@ -26,6 +26,7 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | US-003 | ✅ Done | feat/US-003-registro-servicios | PR #6 → dev | .opencode/workflow/history/US-003.md |
 | US-004 | ✅ Done | feat/US-004-ciclo-vida-proyecto | PR #7 → dev | .opencode/workflow/history/US-004.md |
 | US-005 | ✅ Done | feat/US-005-gestion-propuestas | PR #8 → dev | .opencode/workflow/history/US-005.md |
+| US-006 | ✅ Done | feat/US-006-asignaciones | PR #9 → dev | .opencode/workflow/history/US-006.md |
 
 ## Project Status
 ✅ Fase de análisis de requisitos COMPLETA.
