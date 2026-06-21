@@ -22,6 +22,9 @@ export default async function DashboardPage() {
                 Empleados
               </Link>
             )}
+            <Link href="/servicios" className="text-sm font-medium hover:underline">
+              Servicios
+            </Link>
             <span className="text-sm text-muted-foreground">
               {session.user.name}
             </span>
