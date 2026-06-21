@@ -11,11 +11,11 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 - **Deploy:** Vercel + GitHub (repositorio privado).
 
 ## Current US
-- **ID**: US-003
-- **Card**: dSPqRz26
-- **Status**: 🔄 In Progress
-- **Phase**: P5 — Git + PR
-- **Detail**: .opencode/workflow/history/US-003.md
+- **ID**: —
+- **Card**: —
+- **Status**: —
+- **Phase**: —
+- **Detail**: —
 
 ## History
 | US | Status | Branch | PR | Detail |
@@ -23,7 +23,7 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | US-001 | ✅ Done | feat/US-001-autenticacion | PR #1 → dev, PR #2 → main | .opencode/workflow/history/US-001.md |
 | US-021 | ✅ Done | feat/US-021-landing-page | PR #4 → dev | .opencode/workflow/history/US-021.md |
 | US-002 | ✅ Done | feat/US-002-gestion-clientes | PR #5 → dev | .opencode/workflow/history/US-002.md |
-| US-003 | 🔄 In Progress | feat/US-003-registro-servicios | — | .opencode/workflow/history/US-003.md |
+| US-003 | ✅ Done | feat/US-003-registro-servicios | PR #6 → dev | .opencode/workflow/history/US-003.md |
 
 ## Project Status
 ✅ Fase de análisis de requisitos COMPLETA.
@@ -37,7 +37,7 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 ✅ Tablero Trello creado: https://trello.com/b/Bjj0onFq
 ✅ **US-001 implementada y mergeada a main.**
 ✅ **US-002 implementada y mergeada a dev.**
-✅ **US-003 implementada. Pendiente: PR y merge a dev.**
+✅ **US-003 implementada y mergeada a dev.**
 
 ### Cards en Trello (Backlog)
 | # | US | Prioridad | Card ID | Trello Link |
