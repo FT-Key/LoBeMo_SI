@@ -22,13 +22,36 @@ const NOMBRES_SERVICIOS: Record<string, string> = {
   SOPORTE_TECNICO: "Soporte Técnico",
 }
 
+const ROL_LABELS: Record<string, string> = {
+  GERENTE_GENERAL: "Gerente General",
+  ADMINISTRACION: "Administración y Contabilidad",
+  VENTAS: "Ventas y Atención al Cliente",
+  CISO: "CISO",
+  ANALISTA_SEGURIDAD: "Analista de Seguridad",
+  DESARROLLADOR: "Desarrollador de Software Seguro",
+  ESPECIALISTA_REDES: "Especialista en Redes",
+  PENTESTER: "Pentester",
+  SOPORTE_TECNICO: "Soporte Técnico",
+  AUDITOR: "Auditor de Seguridad",
+  CAPACITADOR: "Capacitador en Ciberseguridad",
+}
+
+type EmpleadoBrief = {
+  id: string
+  nombre: string
+  apellido: string
+  rol: string
+  area: string
+}
+
 type ProyectoDetalleProps = {
   proyecto: Record<string, unknown>
   sessionRol: string
   estadoLabels: Record<string, string>
+  empleados: EmpleadoBrief[]
 }
 
-export function ProyectoDetalle({ proyecto,   sessionRol, estadoLabels }: ProyectoDetalleProps) {
+export function ProyectoDetalle({ proyecto, sessionRol, estadoLabels, empleados }: ProyectoDetalleProps) {
   const router = useRouter()
   const [transitioning, setTransitioning] = useState(false)
   const [error, setError] = useState("")
@@ -66,6 +89,17 @@ export function ProyectoDetalle({ proyecto,   sessionRol, estadoLabels }: Proyec
   const puedeTransicionar = ["GERENTE_GENERAL", "CISO", "ADMINISTRACION", "VENTAS"].includes(sessionRol)
   const esCerrado = p.estado === "CERRADO"
 
+  const puedeAsignar = ["GERENTE_GENERAL", "CISO"].includes(sessionRol)
+  const estadosAsignables = ["APROBADO", "EN_EJECUCION"]
+  const puedeAsignarAhora = puedeAsignar && estadosAsignables.includes(p.estado)
+
+  const [asignando, setAsignando] = useState(false)
+  const [asignarEmpleadoId, setAsignarEmpleadoId] = useState("")
+  const [asignarRol, setAsignarRol] = useState("")
+  const [asignarError, setAsignarError] = useState("")
+  const [asignarSuccess, setAsignarSuccess] = useState("")
+  const [deletingId, setDeletingId] = useState("")
+
   const transicionesPosibles: Record<string, string[]> = {
     RELEVAMIENTO: ["PROPUESTA"],
     PROPUESTA: ["APROBADO"],
@@ -101,6 +135,58 @@ export function ProyectoDetalle({ proyecto,   sessionRol, estadoLabels }: Proyec
       setError("Error de conexión")
     } finally {
       setTransitioning(false)
+    }
+  }
+
+  const idsAsignados = new Set(p.asignaciones.map((a) => a.empleado.id))
+  const empleadosDisponibles = empleados.filter((e) => !idsAsignados.has(e.id))
+
+  async function handleAsignar() {
+    setAsignarError("")
+    setAsignarSuccess("")
+    if (!asignarEmpleadoId || !asignarRol) {
+      setAsignarError("Selecciona un empleado y un rol")
+      return
+    }
+    setAsignando(true)
+    try {
+      const res = await fetch("/api/asignaciones", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ proyectoId: p.id, empleadoId: asignarEmpleadoId, rolEnProyecto: asignarRol }),
+      })
+      const json = await res.json()
+      if (res.ok) {
+        setAsignarSuccess(`Empleado asignado como ${asignarRol}`)
+        setAsignarEmpleadoId("")
+        setAsignarRol("")
+        router.refresh()
+      } else {
+        setAsignarError(json.error || "Error al asignar")
+      }
+    } catch {
+      setAsignarError("Error de conexión")
+    } finally {
+      setAsignando(false)
+    }
+  }
+
+  async function handleDeleteAsignacion(asignacionId: string) {
+    setError("")
+    setDeletingId(asignacionId)
+    try {
+      const res = await fetch(`/api/asignaciones/${asignacionId}`, { method: "DELETE" })
+      if (res.ok) {
+        setSuccess("Asignación eliminada")
+        router.refresh()
+      } else {
+        const json = await res.json()
+        setError(json.error || "Error al eliminar")
+      }
+    } catch {
+      setError("Error de conexión")
+    } finally {
+      setDeletingId("")
     }
   }
 
@@ -175,14 +261,68 @@ export function ProyectoDetalle({ proyecto,   sessionRol, estadoLabels }: Proyec
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="rounded-lg border bg-surface-elevated/80 p-6">
           <h3 className="text-lg font-semibold mb-3">Asignaciones ({p._count.asignaciones})</h3>
+
+          {asignarError && (
+            <div className="rounded-md bg-red-500/15 border border-red-500/25 p-2 mb-3 text-xs text-red-400">{asignarError}</div>
+          )}
+          {asignarSuccess && (
+            <div className="rounded-md bg-green-500/15 border border-green-500/25 p-2 mb-3 text-xs text-green-400">{asignarSuccess}</div>
+          )}
+
+          {puedeAsignarAhora && (
+            <div className="mb-4 p-3 rounded-md bg-muted/30 space-y-2">
+              <p className="text-xs font-medium text-muted-foreground">Nueva asignación</p>
+              <select
+                value={asignarEmpleadoId}
+                onChange={(e) => setAsignarEmpleadoId(e.target.value)}
+                className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+              >
+                <option value="">Seleccionar empleado</option>
+                {empleadosDisponibles.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.apellido}, {emp.nombre} — {ROL_LABELS[emp.rol] ?? emp.rol}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="text"
+                value={asignarRol}
+                onChange={(e) => setAsignarRol(e.target.value)}
+                placeholder="Rol en el proyecto (ej: Pentester líder)"
+                className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+              />
+              <button
+                onClick={handleAsignar}
+                disabled={asignando}
+                className="inline-flex h-8 w-full items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
+              >
+                {asignando ? "Asignando..." : "Asignar empleado"}
+              </button>
+            </div>
+          )}
+
           {p.asignaciones.length === 0 ? (
             <p className="text-sm text-muted-foreground">Sin empleados asignados</p>
           ) : (
             <ul className="space-y-2">
               {p.asignaciones.map((a) => (
                 <li key={a.id} className="text-sm flex items-center justify-between">
-                  <span>{a.empleado.nombre} {a.empleado.apellido}</span>
-                  <span className="text-muted-foreground">{a.rolEnProyecto}</span>
+                  <span>
+                    {a.empleado.nombre} {a.empleado.apellido}
+                    <span className="text-xs text-muted-foreground ml-2">({ROL_LABELS[a.empleado.rol] ?? a.empleado.rol})</span>
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">{a.rolEnProyecto}</span>
+                    {puedeAsignar && p.estado !== "CERRADO" && (
+                      <button
+                        onClick={() => handleDeleteAsignacion(a.id)}
+                        disabled={deletingId === a.id}
+                        className="text-xs text-red-400 hover:text-red-300 disabled:opacity-50"
+                      >
+                        {deletingId === a.id ? "..." : "✕"}
+                      </button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>

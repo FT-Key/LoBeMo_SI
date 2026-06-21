@@ -18,6 +18,12 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
   const session = await requireAuth()
   const { id } = await props.params
 
+  const empleados = await prisma.empleado.findMany({
+    where: { activo: true },
+    orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
+    select: { id: true, nombre: true, apellido: true, rol: true, area: true },
+  })
+
   const proyecto = await prisma.proyecto.findUnique({
     where: { id },
     include: {
@@ -70,6 +76,7 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
           proyecto={JSON.parse(JSON.stringify(proyecto))}
           sessionRol={session.user.rol}
           estadoLabels={ESTADO_LABELS}
+          empleados={JSON.parse(JSON.stringify(empleados))}
         />
       </main>
     </div>
