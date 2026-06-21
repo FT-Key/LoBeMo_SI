@@ -11,11 +11,11 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 - **Deploy:** Vercel + GitHub (repositorio privado).
 
 ## Current US
-- **ID**: US-004
-- **Card**: yGzyxinV
-- **Status**: ✅ Done
-- **Phase**: P5 - Git + PR
-- **Detail**: Creación y ciclo de vida del proyecto
+- **ID**: —
+- **Card**: —
+- **Status**: —
+- **Phase**: —
+- **Detail**: —
 
 ## History
 | US | Status | Branch | PR | Detail |
@@ -24,7 +24,8 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | US-021 | ✅ Done | feat/US-021-landing-page | PR #4 → dev | .opencode/workflow/history/US-021.md |
 | US-002 | ✅ Done | feat/US-002-gestion-clientes | PR #5 → dev | .opencode/workflow/history/US-002.md |
 | US-003 | ✅ Done | feat/US-003-registro-servicios | PR #6 → dev | .opencode/workflow/history/US-003.md |
-| US-004 | 🚧 In Progress | feat/US-004-ciclo-vida-proyecto | — | .opencode/workflow/history/US-004.md |
+| US-004 | ✅ Done | feat/US-004-ciclo-vida-proyecto | PR #7 → dev | .opencode/workflow/history/US-004.md |
+| US-005 | ✅ Done | feat/US-005-gestion-propuestas | PR #8 → dev | .opencode/workflow/history/US-005.md |
 
 ## Project Status
 ✅ Fase de análisis de requisitos COMPLETA.
@@ -39,7 +40,8 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 ✅ **US-001 implementada y mergeada a main.**
 ✅ **US-002 implementada y mergeada a dev.**
 ✅ **US-003 implementada y mergeada a dev.**
-✅ **US-004 implementada (en PR a dev).**
+✅ **US-004 implementada y mergeada a dev.**
+✅ **US-005 implementada y mergeada a dev.**
 
 ### Cards en Trello (Backlog)
 | # | US | Prioridad | Card ID | Trello Link |
@@ -67,4 +69,4 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | 21 | US-021 | 🔴 Must Have | hCrnRlEZ | https://trello.com/c/hCrnRlEZ |
 
 ## Next Steps
-1. **[PRÓXIMA] US-005: Gestión de propuestas**
+1. **[PRÓXIMA] US-006: Asignación de empleados a proyectos**
