@@ -11,11 +11,11 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 - **Deploy:** Vercel + GitHub (repositorio privado).
 
 ## Current US
-- **ID**: —
-- **Card**: —
-- **Status**: —
-- **Phase**: —
-- **Detail**: —
+- **ID**: US-009
+- **Card**: GnktmlPH
+- **Status**: In Progress
+- **Phase**: P1 - Plan
+- **Detail**: Dashboard ejecutivo
 
 ## History
 | US | Status | Branch | PR | Detail |
@@ -71,5 +71,7 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | 20 | US-020 | 🟢 Could Have | 70jfVId9 | https://trello.com/c/70jfVId9 |
 | 21 | US-021 | 🔴 Must Have | hCrnRlEZ | https://trello.com/c/hCrnRlEZ |
 
-## Next Steps
-1. **[PRÓXIMA] US-009: Dashboard ejecutivo**
+## Current Phase
+### US-009 — Dashboard ejecutivo
+- **Phase**: P2 - Implement
+- **Status**: Implementando API route y componentes del dashboard

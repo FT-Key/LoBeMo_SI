@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
+import { QueryProvider } from "@/lib/query-provider";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -34,7 +35,7 @@ export default function RootLayout({
       className={`dark ${jakarta.variable} ${inter.variable} ${mono.variable}`}
     >
       <body className="min-h-screen bg-background font-body text-foreground antialiased">
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );
