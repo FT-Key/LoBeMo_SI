@@ -1,19 +1,26 @@
 import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
-import { ServiciosList } from "./servicios-list"
+import { redirect } from "next/navigation"
 import Link from "next/link"
+import { NuevoProyectoForm } from "./nuevo-proyecto-form"
 
-export default async function ServiciosPage() {
+export default async function NuevoProyectoPage() {
   const session = await requireAuth()
-  const esGerenteGeneral = session.user.rol === "GERENTE_GENERAL"
 
-  const [servicios, total] = await Promise.all([
+  if (session.user.rol !== "GERENTE_GENERAL" && session.user.rol !== "CISO") {
+    redirect("/proyectos")
+  }
+
+  const [clientes, servicios] = await Promise.all([
+    prisma.cliente.findMany({
+      where: { activo: true },
+      orderBy: { razonSocial: "asc" },
+      select: { id: true, razonSocial: true },
+    }),
     prisma.servicio.findMany({
       orderBy: { nombre: "asc" },
-      take: 10,
-      include: { _count: { select: { proyectos: true } } },
+      select: { id: true, nombre: true },
     }),
-    prisma.servicio.count(),
   ])
 
   return (
@@ -25,25 +32,21 @@ export default async function ServiciosPage() {
             <Link href="/dashboard" className="text-sm font-medium hover:underline">Dashboard</Link>
             <Link href="/proyectos" className="text-sm font-medium hover:underline">Proyectos</Link>
             <Link href="/clientes" className="text-sm font-medium hover:underline">Clientes</Link>
-            {esGerenteGeneral && (
-              <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
-            )}
-            <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>
           </nav>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Servicios</h2>
+      <main className="container mx-auto px-4 py-8 max-w-2xl">
+        <div className="mb-6">
+          <Link href="/proyectos" className="text-sm text-muted-foreground hover:underline">&larr; Volver a proyectos</Link>
         </div>
+        <h2 className="text-2xl font-bold mb-6">Nuevo proyecto</h2>
 
-        <ServiciosList
-          esGerenteGeneral={esGerenteGeneral}
-          initialData={JSON.parse(JSON.stringify(servicios))}
-          initialTotal={total}
+        <NuevoProyectoForm
+          clientes={JSON.parse(JSON.stringify(clientes))}
+          servicios={JSON.parse(JSON.stringify(servicios))}
         />
       </main>
     </div>

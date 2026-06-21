@@ -80,8 +80,23 @@ model Proyecto {
   tareas    Tarea[]
   hitos     Hito[]
   documentos Documento[]
+  historialEstados HistorialEstado[]
 
   @@map("proyectos")
+}
+
+model HistorialEstado {
+  id            String   @id @default(cuid())
+  proyectoId    String   @map("proyecto_id")
+  estadoAnterior String? @map("estado_anterior")
+  estadoNuevo   String   @map("estado_nuevo")
+  empleadoId    String?  @map("empleado_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  proyecto Proyecto  @relation(fields: [proyectoId], references: [id])
+  empleado Empleado? @relation(fields: [empleadoId], references: [id])
+
+  @@map("historial_estados")
 }
 
 model Propuesta {
@@ -116,6 +131,7 @@ model Empleado {
   asignaciones Asignacion[]
   notificaciones Notificacion[]
   auditLogs    AuditLog[]
+  historialEstados HistorialEstado[]
 
   @@map("empleados")
 }
