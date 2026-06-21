@@ -11,11 +11,11 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 - **Deploy:** Vercel + GitHub (repositorio privado).
 
 ## Current US
-- **ID**: —
-- **Card**: —
-- **Status**: —
-- **Phase**: —
-- **Detail**: —
+- **ID**: US-021
+- **Card**: hCrnRlEZ
+- **Status**: In Progress
+- **Phase**: P2 - Implement
+- **Detail**: Landing page con identidad visual LoBeMo
 
 ## History
 | US | Status | Branch | PR | Detail |
