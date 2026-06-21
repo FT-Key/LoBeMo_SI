@@ -35,7 +35,16 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
           empleado: { select: { id: true, nombre: true, apellido: true, rol: true } },
         },
       },
-      tareas: { orderBy: { createdAt: "desc" } },
+      tareas: {
+        orderBy: { createdAt: "desc" },
+        include: {
+          asignacion: {
+            include: {
+              empleado: { select: { id: true, nombre: true, apellido: true, rol: true } },
+            },
+          },
+        },
+      },
       hitos: { orderBy: { fechaPrevista: "asc" } },
       historialEstados: {
         orderBy: { createdAt: "desc" },
@@ -75,6 +84,7 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
         <ProyectoDetalle
           proyecto={JSON.parse(JSON.stringify(proyecto))}
           sessionRol={session.user.rol}
+          sessionUserId={session.user.id}
           estadoLabels={ESTADO_LABELS}
           empleados={JSON.parse(JSON.stringify(empleados))}
         />
