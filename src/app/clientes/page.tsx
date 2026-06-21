@@ -23,6 +23,7 @@ export default async function ClientesPage() {
           <h1 className="text-xl font-bold">LoBeMo</h1>
           <nav className="flex items-center gap-4">
             <Link href="/dashboard" className="text-sm font-medium hover:underline">Dashboard</Link>
+            <Link href="/proyectos" className="text-sm font-medium hover:underline">Proyectos</Link>
             {puedeEditar && (
               <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
             )}
