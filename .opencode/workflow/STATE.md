@@ -11,11 +11,11 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 - **Deploy:** Vercel + GitHub (repositorio privado).
 
 ## Current US
-- **ID**: US-009
-- **Card**: GnktmlPH
+- **ID**: US-010
+- **Card**: O8Qb1S6D
 - **Status**: In Progress
-- **Phase**: P1 - Plan
-- **Detail**: Dashboard ejecutivo
+- **Phase**: P2 - Implement
+- **Detail**: Carga y gestión de documentos
 
 ## History
 | US | Status | Branch | PR | Detail |
@@ -29,6 +29,79 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | US-006 | ✅ Done | feat/US-006-asignaciones | PR #9 → dev | .opencode/workflow/history/US-006.md |
 | US-007 | ✅ Done | feat/US-007-gestion-tareas | PR #10 → dev | .opencode/workflow/history/US-007.md |
 | US-008 | ✅ Done | feat/US-008-gestion-hitos | PR #11 → dev | .opencode/workflow/history/US-008.md |
+
+## Lint Results
+### Linter
+- **Comando**: `npm run lint` → Falló (ESLint no encontrado)
+- **Causa**: `node_modules/` está vacío — no se ha ejecutado `npm install`
+- **Errores detectables**: Dependencias no instaladas (eslint, next, typescript, etc.)
+- **Auto-fix aplicado**: No (imposible sin node_modules)
+
+### Typecheck
+- **Comando**: `npm run typecheck` → Falló (script no existe en package.json)
+- **Causa**: No hay script "typecheck" configurado; `npx tsc --noEmit` no disponible por restricciones de seguridad
+- **Errores detectables**: Ver análisis estático abajo
+
+### Detalle de errores detectados por análisis estático
+
+#### 1. Dependencias no instaladas (BLOQUEANTE)
+- `node_modules/` está completamente vacío
+- No es posible ejecutar ESLint, TypeScript compiler ni Prisma generate
+- **Acción requerida**: Ejecutar `npm install` seguido de `prisma generate`
+
+#### 2. Archivos de tipo generado faltantes
+- `src/lib/prisma.ts` línea 1: `import { PrismaClient } from "@/generated/prisma/client"`
+  - El directorio `src/generated/prisma/` no existe hasta ejecutar `npx prisma generate`
+  - Sin este paso, TypeScript no encuentra el tipo `PrismaClient` y todos los archivos que lo importan fallan
+
+#### 3. `src/app/proyectos/[id]/proyecto-detalle.tsx` — Type safety débil
+- **Línea 99**: `proyecto: Record<string, unknown>`
+  - El tipo `Record<string, unknown>` es demasiado genérico. No permite acceso seguro a propiedades.
+- **Líneas 112-140**: Type assertion masiva (`proyecto as { ... }`)
+  - Se asume la forma completa del objeto sin verificación en tiempo de compilación.
+  - Si la data real difiere del tipo declarado, se producen errores runtime.
+  - **Sugerencia**: Definir un tipo/interfaz `ProyectoDetalleData` exportado desde un archivo de tipos y usarlo tanto en la prop como en el server component.
+
+#### 4. `src/app/api/documentos/route.ts` — Tipos `ReadonlyArray`
+- **Línea 5-13**: `TIPOS_DOCUMENTO` es `as const` → tipo `readonly ["INFORME_AUDITORIA", ..., "OTRO"]`
+- **Línea 85**: `TIPOS_DOCUMENTO.includes(tipo)` donde `tipo: string`
+  - TypeScript strict puede quejarse porque `.includes()` en un `ReadonlyArray` espera un tipo compatible con los elementos.
+  - En TypeScript 5+, `includes` en readonly tuples acepta `string`, pero puede requerir un cast explícito en configs más estrictas.
+
+#### 5. `src/app/api/documentos/route.ts` — Parámetro no usado
+- **Línea 23**: `GET(request: NextRequest)` — `request` no se usa directamente (se extrae via `new URL(request.url)`)
+  - ESLint con `@typescript-eslint/no-unused-vars` podría marcar `request` si la regla está activa (similar a `_request` usado en `[id]/route.ts`)
+
+#### 6. `src/app/api/documentos/[id]/route.ts` — Patrón correcto
+- Uso de `_request` con underscore: correcto para Next.js 16 params
+- `params: Promise<{ id: string }>` y `await params`: patrón correcto para Next.js 16
+
+#### 7. `src/app/proyectos/[id]/page.tsx` — Serialización Prisma
+- **Líneas 86, 90**: `JSON.parse(JSON.stringify(proyecto))`
+  - Funcional, pero puede tener impacto en performance para objetos grandes
+  - Alternativa: `prisma.$disconnect()` o usar `structuredClone()` en Node 17+
+
+#### 8. `src/app/proyectos/[id]/proyecto-detalle.tsx` — Posible error en estado de transición
+- **Línea 147**: `puedeTransicionar` solo para roles específicos, pero la UI permite transiciones mediante botones
+- **Línea 211**: `transicionesPosibles[p.estado] ?? []` — correcto con fallback
+
+#### 9. `src/app/proyectos/[id]/proyecto-detalle.tsx` — Fragment dentro de <p>
+- **Líneas 1197-1201**: `<p>` contiene `<><span>...</span> → <span>...</span></>`
+  - Los Fragmentos (`<></>`) dentro de elementos de bloque son válidos en React pero si los estilos CSS de `p` esperan solo contenido inline, puede haber problemas de renderizado. No es un error de compilación.
+
+#### 10. Archivos sin errores detectables
+- `src/app/api/documentos/route.ts`: Lógica correcta, validaciones adecuadas (tamaño, tipo MIME, permisos)
+- `src/app/api/documentos/[id]/route.ts`: CRUD completo con auditoría, correcto
+- `src/app/proyectos/[id]/page.tsx`: Server component bien estructurado
+
+### Resumen
+| Ítem | Estado |
+|------|--------|
+| Ejecución de linter | ❌ No ejecutable (node_modules vacío) |
+| Ejecución de typecheck | ❌ No ejecutable (sin script, sin node_modules) |
+| Errores bloqueantes | 2 (node_modules vacío, prisma generate pendiente) |
+| Issues de tipo estático | 4 (type safety débil, readonly array, parámetro no usado, serialización) |
+| Advertencias | 2 (fragment en p, performance serialización) |
 
 ## Project Status
 ✅ Fase de análisis de requisitos COMPLETA.
@@ -72,6 +145,6 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | 21 | US-021 | 🔴 Must Have | hCrnRlEZ | https://trello.com/c/hCrnRlEZ |
 
 ## Current Phase
-### US-009 — Dashboard ejecutivo
+### US-010 — Carga y gestión de documentos
 - **Phase**: P2 - Implement
-- **Status**: Implementando API route y componentes del dashboard
+- **Status**: API routes y UI de documentos implementados

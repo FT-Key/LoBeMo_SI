@@ -36,6 +36,26 @@ const NOMBRES_SERVICIOS: Record<string, string> = {
   SOPORTE_TECNICO: "Soporte Técnico",
 }
 
+const DOC_TIPO_LABELS: Record<string, string> = {
+  INFORME_AUDITORIA: "Informe de Auditoría",
+  REPORTE_PENTESTING: "Reporte de Pentesting",
+  CODIGO_FUENTE: "Código Fuente",
+  CONFIG_RED: "Configuración de Red",
+  MATERIAL_CAPACITACION: "Material de Capacitación",
+  CONTRATO: "Contrato",
+  OTRO: "Otro",
+}
+
+const DOC_TIPO_BADGES: Record<string, string> = {
+  INFORME_AUDITORIA: "bg-purple-500/15 text-purple-400 border border-purple-500/25",
+  REPORTE_PENTESTING: "bg-red-500/15 text-red-400 border border-red-500/25",
+  CODIGO_FUENTE: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
+  CONFIG_RED: "bg-cyan-500/15 text-cyan-400 border border-cyan-500/25",
+  MATERIAL_CAPACITACION: "bg-green-500/15 text-green-400 border border-green-500/25",
+  CONTRATO: "bg-yellow-500/15 text-yellow-400 border border-yellow-500/25",
+  OTRO: "bg-gray-500/15 text-gray-400 border border-gray-500/25",
+}
+
 const ROL_LABELS: Record<string, string> = {
   GERENTE_GENERAL: "Gerente General",
   ADMINISTRACION: "Administración y Contabilidad",
@@ -108,6 +128,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
     }>
     tareas: TareaItem[]
     hitos: Array<{ id: string; nombre: string; descripcion: string | null; fechaPrevista: string; fechaReal: string | null; completado: boolean }>
+    documentos: Array<{ id: string; nombreArchivo: string; tipo: string; url: string; createdAt: string; tareaId: string | null }>
     historialEstados: Array<{
       id: string
       estadoAnterior: string | null
@@ -168,6 +189,14 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
   const [editHitoCompletado, setEditHitoCompletado] = useState(false)
   const [editandoHitoLoading, setEditandoHitoLoading] = useState(false)
   const [eliminandoHitoId, setEliminandoHitoId] = useState<string | null>(null)
+
+  const [docArchivo, setDocArchivo] = useState<File | null>(null)
+  const [docTipo, setDocTipo] = useState("OTRO")
+  const [docSubiendo, setDocSubiendo] = useState(false)
+  const [docError, setDocError] = useState("")
+  const [docSuccess, setDocSuccess] = useState("")
+  const [viendoDocId, setViendoDocId] = useState<string | null>(null)
+  const [eliminandoDocId, setEliminandoDocId] = useState<string | null>(null)
 
   const transicionesPosibles: Record<string, string[]> = {
     RELEVAMIENTO: ["PROPUESTA"],
@@ -449,6 +478,106 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
       setError("Error de conexión")
     } finally {
       setEditandoHitoLoading(false)
+    }
+  }
+
+  function leerArchivoBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = () => reject(new Error("Error al leer el archivo"))
+      reader.readAsDataURL(file)
+    })
+  }
+
+  async function handleSubirDocumento(e: React.FormEvent) {
+    e.preventDefault()
+    setDocError("")
+    setDocSuccess("")
+
+    if (!docArchivo) {
+      setDocError("Selecciona un archivo")
+      return
+    }
+
+    const maxSize = 10 * 1024 * 1024
+    if (docArchivo.size > maxSize) {
+      setDocError("El archivo no puede superar los 10MB")
+      return
+    }
+
+    const tiposValidos = [
+      "application/pdf",
+      "image/png",
+      "image/jpeg",
+      "image/gif",
+      "image/webp",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "text/plain",
+      "text/csv",
+    ]
+
+    if (!tiposValidos.includes(docArchivo.type) && !docArchivo.name.match(/\.(pdf|png|jpg|jpeg|gif|webp|doc|docx|xls|xlsx|txt|csv)$/i)) {
+      setDocError("Tipo de archivo no soportado. Usa PDF, imágenes, Office o texto.")
+      return
+    }
+
+    setDocSubiendo(true)
+    try {
+      const base64 = await leerArchivoBase64(docArchivo)
+
+      const res = await fetch("/api/documentos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          proyectoId: p.id,
+          nombreArchivo: docArchivo.name,
+          tipo: docTipo,
+          url: base64,
+        }),
+      })
+      const json = await res.json()
+      if (res.ok) {
+        setDocSuccess("Documento subido correctamente")
+        setDocArchivo(null)
+        setDocTipo("OTRO")
+        router.refresh()
+      } else {
+        setDocError(json.error || "Error al subir documento")
+      }
+    } catch {
+      setDocError("Error de conexión")
+    } finally {
+      setDocSubiendo(false)
+    }
+  }
+
+  function formatearTamano(base64: string): string {
+    const bytes = Math.round((base64.length * 3) / 4)
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  }
+
+  async function handleEliminarDocumento(docId: string) {
+    setEliminandoDocId(docId)
+    setError("")
+    try {
+      const res = await fetch(`/api/documentos/${docId}`, { method: "DELETE" })
+      if (res.ok) {
+        setSuccess("Documento eliminado")
+        router.refresh()
+      } else {
+        const json = await res.json()
+        setError(json.error || "Error al eliminar documento")
+      }
+    } catch {
+      setError("Error de conexión")
+    } finally {
+      setEliminandoDocId("")
     }
   }
 
@@ -950,6 +1079,106 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                 </div>
               )
             })}
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-lg border bg-surface-elevated/80 p-6">
+        <h3 className="text-lg font-semibold mb-3">Documentos ({p.documentos.length})</h3>
+
+        {docError && (
+          <div className="rounded-md bg-red-500/15 border border-red-500/25 p-2 mb-3 text-xs text-red-400">{docError}</div>
+        )}
+        {docSuccess && (
+          <div className="rounded-md bg-green-500/15 border border-green-500/25 p-2 mb-3 text-xs text-green-400">{docSuccess}</div>
+        )}
+
+        {(puedeGestionarTareas || sessionRol === "AUDITOR" || sessionRol === "CAPACITADOR") && !esCerrado && (
+          <form onSubmit={handleSubirDocumento} className="mb-4 p-3 rounded-md bg-muted/30 space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">Subir documento</p>
+            <input
+              type="file"
+              onChange={(e) => setDocArchivo(e.target.files?.[0] ?? null)}
+              className="w-full text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary-hover"
+            />
+            <select
+              value={docTipo}
+              onChange={(e) => setDocTipo(e.target.value)}
+              className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
+            >
+              {Object.entries(DOC_TIPO_LABELS).map(([val, label]) => (
+                <option key={val} value={val}>{label}</option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              disabled={docSubiendo}
+              className="inline-flex h-8 w-full items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
+            >
+              {docSubiendo ? "Subiendo..." : "Subir documento"}
+            </button>
+          </form>
+        )}
+
+        {p.documentos.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Sin documentos adjuntos</p>
+        ) : (
+          <div className="space-y-2 max-h-[500px] overflow-y-auto">
+            {p.documentos.map((d) => (
+              <div key={d.id} className="rounded-md border bg-muted/10 p-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <span className="text-sm font-medium truncate">{d.nombreArchivo}</span>
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium shrink-0 ${DOC_TIPO_BADGES[d.tipo] ?? ""}`}>
+                      {DOC_TIPO_LABELS[d.tipo] ?? d.tipo}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0 ml-2">
+                    <button
+                      onClick={() => setViendoDocId(viendoDocId === d.id ? null : d.id)}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      {viendoDocId === d.id ? "Ocultar" : "Ver"}
+                    </button>
+                    {(esCisoOGerente || estaAsignado) && !esCerrado && (
+                      <button
+                        onClick={() => handleEliminarDocumento(d.id)}
+                        disabled={eliminandoDocId === d.id}
+                        className="text-xs text-red-400 hover:text-red-300 disabled:opacity-50"
+                      >
+                        {eliminandoDocId === d.id ? "..." : "✕"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-[10px] text-muted-foreground mt-1">
+                  <span>{formatearTamano(d.url)}</span>
+                  <span>{new Date(d.createdAt).toLocaleDateString("es-AR")}</span>
+                  {d.tareaId && <span>Vinculado a tarea</span>}
+                </div>
+                {viendoDocId === d.id && (
+                  <div className="mt-3 rounded-md overflow-hidden border border-border/50">
+                    {d.url.startsWith("data:image/") ? (
+                      <img src={d.url} alt={d.nombreArchivo} className="max-w-full max-h-80 object-contain mx-auto" />
+                    ) : d.url.startsWith("data:application/pdf") ? (
+                      <iframe src={d.url} className="w-full h-80" title={d.nombreArchivo} />
+                    ) : (
+                      <div className="p-4 text-center">
+                        <a
+                          href={d.url}
+                          download={d.nombreArchivo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline"
+                        >
+                          Descargar {d.nombreArchivo}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
       </div>

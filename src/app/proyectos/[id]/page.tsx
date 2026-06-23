@@ -46,6 +46,7 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
         },
       },
       hitos: { orderBy: { fechaPrevista: "asc" } },
+      documentos: { orderBy: { createdAt: "desc" } },
       historialEstados: {
         orderBy: { createdAt: "desc" },
         include: {
