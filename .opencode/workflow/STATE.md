@@ -11,11 +11,11 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 - **Deploy:** Vercel + GitHub (repositorio privado).
 
 ## Current US
-- **ID**: US-010
-- **Card**: O8Qb1S6D
+- **ID**: US-009
+- **Card**: GnktmlPH
 - **Status**: In Progress
 - **Phase**: P2 - Implement
-- **Detail**: Carga y gestión de documentos
+- **Detail**: Dashboard ejecutivo (pendiente de retomar)
 
 ## History
 | US | Status | Branch | PR | Detail |
@@ -29,6 +29,7 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | US-006 | ✅ Done | feat/US-006-asignaciones | PR #9 → dev | .opencode/workflow/history/US-006.md |
 | US-007 | ✅ Done | feat/US-007-gestion-tareas | PR #10 → dev | .opencode/workflow/history/US-007.md |
 | US-008 | ✅ Done | feat/US-008-gestion-hitos | PR #11 → dev | .opencode/workflow/history/US-008.md |
+| US-010 | ✅ Done | feat/US-010-gestion-documentos | PR #13 → dev | .opencode/workflow/history/US-010.md |
 
 ## Lint Results
 ### Linter
@@ -145,9 +146,9 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | 21 | US-021 | 🔴 Must Have | hCrnRlEZ | https://trello.com/c/hCrnRlEZ |
 
 ## Current Phase
-### US-010 — Carga y gestión de documentos
+### US-009 — Dashboard ejecutivo
 - **Phase**: P2 - Implement
-- **Status**: API routes y UI de documentos implementados
+- **Status**: Pendiente de retomar
 
 ## Review Findings
 
