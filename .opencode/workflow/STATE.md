@@ -148,3 +148,50 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 ### US-010 — Carga y gestión de documentos
 - **Phase**: P2 - Implement
 - **Status**: API routes y UI de documentos implementados
+
+## Review Findings
+
+### Bloqueantes
+
+1. **Archivos almacenados como base64 en la base de datos (Rendimiento/Escalabilidad)**
+   - **Archivo**: `src/app/api/documentos/route.ts` (POST) y `src/app/proyectos/[id]/proyecto-detalle.tsx` (handleSubirDocumento)
+   - **Problema**: El contenido completo del archivo (hasta 10MB) se almacena como data URL base64 en el campo `url` de tipo `String` en PostgreSQL. Esto es insostenible: base64 añade ~33% de overhead, infla la base de datos, degrada el rendimiento de queries (incluso con paginación, la DB debe leer columnas enormes), y hace las copias de seguridad impracticables.
+   - **Sugerencia**: Implementar un sistema de almacenamiento externo (S3, R2, o disco local con ruta relativa). Guardar solo la URL/ruta en la DB y servir archivos estáticos. Alternativa mínima: usar `Blob` de Vercel o Cloudinary.
+
+2. **Falta de validación de tipo de archivo en el servidor (Seguridad)**
+   - **Archivo**: `src/app/api/documentos/route.ts` (POST, línea 75-90)
+   - **Problema**: La validación de tipo MIME y extensión solo ocurre en el cliente (`proyecto-detalle.tsx` líneas 509-526). El servidor no valida el contenido del archivo en absoluto. Un atacante puede subir ejecutables, scripts maliciosos o cualquier tipo de archivo directamente contra la API.
+   - **Sugerencia**: Agregar validación server-side del MIME type real (inspeccionando magic bytes) y/o forzar un servidor de archivos intermedio que rechace tipos peligrosos.
+
+3. **Riesgo de XSS mediante data URLs en previsualización (Seguridad)**
+   - **Archivo**: `src/app/proyectos/[id]/proyecto-detalle.tsx` (líneas 1161-1174)
+   - **Problema**: Las data URLs se usan directamente en `<img src={d.url}>`, `<iframe src={d.url}>` y `<a href={d.url}>`. Si un atacante manipula el contenido del archivo o la URL, podría inyectar `data:text/html;base64,...` con JavaScript, ejecutándose en el contexto de la aplicación.
+   - **Sugerencia**: No usar data URLs para renderizado. Servir archivos desde un endpoint dedicado con Content-Disposition: attachment y Content-Type controlado. Para vistas previa, usar un sandbox en el iframe o servidores de vista previa dedicados.
+
+4. **Roles AUDITOR y CAPACITADOR no pueden subir documentos desde la UI (UX/Accesibilidad)**
+   - **Archivo**: `src/app/proyectos/[id]/proyecto-detalle.tsx` (línea 1096)
+   - **Problema**: La API POST permite a AUDITOR y CAPACITADOR subir documentos (línea 101 de `documentos/route.ts`), pero el formulario de subida solo se muestra cuando `puedeGestionarTareas` es true, que se define como `esCisoOGerente || estaAsignado` (línea 144). AUDITOR y CAPACITADOR no pueden acceder a la funcionalidad desde la UI.
+   - **Sugerencia**: Alinear la UI con la lógica del servidor. Agregar `sessionRol === "AUDITOR" || sessionRol === "CAPACITADOR"` a la condición que controla la visibilidad del formulario de subida.
+
+### Recomendaciones
+
+1. **Código duplicado: `puedeVerDocumentos` en dos archivos (DRY)**
+   - La función `puedeVerDocumentos` está definida en `src/app/api/documentos/route.ts` (línea 15) y `src/app/api/documentos/[id]/route.ts` (línea 5) con la misma implementación. Extraer a un helper compartido como `src/lib/permissions.ts`.
+
+2. **Input de archivo no se resetea tras subida exitosa (UX)**
+   - En `handleSubirDocumento` (línea 545), `setDocArchivo(null)` no limpia el input de tipo file de HTML, que no está controlado por React. El usuario ve el nombre del archivo anterior. Usar una `key` prop en el `<input type="file">` basada en un contador para forzar el re-renderizado.
+
+3. **Sin botón de descarga para imágenes y PDFs (UX)**
+   - En la previsualización (líneas 1161-1163), las imágenes se muestran inline sin opción de descarga. Los PDFs se muestran en iframe sin botón de descarga. Solo el caso `else` ofrece un enlace de descarga. Agregar botón "Descargar" consistente para todos los tipos.
+
+4. **Sin rate limiting en endpoint de subida (Seguridad/Robustez)**
+   - El POST a `/api/documentos` no tiene rate limiting. Un atacante podría subir cientos de archivos grandes y saturar el almacenamiento. Implementar rate limiting (ej: 10 requests/minuto por usuario) siguiendo el patrón de `src/lib/rate-limit.ts` descrito en la skill de seguridad.
+
+5. **Falta de validación del formato de `tareaId` (Robustez)**
+   - Si se envía un `tareaId` con formato inválido (no cuid), Prisma lanza una excepción y la API responde con 500 en lugar de 400. Validar que `tareaId` tenga formato cuid antes de pasarlo a Prisma.
+
+6. **Faltan referencias a requerimientos (RF) en mensajes de error**
+   - Otros endpoints incluyen números de RF en mensajes de error (ej: `"(RF-30)"` en tareas). Los endpoints de documentos no incluyen referencias a RF-40 a RF-45. Agregar `"(RF-XX)"` para facilitar trazabilidad.
+
+7. **`where` tipado como `Record<string, unknown>` (TypeScript)**
+   - En `documentos/route.ts` línea 45, el objeto `where` usa `Record<string, unknown>`, perdiendo type safety de Prisma. Usar `Prisma.documentoFindManyArgs['where']` o similar para mantener tipado completo.
