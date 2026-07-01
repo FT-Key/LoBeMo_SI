@@ -150,6 +150,7 @@ export async function POST(request: Request) {
         titulo: "Nueva asignación a proyecto",
         mensaje: `Has sido asignado al proyecto "${proyecto.nombre}" con el rol de ${rolEnProyecto}.`,
         tipo: "ASIGNACION_PROYECTO",
+        link: `/proyectos/${proyectoId}`,
       },
     })
 

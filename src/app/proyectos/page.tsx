@@ -2,6 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { ProyectosList } from "./proyectos-list"
 import Link from "next/link"
+import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 
 const ESTADO_LABELS: Record<string, string> = {
   RELEVAMIENTO: "Relevamiento",
@@ -49,6 +50,7 @@ export default async function ProyectosPage() {
             {puedeCrear && (
               <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
             )}
+            <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>
           </nav>

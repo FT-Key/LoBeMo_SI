@@ -11,11 +11,11 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 - **Deploy:** Vercel + GitHub (repositorio privado).
 
 ## Current US
-- **ID**: US-009
-- **Card**: GnktmlPH
+- **ID**: US-011
+- **Card**: iYwTejJ5
 - **Status**: In Progress
-- **Phase**: P2 - Implement
-- **Detail**: Dashboard ejecutivo (pendiente de retomar)
+- **Phase**: P0 - Setup
+- **Detail**: Sistema de notificaciones
 
 ## History
 | US | Status | Branch | PR | Detail |
@@ -29,6 +29,7 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | US-006 | ✅ Done | feat/US-006-asignaciones | PR #9 → dev | .opencode/workflow/history/US-006.md |
 | US-007 | ✅ Done | feat/US-007-gestion-tareas | PR #10 → dev | .opencode/workflow/history/US-007.md |
 | US-008 | ✅ Done | feat/US-008-gestion-hitos | PR #11 → dev | .opencode/workflow/history/US-008.md |
+| US-009 | ✅ Done | feat/US-009-dashboard-ejecutivo | PR #12 → dev | .opencode/workflow/history/US-009.md |
 | US-010 | ✅ Done | feat/US-010-gestion-documentos | PR #13 → dev | .opencode/workflow/history/US-010.md |
 
 ## Lint Results
@@ -146,9 +147,9 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | 21 | US-021 | 🔴 Must Have | hCrnRlEZ | https://trello.com/c/hCrnRlEZ |
 
 ## Current Phase
-### US-009 — Dashboard ejecutivo
+### US-011 — Sistema de notificaciones
 - **Phase**: P2 - Implement
-- **Status**: Pendiente de retomar
+- **Status**: Implementado (API endpoints, UI component, schema, notification links)
 
 ## Review Findings
 

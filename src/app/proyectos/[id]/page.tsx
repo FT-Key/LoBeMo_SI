@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ProyectoDetalle } from "./proyecto-detalle"
+import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 
 const ESTADO_LABELS: Record<string, string> = {
   RELEVAMIENTO: "Relevamiento",
@@ -71,6 +72,7 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
             <Link href="/proyectos" className="text-sm font-medium hover:underline">Proyectos</Link>
             <Link href="/clientes" className="text-sm font-medium hover:underline">Clientes</Link>
             <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
+            <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>
           </nav>

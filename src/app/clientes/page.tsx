@@ -2,6 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { ClientesList } from "./clientes-list"
 import Link from "next/link"
+import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 
 export default async function ClientesPage() {
   const session = await requireAuth()
@@ -27,6 +28,7 @@ export default async function ClientesPage() {
             {puedeEditar && (
               <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
             )}
+            <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>
           </nav>

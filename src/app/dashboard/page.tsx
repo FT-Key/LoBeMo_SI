@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { DashboardContent } from "./dashboard-content"
+import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 
 const ROLES_PERMITIDOS = ["GERENTE_GENERAL", "CISO", "ADMINISTRACION"]
 
@@ -102,6 +103,7 @@ export default async function DashboardPage() {
             <a href="/servicios" className="text-sm font-medium text-foreground hover:underline">
               Servicios
             </a>
+            <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">
               {session.user.name}
             </span>

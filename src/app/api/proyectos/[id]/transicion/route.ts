@@ -213,6 +213,7 @@ export async function POST(
             titulo: `Proyecto "${proyecto.nombre}" cambió a ${nuevoEstado}`,
             mensaje: `El proyecto pasó de ${estadoAnterior} a ${nuevoEstado}`,
             tipo: "CAMBIO_ESTADO",
+            link: `/proyectos/${proyecto.id}`,
           },
         })
       }
