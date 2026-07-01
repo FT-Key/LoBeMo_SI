@@ -50,6 +50,7 @@ export default async function ProyectosPage() {
             {puedeCrear && (
               <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
             )}
+            <Link href="/informes-auditoria" className="text-sm font-medium hover:underline">Auditoría</Link>
             <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>

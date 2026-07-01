@@ -103,6 +103,11 @@ export default async function DashboardPage() {
             <a href="/servicios" className="text-sm font-medium text-foreground hover:underline">
               Servicios
             </a>
+            {(rol === "AUDITOR" || rol === "GERENTE_GENERAL" || rol === "CISO") && (
+              <a href="/informes-auditoria" className="text-sm font-medium text-foreground hover:underline">
+                Auditoría
+              </a>
+            )}
             <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">
               {session.user.name}

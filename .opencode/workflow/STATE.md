@@ -11,11 +11,11 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 - **Deploy:** Vercel + GitHub (repositorio privado).
 
 ## Current US
-- **ID**: US-011
-- **Card**: iYwTejJ5
+- **ID**: US-012
+- **Card**: yQ0wyJHI
 - **Status**: In Progress
-- **Phase**: P0 - Setup
-- **Detail**: Sistema de notificaciones
+- **Phase**: P2 - Implement
+- **Detail**: Informes de auditoría (cumplimiento normativo)
 
 ## History
 | US | Status | Branch | PR | Detail |
@@ -31,6 +31,7 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | US-008 | ✅ Done | feat/US-008-gestion-hitos | PR #11 → dev | .opencode/workflow/history/US-008.md |
 | US-009 | ✅ Done | feat/US-009-dashboard-ejecutivo | PR #12 → dev | .opencode/workflow/history/US-009.md |
 | US-010 | ✅ Done | feat/US-010-gestion-documentos | PR #13 → dev | .opencode/workflow/history/US-010.md |
+| US-011 | ✅ Done | feat/US-011-sistema-notificaciones | PR #14 → dev | .opencode/workflow/history/US-011.md |
 
 ## Lint Results
 ### Linter
@@ -146,10 +147,15 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | 20 | US-020 | 🟢 Could Have | 70jfVId9 | https://trello.com/c/70jfVId9 |
 | 21 | US-021 | 🔴 Must Have | hCrnRlEZ | https://trello.com/c/hCrnRlEZ |
 
+## Completed US
+| US | Detail |
+|----|--------|
+| US-011 | Sistema de notificaciones implementado. PR #14 → dev (squash merge). |
+
 ## Current Phase
-### US-011 — Sistema de notificaciones
+### US-012 — Informes de auditoría (cumplimiento normativo)
 - **Phase**: P2 - Implement
-- **Status**: Implementado (API endpoints, UI component, schema, notification links)
+- **Status**: Implementado (modelo, API CRUD, UI listado, formulario, detalle editable, navegación, notificación al completar)
 
 ## Review Findings
 

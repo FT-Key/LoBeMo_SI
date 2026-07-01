@@ -1,21 +1,48 @@
 import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
-import { ServiciosList } from "./servicios-list"
+import { InformeAuditoriaDetalle } from "@/components/informes-auditoria/informe-auditoria-detalle"
 import Link from "next/link"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
+import { notFound } from "next/navigation"
 
-export default async function ServiciosPage() {
+export default async function InformeAuditoriaDetallePage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const session = await requireAuth()
-  const esGerenteGeneral = session.user.rol === "GERENTE_GENERAL"
+  const { id } = await params
 
-  const [servicios, total] = await Promise.all([
-    prisma.servicio.findMany({
-      orderBy: { nombre: "asc" },
-      take: 10,
-      include: { _count: { select: { proyectos: true } } },
-    }),
-    prisma.servicio.count(),
-  ])
+  const informe = await prisma.informeAuditoria.findUnique({
+    where: { id },
+    include: {
+      proyecto: {
+        select: {
+          id: true,
+          nombre: true,
+          estado: true,
+          cliente: { select: { id: true, razonSocial: true } },
+        },
+      },
+      creador: { select: { id: true, nombre: true, apellido: true, rol: true } },
+    },
+  })
+
+  if (!informe) {
+    notFound()
+  }
+
+  const esCreador = informe.creadorId === session.user.id
+  const esGerenteOCiso = session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
+  if (!esCreador && !esGerenteOCiso) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">No autorizado</p>
+      </div>
+    )
+  }
+
+  const rol = session.user.rol
 
   return (
     <div className="min-h-screen">
@@ -26,7 +53,7 @@ export default async function ServiciosPage() {
             <Link href="/dashboard" className="text-sm font-medium hover:underline">Dashboard</Link>
             <Link href="/proyectos" className="text-sm font-medium hover:underline">Proyectos</Link>
             <Link href="/clientes" className="text-sm font-medium hover:underline">Clientes</Link>
-            {esGerenteGeneral && (
+            {rol === "GERENTE_GENERAL" && (
               <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
             )}
             <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
@@ -39,14 +66,14 @@ export default async function ServiciosPage() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Servicios</h2>
+        <div className="mb-6">
+          <Link href="/informes-auditoria" className="text-sm text-primary hover:underline">← Volver a informes</Link>
         </div>
 
-        <ServiciosList
-          esGerenteGeneral={esGerenteGeneral}
-          initialData={JSON.parse(JSON.stringify(servicios))}
-          initialTotal={total}
+        <InformeAuditoriaDetalle
+          informe={JSON.parse(JSON.stringify(informe))}
+          sessionRol={session.user.rol}
+          sessionUserId={session.user.id}
         />
       </main>
     </div>
