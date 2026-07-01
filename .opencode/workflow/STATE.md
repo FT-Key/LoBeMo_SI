@@ -11,11 +11,11 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 - **Deploy:** Vercel + GitHub (repositorio privado).
 
 ## Current US
-- **ID**: — (ninguna)
-- **Card**: —
-- **Status**: —
-- **Phase**: —
-- **Detail**: —
+- **ID**: US-013
+- **Card**: [vMgEsgSd](https://trello.com/c/vMgEsgSd)
+- **Status**: Quality Gates
+- **Phase**: P3
+- **Detail**: `.opencode/workflow/history/US-013.md`
 
 ## History
 | US | Status | Branch | PR | Detail |
@@ -34,79 +34,116 @@ Sistema de gestión de proyectos para LoBeMo Seguridad Informática — empresa 
 | US-011 | ✅ Done | feat/US-011-sistema-notificaciones | PR #14 → dev | .opencode/workflow/history/US-011.md |
 | US-012 | ✅ Done | feat/US-012-informes-auditoria | PR #15 → dev | .opencode/workflow/history/US-012.md |
 | US-011 | ✅ Done | feat/US-011-sistema-notificaciones | PR #14 → dev | .opencode/workflow/history/US-011.md |
+| US-013 | 🔄 In Progress | — | — | .opencode/workflow/history/US-013.md |
 
 ## Lint Results
-### Linter
+### US-013 — Gestión de Capacitaciones
+
+#### Linter
 - **Comando**: `npm run lint` → Falló (ESLint no encontrado)
-- **Causa**: `node_modules/` está vacío — no se ha ejecutado `npm install`
-- **Errores detectables**: Dependencias no instaladas (eslint, next, typescript, etc.)
+- **Causa**: `node_modules/` no está instalado — `npm install` no se ha ejecutado
 - **Auto-fix aplicado**: No (imposible sin node_modules)
 
-### Typecheck
+#### Typecheck
 - **Comando**: `npm run typecheck` → Falló (script no existe en package.json)
 - **Causa**: No hay script "typecheck" configurado; `npx tsc --noEmit` no disponible por restricciones de seguridad
-- **Errores detectables**: Ver análisis estático abajo
+- **Errores detectables**: Ver análisis estático a continuación
 
-### Detalle de errores detectados por análisis estático
+---
 
-#### 1. Dependencias no instaladas (BLOQUEANTE)
-- `node_modules/` está completamente vacío
-- No es posible ejecutar ESLint, TypeScript compiler ni Prisma generate
-- **Acción requerida**: Ejecutar `npm install` seguido de `prisma generate`
+### Detalle de errores por archivo (US-013)
 
-#### 2. Archivos de tipo generado faltantes
-- `src/lib/prisma.ts` línea 1: `import { PrismaClient } from "@/generated/prisma/client"`
-  - El directorio `src/generated/prisma/` no existe hasta ejecutar `npx prisma generate`
-  - Sin este paso, TypeScript no encuentra el tipo `PrismaClient` y todos los archivos que lo importan fallan
+#### Prisma Schema — `prisma/schema.prisma`
+- ✅ **Sin errores detectables**
+  - Modelos `Capacitacion`, `AsistenteCapacitacion`, `CertificadoCapacitacion` correctamente definidos
+  - Relaciones con `onDelete` por defecto (Restrict) — consistentes con el resto del esquema
+  - `@@map` y `@map` usados correctamente para todas las tablas y columnas
+  - `@unique` en `CertificadoCapacitacion.asistenteId` correcto (1:1 con AsistenteCapacitacion)
 
-#### 3. `src/app/proyectos/[id]/proyecto-detalle.tsx` — Type safety débil
-- **Línea 99**: `proyecto: Record<string, unknown>`
-  - El tipo `Record<string, unknown>` es demasiado genérico. No permite acceso seguro a propiedades.
-- **Líneas 112-140**: Type assertion masiva (`proyecto as { ... }`)
-  - Se asume la forma completa del objeto sin verificación en tiempo de compilación.
-  - Si la data real difiere del tipo declarado, se producen errores runtime.
-  - **Sugerencia**: Definir un tipo/interfaz `ProyectoDetalleData` exportado desde un archivo de tipos y usarlo tanto en la prop como en el server component.
+#### API — `src/app/api/capacitaciones/route.ts`
+- ⚠️ **Posible warning de ESLint**: `ESTADOS` (línea 5) declarada pero no usada en este archivo (solo se usa en `[id]/route.ts`). ESLint con regla `@typescript-eslint/no-unused-vars` podría marcarla.
+- ⚠️ **Type safety débil**: `where: Record<string, unknown>` (línea 21) — se pierde type safety de Prisma. Al asignar `where.OR` (línea 23), TypeScript no valida que los campos contengan operadores válidos de Prisma como `contains` o `mode`. Usar `Prisma.CapacitacionWhereInput`.
+- ⚠️ **Mismo patrón en POST**: `parseInt(duracionHoras)` (línea 109) sin validación previa de tipo — si `duracionHoras` llega como string no numérico, `parseInt` devuelve `NaN` y Prisma lanza error 500 en lugar de 400.
 
-#### 4. `src/app/api/documentos/route.ts` — Tipos `ReadonlyArray`
-- **Línea 5-13**: `TIPOS_DOCUMENTO` es `as const` → tipo `readonly ["INFORME_AUDITORIA", ..., "OTRO"]`
-- **Línea 85**: `TIPOS_DOCUMENTO.includes(tipo)` donde `tipo: string`
-  - TypeScript strict puede quejarse porque `.includes()` en un `ReadonlyArray` espera un tipo compatible con los elementos.
-  - En TypeScript 5+, `includes` en readonly tuples acepta `string`, pero puede requerir un cast explícito en configs más estrictas.
+#### API — `src/app/api/capacitaciones/[id]/route.ts`
+- ⚠️ **Type safety débil**: `data: Record<string, unknown>` (línea 75) — mismo problema que arriba. La actualización de Prisma recibe un objeto sin tipado, perdiendo validación en tiempo de compilación. Usar `Prisma.CapacitacionUpdateInput`.
+- ⚠️ **Inconsistencia en materiales**: En POST (route.ts línea 113), `materiales` vacío se guarda como `null`. En PATCH (línea 87), si `materiales` es `""` (string vacío), se guarda como `""` en lugar de `null`. Recomendación: normalizar en PATCH: `data.materiales = materiales || null`.
 
-#### 5. `src/app/api/documentos/route.ts` — Parámetro no usado
-- **Línea 23**: `GET(request: NextRequest)` — `request` no se usa directamente (se extrae via `new URL(request.url)`)
-  - ESLint con `@typescript-eslint/no-unused-vars` podría marcar `request` si la regla está activa (similar a `_request` usado en `[id]/route.ts`)
+#### API — `src/app/api/capacitaciones/[id]/asistentes/route.ts`
+- ✅ **Sin errores detectables**
+  - Validación correcta de campos obligatorios
+  - Autorización correcta (CAPACITADOR o GERENTE_GENERAL)
+  - Auditoría correcta con `auditLog.create`
 
-#### 6. `src/app/api/documentos/[id]/route.ts` — Patrón correcto
-- Uso de `_request` con underscore: correcto para Next.js 16 params
-- `params: Promise<{ id: string }>` y `await params`: patrón correcto para Next.js 16
+#### API — `src/app/api/capacitaciones/[id]/asistentes/[asisId]/route.ts`
+- ⚠️ **Validación de evaluación**: `parseInt(evaluacion)` (línea 39) — si `evaluacion` es un string vacío o no numérico, `parseInt` devuelve `NaN`, que pasa la validación `val < 1 || val > 10` como `true` (ya que `NaN` comparado con números siempre da `false`), causando que se guarde `NaN` en la BD. Se debe validar con `isNaN()` explícitamente.
+- ✅ **Estructura correcta**: uso de `_request` con underscore para parámetros no usados, `params: Promise<...>` con `await`.
 
-#### 7. `src/app/proyectos/[id]/page.tsx` — Serialización Prisma
-- **Líneas 86, 90**: `JSON.parse(JSON.stringify(proyecto))`
-  - Funcional, pero puede tener impacto en performance para objetos grandes
-  - Alternativa: `prisma.$disconnect()` o usar `structuredClone()` en Node 17+
+#### API — `src/app/api/capacitaciones/[id]/certificado/route.ts`
+- ✅ **Sin errores detectables**
+  - Validación de regla de negocio RN-CAP-03 correcta (no certificar si no completó)
+  - Prevención de duplicados correcta (si ya tiene certificado, rechaza)
+  - Generación de código de certificado con formato adecuado
 
-#### 8. `src/app/proyectos/[id]/proyecto-detalle.tsx` — Posible error en estado de transición
-- **Línea 147**: `puedeTransicionar` solo para roles específicos, pero la UI permite transiciones mediante botones
-- **Línea 211**: `transicionesPosibles[p.estado] ?? []` — correcto con fallback
+#### Server Component — `src/app/capacitaciones/page.tsx`
+- ✅ **Sin errores detectables**
+  - SSR con `requireAuth()` correcto
+  - Serialización con `JSON.parse(JSON.stringify(...))` — patrón común para Prisma
+  - Filtro por rol correcto
 
-#### 9. `src/app/proyectos/[id]/proyecto-detalle.tsx` — Fragment dentro de <p>
-- **Líneas 1197-1201**: `<p>` contiene `<><span>...</span> → <span>...</span></>`
-  - Los Fragmentos (`<></>`) dentro de elementos de bloque son válidos en React pero si los estilos CSS de `p` esperan solo contenido inline, puede haber problemas de renderizado. No es un error de compilación.
+#### Server Component — `src/app/capacitaciones/nuevo/page.tsx`
+- ⚠️ **Posible filtro incorrecto de estados**: `estado: { in: ["APROBADO", "EN_EJECUCION", "EN_REVISION"] }` (línea 20) — estos valores pueden no coincidir con los estados reales de proyectos en la base de datos. El modelo `Proyecto` tiene `estado: String @default("RELEVAMIENTO")`, y no hay restricción de enum. Si los valores guardados difieren, el select de proyectos aparecerá vacío. Verificar consistencia con el resto del código.
+- ✅ **Resto del componente correcto**: SSR, autorización, serialización.
 
-#### 10. Archivos sin errores detectables
-- `src/app/api/documentos/route.ts`: Lógica correcta, validaciones adecuadas (tamaño, tipo MIME, permisos)
-- `src/app/api/documentos/[id]/route.ts`: CRUD completo con auditoría, correcto
-- `src/app/proyectos/[id]/page.tsx`: Server component bien estructurado
+#### Client Component — `src/components/capacitaciones/capacitacion-list.tsx`
+- ✅ **Sin errores detectables**
+  - Tipos `Capacitacion` y `Pagination` definidos correctamente
+  - `"use client"` correcto para estado interactivo
+  - Paginación y filtros funcionales
+  - Acceso seguro a `MODALIDAD_BADGES[c.modalidad] ?? ""`
+  - Acceso seguro a `ESTADO_LABELS[c.estado] ?? c.estado`
 
-### Resumen
+#### Client Component — `src/components/capacitaciones/capacitacion-form.tsx`
+- ✅ **Sin errores detectables**
+  - Validación completa en cliente antes de enviar
+  - Hook `useRouter` de `next/navigation` correcto
+  - Manejo de errores con try/catch
+  - Tipos correctos para `Proyecto`
+
+#### Server Component — `src/app/capacitaciones/[id]/page.tsx`
+- ✅ **Sin errores detectables**
+  - `params: Promise<{ id: string }>` y `await params` — patrón correcto para Next.js 16
+  - Uso de `notFound()` para 404
+  - Serialización y props correctas al componente cliente
+
+#### Client Component — `src/components/capacitaciones/capacitacion-detalle.tsx`
+- ⚠️ **Validación `asis.evaluacion` en UI**: línea 503-504 — cuando `e.target.value` es `""` (input vacío), `parseInt("")` devuelve `NaN`, pero `NaN` se envía a la API. Aunque la API lo rechaza con error 400, sería mejor validar en cliente antes de enviar.
+- ✅ **Estructura y lógica correcta**: estados, transiciones, CRUD de asistentes, generación de certificados, manejo de errores.
+
+---
+
+### Resumen de issues encontrados (US-013)
+
+| Archivo | Tipo | Gravedad | Descripción |
+|---------|------|----------|-------------|
+| `prisma/schema.prisma` | — | ✅ | Sin errores |
+| `capacitaciones/route.ts` | Unused var | ⚠️ Baja | `ESTADOS` declarado pero no usado en el archivo |
+| `capacitaciones/route.ts` | Type safety | ⚠️ Media | `where: Record<string, unknown>` pierde tipado Prisma |
+| `capacitaciones/route.ts` | Validación | ⚠️ Media | `parseInt` sin validación previa (`duracionHoras`) |
+| `[id]/route.ts` | Type safety | ⚠️ Media | `data: Record<string, unknown>` pierde tipado Prisma |
+| `[id]/route.ts` | Inconsistencia | ⚠️ Baja | `materiales` vacío se guarda como `""` en PATCH vs `null` en POST |
+| `[id]/asistentes/[asisId]/route.ts` | Validación | ⚠️ Media | `parseInt` sin `isNaN()` — puede guardar `NaN` en BD |
+| `capacitaciones/nuevo/page.tsx` | Lógica | ⚠️ Media | Estados de proyecto pueden no coincidir con la BD |
+| `capacitacion-detalle.tsx` | Validación | ⚠️ Baja | `parseInt("")` envía `NaN` a la API sin validación previa |
+
+### Problemas bloqueantes para tools automatizadas
 | Ítem | Estado |
 |------|--------|
-| Ejecución de linter | ❌ No ejecutable (node_modules vacío) |
-| Ejecución de typecheck | ❌ No ejecutable (sin script, sin node_modules) |
-| Errores bloqueantes | 2 (node_modules vacío, prisma generate pendiente) |
-| Issues de tipo estático | 4 (type safety débil, readonly array, parámetro no usado, serialización) |
-| Advertencias | 2 (fragment en p, performance serialización) |
+| `node_modules/` instalado | ❌ No — se requiere `npm install` |
+| Script `typecheck` en package.json | ❌ No existe — usar `npx tsc --noEmit` |
+| Prisma Client generado | ❌ No — se requiere `npx prisma generate` |
+| Ejecución de ESLint | ❌ No ejecutable |
+| Ejecución de TypeScript | ❌ No ejecutable |
 
 ## Project Status
 ✅ Fase de análisis de requisitos COMPLETA.
