@@ -243,6 +243,55 @@ model InformeAuditoria {
   @@map("informes_auditoria")
 }
 
+model Capacitacion {
+  id            String   @id @default(cuid())
+  proyectoId    String?  @map("proyecto_id")
+  titulo        String
+  temario       String
+  duracionHoras Int      @map("duracion_horas")
+  modalidad     String   @default("PRESENCIAL")
+  fechaInicio   DateTime @map("fecha_inicio")
+  fechaFin      DateTime? @map("fecha_fin")
+  estado        String   @default("PLANIFICADA")
+  materiales    String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  proyecto  Proyecto?             @relation(fields: [proyectoId], references: [id])
+  asistentes AsistenteCapacitacion[]
+
+  @@map("capacitaciones")
+}
+
+model AsistenteCapacitacion {
+  id              String   @id @default(cuid())
+  capacitacionId  String   @map("capacitacion_id")
+  nombreAsistente String   @map("nombre_asistente")
+  emailAsistente  String   @map("email_asistente")
+  organizacion    String?
+  evaluacion      Int?
+  completado      Boolean  @default(false)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  capacitacion Capacitacion @relation(fields: [capacitacionId], references: [id])
+  certificado  CertificadoCapacitacion?
+
+  @@map("asistentes_capacitacion")
+}
+
+model CertificadoCapacitacion {
+  id                String   @id @default(cuid())
+  asistenteId       String   @unique @map("asistente_id")
+  codigoCertificado String   @unique @map("codigo_certificado")
+  fechaEmision      DateTime @default(now()) @map("fecha_emision")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  asistente AsistenteCapacitacion @relation(fields: [asistenteId], references: [id])
+
+  @@map("certificados_capacitacion")
+}
+
 model AuditLog {
   id         String    @id @default(cuid())
   accion     String
