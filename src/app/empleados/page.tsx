@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma"
 import { requireGerenteGeneral } from "@/lib/auth-helpers"
 import Link from "next/link"
+import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 
 export default async function EmpleadosPage() {
-  await requireGerenteGeneral()
+  const session = await requireGerenteGeneral()
 
   const empleados = await prisma.empleado.findMany({
     orderBy: { createdAt: "desc" },
@@ -18,6 +19,8 @@ export default async function EmpleadosPage() {
             <Link href="/dashboard" className="text-sm font-medium hover:underline">
               Dashboard
             </Link>
+            <NotificacionDropdown />
+            <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link
               href="/api/auth/signout"
               className="text-sm text-muted-foreground hover:underline"

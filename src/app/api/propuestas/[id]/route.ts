@@ -138,6 +138,7 @@ export async function PATCH(
             titulo: "Propuesta aceptada",
             mensaje: `La propuesta versión ${propuesta.version} del proyecto ha sido aceptada. Ya puede pasar a APROBADO.`,
             tipo: "CAMBIO_ESTADO",
+            link: `/proyectos/${propuesta.proyecto.id}`,
           },
         })
       }

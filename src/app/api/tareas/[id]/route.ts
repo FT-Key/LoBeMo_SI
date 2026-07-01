@@ -172,13 +172,15 @@ export async function PATCH(
       })
 
       if (ciso) {
-        const proyectoNombre = tareaExistente.proyecto?.nombre ?? "Proyecto"
+        const proyecto = tareaExistente.proyecto
+        const proyectoNombre = proyecto?.nombre ?? "Proyecto"
         await prisma.notificacion.create({
           data: {
             empleadoId: ciso.id,
             titulo: "Tarea crítica completada",
             mensaje: `La tarea "${tareaExistente.titulo}" del proyecto "${proyectoNombre}" ha sido completada.`,
             tipo: "ASIGNACION_PROYECTO",
+            link: proyecto?.id ? `/proyectos/${proyecto.id}` : null,
           },
         })
       }

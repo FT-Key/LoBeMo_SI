@@ -2,6 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { PropuestasList } from "./propuestas-list"
 import Link from "next/link"
+import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 
 const ESTADO_PROPUESTA_LABELS: Record<string, string> = {
   ENVIADA: "Enviada",
@@ -45,6 +46,7 @@ export default async function PropuestasPage() {
             {session.user.rol === "GERENTE_GENERAL" && (
               <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
             )}
+            <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>
           </nav>

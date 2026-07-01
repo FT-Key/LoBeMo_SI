@@ -209,6 +209,7 @@ model Notificacion {
   titulo     String
   mensaje    String
   tipo       String
+  link       String?
   leida      Boolean  @default(false)
   empleadoId String   @map("empleado_id")
   createdAt  DateTime @default(now()) @map("created_at")
