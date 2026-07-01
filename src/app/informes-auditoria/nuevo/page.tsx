@@ -1,21 +1,28 @@
 import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
-import { ServiciosList } from "./servicios-list"
+import { InformeAuditoriaForm } from "@/components/informes-auditoria/informe-auditoria-form"
 import Link from "next/link"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 
-export default async function ServiciosPage() {
+export default async function NuevoInformePage() {
   const session = await requireAuth()
-  const esGerenteGeneral = session.user.rol === "GERENTE_GENERAL"
 
-  const [servicios, total] = await Promise.all([
-    prisma.servicio.findMany({
-      orderBy: { nombre: "asc" },
-      take: 10,
-      include: { _count: { select: { proyectos: true } } },
-    }),
-    prisma.servicio.count(),
-  ])
+  const puedeCrear = session.user.rol === "AUDITOR" || session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
+  if (!puedeCrear) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">No autorizado</p>
+      </div>
+    )
+  }
+
+  const proyectos = await prisma.proyecto.findMany({
+    where: { servicio: { nombre: "AUDITORIA_ISO27001" } },
+    orderBy: { nombre: "asc" },
+    select: { id: true, nombre: true },
+  })
+
+  const rol = session.user.rol
 
   return (
     <div className="min-h-screen">
@@ -26,7 +33,7 @@ export default async function ServiciosPage() {
             <Link href="/dashboard" className="text-sm font-medium hover:underline">Dashboard</Link>
             <Link href="/proyectos" className="text-sm font-medium hover:underline">Proyectos</Link>
             <Link href="/clientes" className="text-sm font-medium hover:underline">Clientes</Link>
-            {esGerenteGeneral && (
+            {rol === "GERENTE_GENERAL" && (
               <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
             )}
             <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
@@ -39,15 +46,12 @@ export default async function ServiciosPage() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Servicios</h2>
+        <div className="mb-6">
+          <Link href="/informes-auditoria" className="text-sm text-primary hover:underline">← Volver</Link>
+          <h2 className="text-2xl font-bold mt-2">Nuevo informe de auditoría</h2>
         </div>
 
-        <ServiciosList
-          esGerenteGeneral={esGerenteGeneral}
-          initialData={JSON.parse(JSON.stringify(servicios))}
-          initialTotal={total}
-        />
+        <InformeAuditoriaForm proyectos={JSON.parse(JSON.stringify(proyectos))} />
       </main>
     </div>
   )

@@ -80,6 +80,7 @@ model Proyecto {
   tareas    Tarea[]
   hitos     Hito[]
   documentos Documento[]
+  informesAuditoria InformeAuditoria[]
   historialEstados HistorialEstado[]
 
   @@map("proyectos")
@@ -130,6 +131,7 @@ model Empleado {
   updatedAt    DateTime     @updatedAt @map("updated_at")
   asignaciones Asignacion[]
   notificaciones Notificacion[]
+  informesAuditoria InformeAuditoria[]
   auditLogs    AuditLog[]
   historialEstados HistorialEstado[]
 
@@ -218,6 +220,27 @@ model Notificacion {
   empleado Empleado @relation(fields: [empleadoId], references: [id])
 
   @@map("notificaciones")
+}
+
+model InformeAuditoria {
+  id                  String   @id @default(cuid())
+  proyectoId          String   @map("proyecto_id")
+  creadorId           String   @map("creador_id")
+  alcance             String
+  criteriosAuditoria  String   @map("criterios_auditoria")
+  hallazgos           Json     @default("[]")
+  noConformidades     Json     @default("[]") @map("no_conformidades")
+  observaciones       Json     @default("[]")
+  recomendaciones     Json     @default("[]")
+  estado              String   @default("BORRADOR")
+  fechaEmision        DateTime? @map("fecha_emision")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  proyecto Proyecto @relation(fields: [proyectoId], references: [id])
+  creador  Empleado @relation(fields: [creadorId], references: [id])
+
+  @@map("informes_auditoria")
 }
 
 model AuditLog {

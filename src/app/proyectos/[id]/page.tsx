@@ -72,6 +72,7 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
             <Link href="/proyectos" className="text-sm font-medium hover:underline">Proyectos</Link>
             <Link href="/clientes" className="text-sm font-medium hover:underline">Clientes</Link>
             <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
+            <Link href="/informes-auditoria" className="text-sm font-medium hover:underline">Auditoría</Link>
             <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>

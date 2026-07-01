@@ -1,21 +1,38 @@
 import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
-import { ClientesList } from "./clientes-list"
+import { InformeAuditoriaList } from "@/components/informes-auditoria/informe-auditoria-list"
 import Link from "next/link"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 
-export default async function ClientesPage() {
+export default async function InformesAuditoriaPage() {
   const session = await requireAuth()
-  const puedeEditar = session.user.rol === "GERENTE_GENERAL" || session.user.rol === "ADMINISTRACION" || session.user.rol === "VENTAS"
 
-  const [clientes, total] = await Promise.all([
-    prisma.cliente.findMany({
+  const puedeCrear = session.user.rol === "AUDITOR" || session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
+
+  const where: Record<string, unknown> = {}
+  if (session.user.rol !== "GERENTE_GENERAL" && session.user.rol !== "CISO") {
+    where.creadorId = session.user.id
+  }
+
+  const [informes, total, proyectos] = await Promise.all([
+    prisma.informeAuditoria.findMany({
+      where,
       orderBy: { createdAt: "desc" },
       take: 10,
-      include: { _count: { select: { proyectos: true } } },
+      include: {
+        proyecto: { select: { id: true, nombre: true } },
+        creador: { select: { id: true, nombre: true, apellido: true, rol: true } },
+      },
     }),
-    prisma.cliente.count(),
+    prisma.informeAuditoria.count({ where }),
+    prisma.proyecto.findMany({
+      where: { servicio: { nombre: "AUDITORIA_ISO27001" } },
+      orderBy: { nombre: "asc" },
+      select: { id: true, nombre: true },
+    }),
   ])
+
+  const rol = session.user.rol
 
   return (
     <div className="min-h-screen">
@@ -25,11 +42,12 @@ export default async function ClientesPage() {
           <nav className="flex items-center gap-4">
             <Link href="/dashboard" className="text-sm font-medium hover:underline">Dashboard</Link>
             <Link href="/proyectos" className="text-sm font-medium hover:underline">Proyectos</Link>
-            {puedeEditar && (
+            <Link href="/clientes" className="text-sm font-medium hover:underline">Clientes</Link>
+            {rol === "GERENTE_GENERAL" && (
               <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
             )}
             <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
-            <Link href="/informes-auditoria" className="text-sm font-medium hover:underline">Auditoría</Link>
+            <Link href="/informes-auditoria" className="text-sm font-medium text-primary hover:underline">Auditoría</Link>
             <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>
@@ -39,21 +57,21 @@ export default async function ClientesPage() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Clientes</h2>
-          {puedeEditar && (
+          <h2 className="text-2xl font-bold">Informes de Auditoría</h2>
+          {puedeCrear && (
             <Link
-              href="/clientes/nuevo"
+              href="/informes-auditoria/nuevo"
               className="inline-flex h-10 items-center justify-center rounded-md bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90"
             >
-              Nuevo cliente
+              Nuevo informe
             </Link>
           )}
         </div>
 
-        <ClientesList
-          puedeEditar={puedeEditar}
-          initialData={JSON.parse(JSON.stringify(clientes))}
+        <InformeAuditoriaList
+          initialData={JSON.parse(JSON.stringify(informes))}
           initialTotal={total}
+          proyectos={JSON.parse(JSON.stringify(proyectos))}
         />
       </main>
     </div>
