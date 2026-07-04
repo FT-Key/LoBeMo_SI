@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import type { Prisma } from "@prisma/client"
 
 const MODALIDADES = ["PRESENCIAL", "REMOTA"]
-const ESTADOS = ["PLANIFICADA", "EN_CURSO", "COMPLETADA", "CANCELADA"]
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search") ?? ""
     const estado = searchParams.get("estado") ?? ""
 
-    const where: Record<string, unknown> = {}
+    const where: Prisma.CapacitacionWhereInput = {}
     if (search) {
       where.OR = [
         { titulo: { contains: search, mode: "insensitive" } },

@@ -82,6 +82,8 @@ model Proyecto {
   documentos Documento[]
   informesAuditoria InformeAuditoria[]
   historialEstados HistorialEstado[]
+  capacitaciones Capacitacion[]
+  hallazgosPentesting HallazgoPentesting[]
 
   @@map("proyectos")
 }
@@ -134,6 +136,7 @@ model Empleado {
   informesAuditoria InformeAuditoria[]
   auditLogs    AuditLog[]
   historialEstados HistorialEstado[]
+  hallazgosPentesting HallazgoPentesting[]
 
   @@map("empleados")
 }
@@ -290,6 +293,25 @@ model CertificadoCapacitacion {
   asistente AsistenteCapacitacion @relation(fields: [asistenteId], references: [id])
 
   @@map("certificados_capacitacion")
+}
+
+model HallazgoPentesting {
+  id            String   @id @default(cuid())
+  proyectoId    String   @map("proyecto_id")
+  creadorId     String   @map("creador_id")
+  titulo        String
+  descripcion   String
+  severidad     String   @default("MEDIA")
+  evidencia     String?
+  recomendacion String?
+  estado        String   @default("PENDIENTE")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  proyecto Proyecto @relation(fields: [proyectoId], references: [id])
+  creador  Empleado @relation(fields: [creadorId], references: [id])
+
+  @@map("hallazgos_pentesting")
 }
 
 model AuditLog {
