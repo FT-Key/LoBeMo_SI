@@ -26,9 +26,10 @@
 | US-020 | ✅ Done | feat/US-020-admin-panel | PR #22 → dev | .opencode/workflow/history/US-020.md |
 | US-022 | ✅ Done | feat/US-022-quality-fixes | PR #23 → dev | .opencode/workflow/history/US-022.md |
 | US-023 | ✅ Done | feat/US-023-lint-export | PR #24 → dev | .opencode/workflow/history/US-023.md |
+| US-024 | ✅ Done | feat/US-024-middleware-landing | PR #25 → dev | .opencode/workflow/history/US-024.md |
 
 ## Project Status
-✅ 23 US completadas (US-001 a US-023). Todas completadas.
+✅ 24 US completadas (US-001 a US-024). Todas completadas.
 ✅ Lint: 0 errores, 0 warnings.
 ✅ Typecheck: disponible y pasa sin errores.
 
@@ -59,3 +60,7 @@
 ✅ `exportar/proyecto/[id]/route.ts` — Eliminado import `NextResponse` no usado
 ✅ `lint` — 0 errores, 0 warnings
 ✅ `typecheck` — 0 errores
+
+### Issues corregidos por US-024
+✅ `src/middleware.ts` — Agregado `request.nextUrl.pathname === "/"` a excepciones
+✅ Landing page ahora es accesible sin autenticacion

@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   const isApiAuth = request.nextUrl.pathname.startsWith("/api/auth")
   const token = request.cookies.get("next-auth.session-token")?.value || request.cookies.get("__Secure-next-auth.session-token")?.value
 
-  if (isAuthPage || isApiAuth) {
+  if (isAuthPage || isApiAuth || request.nextUrl.pathname === "/") {
     return NextResponse.next()
   }
 
