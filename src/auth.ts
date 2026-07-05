@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
@@ -11,27 +12,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Contraseña", type: "password" },
       },
       authorize: async (credentials) => {
-        const { email, password } = credentials as {
-          email: string
-          password: string
-        }
+        try {
+          const { email, password } = credentials as {
+            email: string
+            password: string
+          }
 
-        if (!email || !password) return null
+          if (!email || !password) return null
 
-        const empleado = await prisma.empleado.findUnique({
-          where: { email },
-        })
+          const empleado = await prisma.empleado.findUnique({
+            where: { email },
+          })
 
-        if (!empleado || !empleado.activo) return null
+          if (!empleado || !empleado.activo) return null
 
-        const isValid = await bcrypt.compare(password, empleado.password)
-        if (!isValid) return null
+          const isValid = await bcrypt.compare(password, empleado.password)
+          if (!isValid) return null
 
-        return {
-          id: empleado.id,
-          email: empleado.email,
-          name: `${empleado.nombre} ${empleado.apellido}`,
-          rol: empleado.rol,
+          return {
+            id: empleado.id,
+            email: empleado.email,
+            name: `${empleado.nombre} ${empleado.apellido}`,
+            rol: empleado.rol,
+          }
+        } catch (error) {
+          console.error("[auth] authorize error:", error)
+          return null
         }
       },
     }),

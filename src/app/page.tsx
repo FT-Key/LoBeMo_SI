@@ -7,6 +7,8 @@ import { FeaturesSection } from "@/components/landing/features-section"
 import { CtaSection } from "@/components/landing/cta-section"
 import { FooterSection } from "@/components/landing/footer-section"
 
+export const dynamic = "force-dynamic"
+
 export default async function Home() {
   const hasSuperAdmin = await prisma.empleado.findFirst({
     where: { rol: "GERENTE_GENERAL" },
