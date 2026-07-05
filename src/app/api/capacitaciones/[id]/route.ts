@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
-import type { Prisma } from "@prisma/client"
 
 const ESTADOS = ["PLANIFICADA", "EN_CURSO", "COMPLETADA", "CANCELADA"]
 
@@ -73,7 +72,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Capacitación no encontrada" }, { status: 404 })
     }
 
-    const data: Prisma.CapacitacionUpdateInput = {}
+    const data: Record<string, unknown> = {}
     if (titulo !== undefined) data.titulo = titulo.trim()
     if (temario !== undefined) data.temario = temario.trim()
     if (duracionHoras !== undefined) {

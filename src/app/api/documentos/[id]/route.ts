@@ -32,7 +32,7 @@ export async function GET(
 
     const puedeVer = await puedeAccederDocumento(
       session.user.id,
-      documento.proyectoId,
+      documento.proyectoId ?? "",
       session.user.rol
     )
     if (!puedeVer) {
@@ -67,9 +67,9 @@ export async function DELETE(
     }
 
     const esCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
-    const esAsignado = await prisma.asignacion.findFirst({
+    const esAsignado = documento.proyectoId ? await prisma.asignacion.findFirst({
       where: { proyectoId: documento.proyectoId, empleadoId: session.user.id },
-    })
+    }) : null
 
     if (!esCisoOGerente && !esAsignado) {
       return NextResponse.json(

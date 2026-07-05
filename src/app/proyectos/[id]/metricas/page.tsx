@@ -1,21 +1,35 @@
 import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
-import { ClientesList } from "./clientes-list"
+import { notFound } from "next/navigation"
 import Link from "next/link"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
+import { MetricasProyecto } from "./metricas-content"
 
-export default async function ClientesPage() {
+export default async function MetricasProyectoPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const session = await requireAuth()
-  const puedeEditar = session.user.rol === "GERENTE_GENERAL" || session.user.rol === "ADMINISTRACION" || session.user.rol === "VENTAS"
+  const { id } = await params
 
-  const [clientes, total] = await Promise.all([
-    prisma.cliente.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 10,
-      include: { _count: { select: { proyectos: true } } },
-    }),
-    prisma.cliente.count(),
-  ])
+  const puedeVer = ["CISO", "GERENTE_GENERAL"].includes(session.user.rol)
+  if (!puedeVer) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">No autorizado</p>
+      </div>
+    )
+  }
+
+  const proyecto = await prisma.proyecto.findUnique({
+    where: { id },
+    select: { id: true, nombre: true, estado: true },
+  })
+
+  if (!proyecto) notFound()
+
+  const rol = session.user.rol
 
   return (
     <div className="min-h-screen">
@@ -25,14 +39,14 @@ export default async function ClientesPage() {
           <nav className="flex items-center gap-4">
             <Link href="/dashboard" className="text-sm font-medium hover:underline">Dashboard</Link>
             <Link href="/proyectos" className="text-sm font-medium hover:underline">Proyectos</Link>
-            {puedeEditar && (
+            <Link href="/clientes" className="text-sm font-medium hover:underline">Clientes</Link>
+            {rol === "GERENTE_GENERAL" && (
               <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
             )}
             <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
             <Link href="/capacitaciones" className="text-sm font-medium hover:underline">Capacitaciones</Link>
             <Link href="/pentesting" className="text-sm font-medium hover:underline">Pentesting</Link>
             <Link href="/soporte" className="text-sm font-medium hover:underline">Soporte</Link>
-            <Link href="/informes-auditoria" className="text-sm font-medium hover:underline">Auditoría</Link>
             <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>
@@ -41,23 +55,13 @@ export default async function ClientesPage() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Clientes</h2>
-          {puedeEditar && (
-            <Link
-              href="/clientes/nuevo"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90"
-            >
-              Nuevo cliente
-            </Link>
-          )}
+        <div className="mb-6">
+          <Link href={`/proyectos/${id}`} className="text-sm text-primary hover:underline">← Volver al proyecto</Link>
+          <h2 className="text-2xl font-bold mt-2">Métricas: {proyecto.nombre}</h2>
+          <p className="text-sm text-muted-foreground mt-1">Estado: {proyecto.estado.replace(/_/g, " ")}</p>
         </div>
 
-        <ClientesList
-          puedeEditar={puedeEditar}
-          initialData={JSON.parse(JSON.stringify(clientes))}
-          initialTotal={total}
-        />
+        <MetricasProyecto proyectoId={id} />
       </main>
     </div>
   )

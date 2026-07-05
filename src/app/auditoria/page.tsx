@@ -32,6 +32,7 @@ export default async function AuditoriaPage() {
             <Link href="/informes-auditoria" className="text-sm font-medium hover:underline">Auditoría</Link>
             <Link href="/capacitaciones" className="text-sm font-medium hover:underline">Capacitaciones</Link>
             <Link href="/pentesting" className="text-sm font-medium hover:underline">Pentesting</Link>
+            <Link href="/soporte" className="text-sm font-medium hover:underline">Soporte</Link>
             <Link href="/auditoria" className="text-sm font-medium text-primary hover:underline">Audit Log</Link>
             <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>

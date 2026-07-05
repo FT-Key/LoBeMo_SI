@@ -83,6 +83,8 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
       <main className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="mb-6">
           <Link href="/proyectos" className="text-sm text-muted-foreground hover:underline">&larr; Volver a proyectos</Link>
+          <span className="text-muted-foreground mx-2">|</span>
+          <Link href={`/proyectos/${id}/metricas`} className="text-sm text-primary hover:underline">Métricas</Link>
         </div>
 
         <ProyectoDetalle

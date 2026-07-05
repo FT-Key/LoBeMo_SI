@@ -84,6 +84,7 @@ model Proyecto {
   historialEstados HistorialEstado[]
   capacitaciones Capacitacion[]
   hallazgosPentesting HallazgoPentesting[]
+  ticketsSoporte TicketSoporte[]
 
   @@map("proyectos")
 }
@@ -137,6 +138,8 @@ model Empleado {
   auditLogs    AuditLog[]
   historialEstados HistorialEstado[]
   hallazgosPentesting HallazgoPentesting[]
+  ticketsCreados TicketSoporte[] @relation("CreadorTicket")
+  ticketsAsignados TicketSoporte[] @relation("AsignadoTicket")
 
   @@map("empleados")
 }
@@ -312,6 +315,27 @@ model HallazgoPentesting {
   creador  Empleado @relation(fields: [creadorId], references: [id])
 
   @@map("hallazgos_pentesting")
+}
+
+model TicketSoporte {
+  id          String    @id @default(cuid())
+  titulo      String
+  descripcion String?
+  prioridad   String    @default("MEDIA")
+  estado      String    @default("ABIERTO")
+  categoria   String?
+  clienteNombre String? @map("cliente_nombre")
+  proyectoId  String?   @map("proyecto_id")
+  creadorId   String    @map("creador_id")
+  asignadoAId String?   @map("asignado_a_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  proyecto  Proyecto? @relation(fields: [proyectoId], references: [id])
+  creador   Empleado  @relation("CreadorTicket", fields: [creadorId], references: [id])
+  asignadoA Empleado? @relation("AsignadoTicket", fields: [asignadoAId], references: [id])
+
+  @@map("tickets_soporte")
 }
 
 model AuditLog {

@@ -103,6 +103,15 @@ export default async function DashboardPage() {
             <a href="/servicios" className="text-sm font-medium text-foreground hover:underline">
               Servicios
             </a>
+            <a href="/capacitaciones" className="text-sm font-medium text-foreground hover:underline">
+              Capacitaciones
+            </a>
+            <a href="/pentesting" className="text-sm font-medium text-foreground hover:underline">
+              Pentesting
+            </a>
+            <a href="/soporte" className="text-sm font-medium text-foreground hover:underline">
+              Soporte
+            </a>
             {(rol === "AUDITOR" || rol === "GERENTE_GENERAL" || rol === "CISO") && (
               <a href="/informes-auditoria" className="text-sm font-medium text-foreground hover:underline">
                 Auditoría

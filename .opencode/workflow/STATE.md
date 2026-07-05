@@ -1,9 +1,9 @@
 # Workflow State
 
 ## Current US
-- **ID**: US-015
+- **ID**: US-017
 - **Status**: ✅ Done
-- **Phase**: F6 — Trello Done
+- **Phase**: F5 — Git + PR pendiente
 
 ## History
 | US | Status | Branch | PR | Detail |
@@ -24,12 +24,14 @@
 | US-013 | ✅ Done | — | Quality fixes applied to dev | .opencode/workflow/history/US-013.md |
 | US-014 | ✅ Done | feat/US-014-hallazgos-pentesting | PR #17 → dev | .opencode/workflow/history/US-014.md |
 | US-015 | ✅ Done | feat/US-015-audit-log | PR → dev | .opencode/workflow/history/US-015.md |
+| US-016 | ✅ Done | feat/US-016-soporte-tecnico | (en creación) | .opencode/workflow/history/US-016.md |
+| US-017 | ✅ Done | feat/US-016-soporte-tecnico | (en creación) | .opencode/workflow/history/US-017.md |
 
 ## Project Status
-✅ 16 US completadas (US-001 a US-015). 5 restantes (US-016 a US-020) en backlog.
+✅ 18 US completadas (US-001 a US-017). 3 restantes (US-018 a US-020) en backlog.
 
 ## Next Steps
-- Implementar US restantes del backlog: US-016 a US-020.
+- Git: push rama, crear PR hacia dev, mergear.
 
 ## Lint Results
 
