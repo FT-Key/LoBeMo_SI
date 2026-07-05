@@ -22,10 +22,11 @@
 | US-016 | ✅ Done | feat/US-016-soporte-tecnico | PR #19 → dev | .opencode/workflow/history/US-016.md |
 | US-017 | ✅ Done | feat/US-016-soporte-tecnico | PR #19 → dev | .opencode/workflow/history/US-017.md |
 | US-018 | ✅ Done | feat/US-018-exportacion-pdf | PR #20 → dev | .opencode/workflow/history/US-018.md |
-| US-019 | ✅ Done | feat/US-019-calendario | (en creación) | .opencode/workflow/history/US-019.md |
+| US-019 | ✅ Done | feat/US-019-calendario | PR #21 → dev | .opencode/workflow/history/US-019.md |
+| US-020 | ✅ Done | feat/US-020-admin-panel | PR → dev | .opencode/workflow/history/US-020.md |
 
 ## Project Status
-✅ 20 US completadas (US-001 a US-019). 1 restante (US-020) en backlog.
+✅ 21 US completadas (US-001 a US-020). Todas las US completadas.
 
 ## Lint Results
 

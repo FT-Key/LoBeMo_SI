@@ -116,6 +116,11 @@ export async function POST(request: Request) {
       )
     }
 
+    const config = await prisma.configuracion.findUnique({
+      where: { clave: "MAX_PROYECTOS_ACTIVOS_POR_EMPLEADO" },
+    })
+    const maxActivos = config ? parseInt(config.valor) : 3
+
     const proyectosActivos = await prisma.asignacion.count({
       where: {
         empleadoId,
@@ -125,9 +130,9 @@ export async function POST(request: Request) {
       },
     })
 
-    if (proyectosActivos >= 3) {
+    if (proyectosActivos >= maxActivos) {
       return NextResponse.json(
-        { error: "El empleado ya tiene 3 proyectos activos. No puede asignarse a más (RN-08)" },
+        { error: `El empleado ya tiene ${maxActivos} proyectos activos. No puede asignarse a más (RN-08)` },
         { status: 400 }
       )
     }

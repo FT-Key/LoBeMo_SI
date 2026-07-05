@@ -96,9 +96,14 @@ export default async function DashboardPage() {
               Clientes
             </a>
             {rol === "GERENTE_GENERAL" && (
-              <a href="/empleados" className="text-sm font-medium text-foreground hover:underline">
-                Empleados
-              </a>
+              <>
+                <a href="/empleados" className="text-sm font-medium text-foreground hover:underline">
+                  Empleados
+                </a>
+                <a href="/admin" className="text-sm font-medium text-foreground hover:underline">
+                  Admin
+                </a>
+              </>
             )}
             <a href="/servicios" className="text-sm font-medium text-foreground hover:underline">
               Servicios
