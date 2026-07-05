@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { InformeAuditoriaDetalle } from "@/components/informes-auditoria/informe-auditoria-detalle"
+import { ExportarPDFButton } from "@/components/exportar/exportar-pdf-button"
 import Link from "next/link"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 import { notFound } from "next/navigation"
@@ -66,8 +67,9 @@ export default async function InformeAuditoriaDetallePage({
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <Link href="/informes-auditoria" className="text-sm text-primary hover:underline">← Volver a informes</Link>
+          <ExportarPDFButton url={`/api/exportar/informe-auditoria/${id}`} label="Exportar PDF" />
         </div>
 
         <InformeAuditoriaDetalle
