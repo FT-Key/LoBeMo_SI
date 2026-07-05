@@ -1,30 +1,10 @@
 import { requireAuth } from "@/lib/auth-helpers"
-import { prisma } from "@/lib/prisma"
-import { HallazgoForm } from "@/components/pentesting/hallazgo-form"
+import { CalendarioView } from "./calendario-view"
 import Link from "next/link"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 
-export default async function NuevoHallazgoPage() {
+export default async function CalendarioPage() {
   const session = await requireAuth()
-
-  const puedeCrear = session.user.rol === "PENTESTER" || session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
-  if (!puedeCrear) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">No autorizado</p>
-      </div>
-    )
-  }
-
-  const proyectos = await prisma.proyecto.findMany({
-    where: {
-      servicio: { nombre: "PENTESTING" },
-      estado: { in: ["APROBADO", "EN_EJECUCION", "EN_REVISION"] },
-    },
-    orderBy: { nombre: "asc" },
-    select: { id: true, nombre: true },
-  })
-
   const rol = session.user.rol
 
   return (
@@ -40,11 +20,10 @@ export default async function NuevoHallazgoPage() {
               <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
             )}
             <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
-            <Link href="/informes-auditoria" className="text-sm font-medium hover:underline">Auditoría</Link>
             <Link href="/capacitaciones" className="text-sm font-medium hover:underline">Capacitaciones</Link>
             <Link href="/pentesting" className="text-sm font-medium hover:underline">Pentesting</Link>
             <Link href="/soporte" className="text-sm font-medium hover:underline">Soporte</Link>
-            <Link href="/calendario" className="text-sm font-medium hover:underline">Calendario</Link>
+            <Link href="/calendario" className="text-sm font-medium text-primary hover:underline">Calendario</Link>
             <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>
@@ -52,13 +31,13 @@ export default async function NuevoHallazgoPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="mb-6">
-          <Link href="/pentesting" className="text-sm text-primary hover:underline">← Volver</Link>
-          <h2 className="text-2xl font-bold mt-2">Nuevo hallazgo</h2>
+          <h2 className="text-2xl font-bold">Calendario</h2>
+          <p className="text-sm text-muted-foreground mt-1">Hitos y vencimientos de propuestas</p>
         </div>
 
-        <HallazgoForm proyectos={JSON.parse(JSON.stringify(proyectos))} />
+        <CalendarioView />
       </main>
     </div>
   )

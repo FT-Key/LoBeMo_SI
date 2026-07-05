@@ -34,6 +34,7 @@ export default async function ServiciosPage() {
             <Link href="/pentesting" className="text-sm font-medium hover:underline">Pentesting</Link>
             <Link href="/soporte" className="text-sm font-medium hover:underline">Soporte</Link>
             <Link href="/informes-auditoria" className="text-sm font-medium hover:underline">Auditoría</Link>
+            <Link href="/calendario" className="text-sm font-medium hover:underline">Calendario</Link>
             <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>

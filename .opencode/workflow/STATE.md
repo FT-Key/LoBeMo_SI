@@ -21,10 +21,11 @@
 | US-015 | ✅ Done | feat/US-015-audit-log | PR → dev | .opencode/workflow/history/US-015.md |
 | US-016 | ✅ Done | feat/US-016-soporte-tecnico | PR #19 → dev | .opencode/workflow/history/US-016.md |
 | US-017 | ✅ Done | feat/US-016-soporte-tecnico | PR #19 → dev | .opencode/workflow/history/US-017.md |
-| US-018 | ✅ Done | feat/US-018-exportacion-pdf | (en creación) | .opencode/workflow/history/US-018.md |
+| US-018 | ✅ Done | feat/US-018-exportacion-pdf | PR #20 → dev | .opencode/workflow/history/US-018.md |
+| US-019 | ✅ Done | feat/US-019-calendario | (en creación) | .opencode/workflow/history/US-019.md |
 
 ## Project Status
-✅ 19 US completadas (US-001 a US-018). 2 restantes (US-019, US-020) en backlog.
+✅ 20 US completadas (US-001 a US-019). 1 restante (US-020) en backlog.
 
 ## Lint Results
 
