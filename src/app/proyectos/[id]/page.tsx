@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ProyectoDetalle } from "./proyecto-detalle"
+import { ExportarPDFButton } from "@/components/exportar/exportar-pdf-button"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 
 const ESTADO_LABELS: Record<string, string> = {
@@ -81,10 +82,13 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-5xl">
-        <div className="mb-6">
-          <Link href="/proyectos" className="text-sm text-muted-foreground hover:underline">&larr; Volver a proyectos</Link>
-          <span className="text-muted-foreground mx-2">|</span>
-          <Link href={`/proyectos/${id}/metricas`} className="text-sm text-primary hover:underline">Métricas</Link>
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Link href="/proyectos" className="text-sm text-muted-foreground hover:underline">&larr; Volver a proyectos</Link>
+            <span className="text-muted-foreground mx-1">|</span>
+            <Link href={`/proyectos/${id}/metricas`} className="text-sm text-primary hover:underline">Métricas</Link>
+          </div>
+          <ExportarPDFButton url={`/api/exportar/proyecto/${id}`} label="Exportar PDF" />
         </div>
 
         <ProyectoDetalle
