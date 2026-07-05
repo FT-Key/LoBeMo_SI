@@ -45,7 +45,7 @@ export function NuevoClienteForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
       {error && (
         <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">{error}</div>
       )}

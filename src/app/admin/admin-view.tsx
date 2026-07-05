@@ -46,8 +46,8 @@ export function AdminView({ initialItems }: { initialItems: ConfigItem[] }) {
         <div
           className={`p-3 rounded-md text-sm ${
             message.type === "success"
-              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-              : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+              ? "bg-destructive/15 text-destructive"
+              : "bg-destructive/15 text-destructive"
           }`}
         >
           {message.text}
@@ -67,7 +67,7 @@ export function AdminView({ initialItems }: { initialItems: ConfigItem[] }) {
             max="100"
             value={item.valor}
             onChange={(e) => handleChange(item.clave, e.target.value)}
-            className="flex h-10 w-32 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="flex h-10 w-full sm:w-32 rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </div>
       ))}
@@ -75,7 +75,7 @@ export function AdminView({ initialItems }: { initialItems: ConfigItem[] }) {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        className="w-full sm:w-auto inline-flex items-center justify-center rounded-md bg-foreground px-6 h-10 text-sm font-medium text-background hover:bg-foreground/90 disabled:opacity-50"
       >
         {saving ? "Guardando..." : "Guardar configuración"}
       </button>

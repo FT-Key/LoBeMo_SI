@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { PropuestasList } from "./propuestas-list"
 import Link from "next/link"
-import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
+import { Navbar } from "@/components/navbar"
 
 const ESTADO_PROPUESTA_LABELS: Record<string, string> = {
   ENVIADA: "Enviada",
@@ -35,25 +35,7 @@ export default async function PropuestasPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold">LoBeMo</h1>
-          <nav className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-sm font-medium hover:underline">Dashboard</Link>
-            <Link href="/proyectos" className="text-sm font-medium hover:underline">Proyectos</Link>
-            <Link href="/clientes" className="text-sm font-medium hover:underline">Clientes</Link>
-            <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
-            {session.user.rol === "GERENTE_GENERAL" && (
-              <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
-            )}
-            <Link href="/informes-auditoria" className="text-sm font-medium hover:underline">Auditoría</Link>
-            <Link href="/calendario" className="text-sm font-medium hover:underline">Calendario</Link>
-            <NotificacionDropdown />
-            <span className="text-sm text-muted-foreground">{session.user.name}</span>
-            <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>
-          </nav>
-        </div>
-      </header>
+      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/propuestas" />
 
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">

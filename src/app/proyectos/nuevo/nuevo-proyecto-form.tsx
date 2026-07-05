@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 
 export function NuevoProyectoForm({
   clientes,
@@ -59,15 +58,15 @@ export function NuevoProyectoForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
       {error && (
-        <div className="rounded-md bg-red-500/15 border border-red-500/25 p-3 text-sm text-red-400">
+        <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
           {error}
         </div>
       )}
 
-      <div>
-        <label className="text-sm font-medium text-foreground mb-1.5 block">Nombre del proyecto *</label>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Nombre del proyecto *</label>
         <input
           name="nombre"
           value={form.nombre}
@@ -77,8 +76,8 @@ export function NuevoProyectoForm({
         />
       </div>
 
-      <div>
-        <label className="text-sm font-medium text-foreground mb-1.5 block">Descripción</label>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Descripción</label>
         <textarea
           name="descripcion"
           value={form.descripcion}
@@ -88,8 +87,8 @@ export function NuevoProyectoForm({
         />
       </div>
 
-      <div>
-        <label className="text-sm font-medium text-foreground mb-1.5 block">Cliente *</label>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Cliente *</label>
         <select
           name="clienteId"
           value={form.clienteId}
@@ -103,8 +102,8 @@ export function NuevoProyectoForm({
         </select>
       </div>
 
-      <div>
-        <label className="text-sm font-medium text-foreground mb-1.5 block">Servicio *</label>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Servicio *</label>
         <select
           name="servicioId"
           value={form.servicioId}
@@ -118,8 +117,8 @@ export function NuevoProyectoForm({
         </select>
       </div>
 
-      <div>
-        <label className="text-sm font-medium text-foreground mb-1.5 block">Fecha estimada de finalización</label>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Fecha estimada de finalización</label>
         <input
           name="fechaEstimadaFin"
           type="date"
@@ -129,8 +128,8 @@ export function NuevoProyectoForm({
         />
       </div>
 
-      <div>
-        <label className="text-sm font-medium text-foreground mb-1.5 block">Monto acordado (ARS)</label>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Monto acordado (ARS)</label>
         <input
           name="montoAcordado"
           type="number"
@@ -142,21 +141,9 @@ export function NuevoProyectoForm({
         />
       </div>
 
-      <div className="flex gap-4 pt-2">
-        <button
-          type="submit"
-          disabled={saving}
-          className="inline-flex h-10 items-center justify-center rounded-md bg-foreground px-6 text-sm font-medium text-background hover:bg-foreground/90 disabled:opacity-50"
-        >
-          {saving ? "Guardando..." : "Crear proyecto"}
-        </button>
-        <Link
-          href="/proyectos"
-          className="inline-flex h-10 items-center justify-center rounded-md border border-input px-6 text-sm font-medium hover:bg-muted"
-        >
-          Cancelar
-        </Link>
-      </div>
+      <button type="submit" disabled={saving} className="w-full h-10 rounded-md bg-foreground text-background text-sm font-medium hover:bg-foreground/90 disabled:opacity-50">
+        {saving ? "Guardando..." : "Crear proyecto"}
+      </button>
     </form>
   )
 }

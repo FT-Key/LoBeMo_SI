@@ -87,7 +87,7 @@ export function NotificacionDropdown() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 rounded-lg border border-border bg-popover shadow-lg z-50">
+        <div className="absolute right-0 top-full mt-2 w-80 rounded-lg border border-border bg-background shadow-2xl z-[100]">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
             <h3 className="text-sm font-semibold text-foreground">Notificaciones</h3>
             {isFetching && (

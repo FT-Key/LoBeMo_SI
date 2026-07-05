@@ -61,7 +61,7 @@ export function InformeAuditoriaForm({ proyectos }: { proyectos: Proyecto[] }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
       {error && (
-        <div className="p-3 rounded-md bg-red-500/15 text-red-400 border border-red-500/25 text-sm">
+        <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
           {error}
         </div>
       )}
