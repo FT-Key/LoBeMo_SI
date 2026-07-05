@@ -28,9 +28,10 @@
 | US-023 | ✅ Done | feat/US-023-lint-export | PR #24 → dev | .opencode/workflow/history/US-023.md |
 | US-024 | ✅ Done | feat/US-024-middleware-landing | PR #25 → dev | .opencode/workflow/history/US-024.md |
 | US-025 | ✅ Done | feat/US-025-csp-unsafe-inline | PR #26 → dev | .opencode/workflow/history/US-025.md |
-
+| US-026 | ✅ Done | feat/US-026-login-session-fix | PR #27 → dev | .opencode/workflow/history/US-026.md |
+ 
 ## Project Status
-✅ 25 US completadas (US-001 a US-025). Todas completadas.
+✅ 26 US completadas (US-001 a US-026). Todas completadas.
 ✅ Lint: 0 errores, 0 warnings.
 ✅ Typecheck: disponible y pasa sin errores.
 

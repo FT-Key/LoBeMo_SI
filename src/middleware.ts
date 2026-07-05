@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server"
 export function middleware(request: NextRequest) {
   const isAuthPage = request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/register")
   const isApiAuth = request.nextUrl.pathname.startsWith("/api/auth")
-  const token = request.cookies.get("next-auth.session-token")?.value || request.cookies.get("__Secure-next-auth.session-token")?.value
+  const token = request.cookies.get("authjs.session-token")?.value || request.cookies.get("__Secure-authjs.session-token")?.value
 
   if (isAuthPage || isApiAuth || request.nextUrl.pathname === "/") {
     return NextResponse.next()
