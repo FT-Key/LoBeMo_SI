@@ -112,6 +112,9 @@ export default async function DashboardPage() {
             <a href="/soporte" className="text-sm font-medium text-foreground hover:underline">
               Soporte
             </a>
+            <a href="/calendario" className="text-sm font-medium text-foreground hover:underline">
+              Calendario
+            </a>
             {(rol === "AUDITOR" || rol === "GERENTE_GENERAL" || rol === "CISO") && (
               <a href="/informes-auditoria" className="text-sm font-medium text-foreground hover:underline">
                 Auditoría

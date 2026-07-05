@@ -59,6 +59,7 @@ export default async function InformeAuditoriaDetallePage({
             )}
             <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
             <Link href="/informes-auditoria" className="text-sm font-medium hover:underline">Auditoría</Link>
+            <Link href="/calendario" className="text-sm font-medium hover:underline">Calendario</Link>
             <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>
