@@ -96,7 +96,7 @@ export function NuevaPropuestaForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="rounded-md bg-red-500/15 border border-red-500/25 p-3 text-sm text-red-400">
+        <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
           {error}
         </div>
       )}

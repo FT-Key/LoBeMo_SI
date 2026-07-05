@@ -1,9 +1,8 @@
-import Link from "next/link"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { DashboardContent } from "./dashboard-content"
-import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
+import { Navbar } from "@/components/navbar"
 
 const ROLES_PERMITIDOS = ["GERENTE_GENERAL", "CISO", "ADMINISTRACION"]
 
@@ -79,66 +78,9 @@ export default async function DashboardPage() {
     },
   }
 
-  const rol = session.user.rol
-
   return (
     <div className="min-h-screen">
-      <header className="border-b border-border">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-foreground">LoBeMo</h1>
-          <nav className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-sm font-medium text-primary hover:underline">
-              Dashboard
-            </Link>
-            <Link href="/proyectos" className="text-sm font-medium text-foreground hover:underline">
-              Proyectos
-            </Link>
-            <Link href="/clientes" className="text-sm font-medium text-foreground hover:underline">
-              Clientes
-            </Link>
-            {rol === "GERENTE_GENERAL" && (
-              <>
-                <Link href="/empleados" className="text-sm font-medium text-foreground hover:underline">
-                  Empleados
-                </Link>
-                <Link href="/admin" className="text-sm font-medium text-foreground hover:underline">
-                  Admin
-                </Link>
-              </>
-            )}
-            <Link href="/servicios" className="text-sm font-medium text-foreground hover:underline">
-              Servicios
-            </Link>
-            <Link href="/capacitaciones" className="text-sm font-medium text-foreground hover:underline">
-              Capacitaciones
-            </Link>
-            <Link href="/pentesting" className="text-sm font-medium text-foreground hover:underline">
-              Pentesting
-            </Link>
-            <Link href="/soporte" className="text-sm font-medium text-foreground hover:underline">
-              Soporte
-            </Link>
-            <Link href="/calendario" className="text-sm font-medium text-foreground hover:underline">
-              Calendario
-            </Link>
-            {(rol === "AUDITOR" || rol === "GERENTE_GENERAL" || rol === "CISO") && (
-              <Link href="/informes-auditoria" className="text-sm font-medium text-foreground hover:underline">
-                Auditoría
-              </Link>
-            )}
-            <NotificacionDropdown />
-            <span className="text-sm text-muted-foreground">
-              {session.user.name}
-            </span>
-            <Link
-              href="/api/auth/signout"
-              className="text-sm text-muted-foreground hover:underline"
-            >
-              Cerrar sesión
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/dashboard" />
 
       <main className="container mx-auto px-4 py-8">
         <DashboardContent initialData={initialData} />
