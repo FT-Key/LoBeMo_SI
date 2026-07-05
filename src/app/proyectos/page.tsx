@@ -47,6 +47,9 @@ export default async function ProyectosPage() {
             <Link href="/dashboard" className="text-sm font-medium hover:underline">Dashboard</Link>
             <Link href="/clientes" className="text-sm font-medium hover:underline">Clientes</Link>
             <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
+            <Link href="/capacitaciones" className="text-sm font-medium hover:underline">Capacitaciones</Link>
+            <Link href="/pentesting" className="text-sm font-medium hover:underline">Pentesting</Link>
+            <Link href="/soporte" className="text-sm font-medium hover:underline">Soporte</Link>
             {puedeCrear && (
               <Link href="/empleados" className="text-sm font-medium hover:underline">Empleados</Link>
             )}

@@ -22,6 +22,9 @@ export default async function EmpleadosPage() {
             <Link href="/proyectos" className="text-sm font-medium hover:underline">Proyectos</Link>
             <Link href="/clientes" className="text-sm font-medium hover:underline">Clientes</Link>
             <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
+            <Link href="/capacitaciones" className="text-sm font-medium hover:underline">Capacitaciones</Link>
+            <Link href="/pentesting" className="text-sm font-medium hover:underline">Pentesting</Link>
+            <Link href="/soporte" className="text-sm font-medium hover:underline">Soporte</Link>
             <Link href="/informes-auditoria" className="text-sm font-medium hover:underline">Auditoría</Link>
             <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>

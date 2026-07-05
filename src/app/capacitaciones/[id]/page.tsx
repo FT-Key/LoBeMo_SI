@@ -56,6 +56,8 @@ export default async function CapacitacionDetallePage({
             <Link href="/servicios" className="text-sm font-medium hover:underline">Servicios</Link>
             <Link href="/informes-auditoria" className="text-sm font-medium hover:underline">Auditoría</Link>
             <Link href="/capacitaciones" className="text-sm font-medium hover:underline">Capacitaciones</Link>
+            <Link href="/pentesting" className="text-sm font-medium hover:underline">Pentesting</Link>
+            <Link href="/soporte" className="text-sm font-medium hover:underline">Soporte</Link>
             <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <Link href="/api/auth/signout" className="text-sm text-muted-foreground hover:underline">Cerrar sesión</Link>
