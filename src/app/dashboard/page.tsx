@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
@@ -86,50 +87,55 @@ export default async function DashboardPage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-xl font-bold text-foreground">LoBeMo</h1>
           <nav className="flex items-center gap-4">
-            <a href="/dashboard" className="text-sm font-medium text-primary hover:underline">
+            <Link href="/dashboard" className="text-sm font-medium text-primary hover:underline">
               Dashboard
-            </a>
-            <a href="/proyectos" className="text-sm font-medium text-foreground hover:underline">
+            </Link>
+            <Link href="/proyectos" className="text-sm font-medium text-foreground hover:underline">
               Proyectos
-            </a>
-            <a href="/clientes" className="text-sm font-medium text-foreground hover:underline">
+            </Link>
+            <Link href="/clientes" className="text-sm font-medium text-foreground hover:underline">
               Clientes
-            </a>
+            </Link>
             {rol === "GERENTE_GENERAL" && (
-              <a href="/empleados" className="text-sm font-medium text-foreground hover:underline">
-                Empleados
-              </a>
+              <>
+                <Link href="/empleados" className="text-sm font-medium text-foreground hover:underline">
+                  Empleados
+                </Link>
+                <Link href="/admin" className="text-sm font-medium text-foreground hover:underline">
+                  Admin
+                </Link>
+              </>
             )}
-            <a href="/servicios" className="text-sm font-medium text-foreground hover:underline">
+            <Link href="/servicios" className="text-sm font-medium text-foreground hover:underline">
               Servicios
-            </a>
-            <a href="/capacitaciones" className="text-sm font-medium text-foreground hover:underline">
+            </Link>
+            <Link href="/capacitaciones" className="text-sm font-medium text-foreground hover:underline">
               Capacitaciones
-            </a>
-            <a href="/pentesting" className="text-sm font-medium text-foreground hover:underline">
+            </Link>
+            <Link href="/pentesting" className="text-sm font-medium text-foreground hover:underline">
               Pentesting
-            </a>
-            <a href="/soporte" className="text-sm font-medium text-foreground hover:underline">
+            </Link>
+            <Link href="/soporte" className="text-sm font-medium text-foreground hover:underline">
               Soporte
-            </a>
-            <a href="/calendario" className="text-sm font-medium text-foreground hover:underline">
+            </Link>
+            <Link href="/calendario" className="text-sm font-medium text-foreground hover:underline">
               Calendario
-            </a>
+            </Link>
             {(rol === "AUDITOR" || rol === "GERENTE_GENERAL" || rol === "CISO") && (
-              <a href="/informes-auditoria" className="text-sm font-medium text-foreground hover:underline">
+              <Link href="/informes-auditoria" className="text-sm font-medium text-foreground hover:underline">
                 Auditoría
-              </a>
+              </Link>
             )}
             <NotificacionDropdown />
             <span className="text-sm text-muted-foreground">
               {session.user.name}
             </span>
-            <a
+            <Link
               href="/api/auth/signout"
               className="text-sm text-muted-foreground hover:underline"
             >
               Cerrar sesión
-            </a>
+            </Link>
           </nav>
         </div>
       </header>

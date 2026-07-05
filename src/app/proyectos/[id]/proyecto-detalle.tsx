@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -1159,7 +1160,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                 {viendoDocId === d.id && (
                   <div className="mt-3 rounded-md overflow-hidden border border-border/50">
                     {d.url.startsWith("data:image/") ? (
-                      <img src={d.url} alt={d.nombreArchivo} className="max-w-full max-h-80 object-contain mx-auto" />
+                      <Image src={d.url} alt={d.nombreArchivo} width={640} height={320} className="max-w-full max-h-80 object-contain mx-auto" />
                     ) : d.url.startsWith("data:application/pdf") ? (
                       <iframe src={d.url} className="w-full h-80" title={d.nombreArchivo} />
                     ) : (

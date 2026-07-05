@@ -338,6 +338,15 @@ model TicketSoporte {
   @@map("tickets_soporte")
 }
 
+model Configuracion {
+  id    String @id @default(cuid())
+  clave String @unique
+  valor String
+  descripcion String?
+
+  @@map("configuracion")
+}
+
 model AuditLog {
   id         String    @id @default(cuid())
   accion     String

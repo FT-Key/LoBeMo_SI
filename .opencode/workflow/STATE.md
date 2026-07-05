@@ -22,10 +22,12 @@
 | US-016 | ✅ Done | feat/US-016-soporte-tecnico | PR #19 → dev | .opencode/workflow/history/US-016.md |
 | US-017 | ✅ Done | feat/US-016-soporte-tecnico | PR #19 → dev | .opencode/workflow/history/US-017.md |
 | US-018 | ✅ Done | feat/US-018-exportacion-pdf | PR #20 → dev | .opencode/workflow/history/US-018.md |
-| US-019 | ✅ Done | feat/US-019-calendario | (en creación) | .opencode/workflow/history/US-019.md |
+| US-019 | ✅ Done | feat/US-019-calendario | PR #21 → dev | .opencode/workflow/history/US-019.md |
+| US-020 | ✅ Done | feat/US-020-admin-panel | PR #22 → dev | .opencode/workflow/history/US-020.md |
+| US-022 | ✅ Done | — | Fixes aplicados directo a dev | .opencode/workflow/history/US-022.md |
 
 ## Project Status
-✅ 20 US completadas (US-001 a US-019). 1 restante (US-020) en backlog.
+✅ 22 US completadas (US-001 a US-022). Proyecto completo.
 
 ## Lint Results
 
@@ -40,18 +42,17 @@
 - **Motivo**: No existe script `typecheck` en `package.json`. Los permisos del entorno no permiten ejecutar `npx tsc --noEmit` directamente ni editar `package.json` para agregar el script temporalmente.
 - **Recomendación**: Agregar script `"typecheck": "tsc --noEmit"` en `package.json` para habilitar verificación de tipos.
 
-### Detalle de errores (no auto-fixables) — PRE-EXISTENTES (no son de US-015)
+### Issues corregidos por US-022
+✅ `dashboard/page.tsx` — Reemplazados `<a>` por `<Link />`
+✅ `informes-auditoria/route.ts` — Eliminado `ESTADOS_VALIDOS` no usado
+✅ `proyecto-detalle.tsx` — Reemplazado `<img>` por `<Image />`
+✅ `capacitacion-detalle.tsx` — Eliminados `ESTADO_BADGES` y `sessionUserId`
+✅ `hallazgo-detalle.tsx` — Eliminado `esPentester`
+✅ `package.json` — Agregado script `typecheck`
+✅ `typecheck` — Pasa sin errores
 
+### Issues restantes (pre-existentes, fuera del alcance de US-022)
 | Archivo | Línea | Tipo | Mensaje |
 |---------|-------|------|---------|
-| `src/app/dashboard/page.tsx` | 92 | error | Usar `<a>` para navegar a `/proyectos/`. Usar `<Link />` de `next/link` |
-| `src/app/dashboard/page.tsx` | 107 | error | Usar `<a>` para navegar a `/informes-auditoria/`. Usar `<Link />` de `next/link` |
-| `src/app/dashboard/page.tsx` | 115 | error | Usar `<a>` para navegar a `/api/auth/signout/`. Usar `<Link />` de `next/link` |
-| `src/app/api/informes-auditoria/route.ts` | 5 | warning | `ESTADOS_VALIDOS` asignado pero nunca usado |
-| `src/app/proyectos/[id]/proyecto-detalle.tsx` | 1162 | warning | `<img>` en vez de `<Image />` de `next/image` |
-| `src/components/capacitaciones/capacitacion-detalle.tsx` | 6 | warning | `ESTADO_BADGES` asignado pero nunca usado |
-| `src/components/capacitaciones/capacitacion-detalle.tsx` | 53 | warning | `sessionUserId` definido pero nunca usado |
-| `src/components/pentesting/hallazgo-detalle.tsx` | 62 | warning | `esPentester` asignado pero nunca usado |
-
-### Detalle de errores (no auto-fixables) — DE US-015
-- Ninguno. Los 3 archivos de US-015 pasaron lint sin errores ni warnings.
+| `src/app/api/exportar/informe-auditoria/[id]/route.ts` | 96,101,106,111 | error | Unexpected any. Specify a different type |
+| `src/app/api/exportar/proyecto/[id]/route.ts` | 3 | warning | `NextResponse` defined but never used |
