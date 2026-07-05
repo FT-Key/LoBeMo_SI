@@ -86,6 +86,7 @@ export async function GET(
   <div class="section">${informe.criteriosAuditoria.replace(/\n/g, "<br>")}</div>
 
   ${(() => {
+    type JsonItem = { descripcion?: string; tipo?: string; severidad?: string }
     const hallazgos = typeof informe.hallazgos === "string" ? JSON.parse(informe.hallazgos) : informe.hallazgos
     const noConformidades = typeof informe.noConformidades === "string" ? JSON.parse(informe.noConformidades) : informe.noConformidades
     const observaciones = typeof informe.observaciones === "string" ? JSON.parse(informe.observaciones) : informe.observaciones
@@ -93,22 +94,22 @@ export async function GET(
     return `
     <h2>Hallazgos</h2>
     ${Array.isArray(hallazgos) && hallazgos.length > 0
-      ? `<table><tr><th>#</th><th>Hallazgo</th><th>Tipo</th><th>Severidad</th></tr>${hallazgos.map((h: any, i: number) => `<tr><td>${i + 1}</td><td>${h.descripcion ?? h}</td><td>${h.tipo ?? "—"}</td><td>${h.severidad ?? "—"}</td></tr>`).join("")}</table>`
+      ? `<table><tr><th>#</th><th>Hallazgo</th><th>Tipo</th><th>Severidad</th></tr>${hallazgos.map((h: JsonItem, i: number) => `<tr><td>${i + 1}</td><td>${h.descripcion ?? h}</td><td>${h.tipo ?? "—"}</td><td>${h.severidad ?? "—"}</td></tr>`).join("")}</table>`
       : "<p>Sin hallazgos registrados.</p>"}
 
     <h2>No Conformidades</h2>
     ${Array.isArray(noConformidades) && noConformidades.length > 0
-      ? `<ul>${noConformidades.map((nc: any) => `<li>${nc.descripcion ?? nc}</li>`).join("")}</ul>`
+      ? `<ul>${noConformidades.map((nc: JsonItem) => `<li>${nc.descripcion ?? nc}</li>`).join("")}</ul>`
       : "<p>Sin no conformidades registradas.</p>"}
 
     <h2>Observaciones</h2>
     ${Array.isArray(observaciones) && observaciones.length > 0
-      ? `<ul>${observaciones.map((o: any) => `<li>${o.descripcion ?? o}</li>`).join("")}</ul>`
+      ? `<ul>${observaciones.map((o: JsonItem) => `<li>${o.descripcion ?? o}</li>`).join("")}</ul>`
       : "<p>Sin observaciones registradas.</p>"}
 
     <h2>Recomendaciones</h2>
     ${Array.isArray(recomendacionesRef) && recomendacionesRef.length > 0
-      ? `<ul>${recomendacionesRef.map((r: any) => `<li>${r.descripcion ?? r}</li>`).join("")}</ul>`
+      ? `<ul>${recomendacionesRef.map((r: JsonItem) => `<li>${r.descripcion ?? r}</li>`).join("")}</ul>`
       : "<p>Sin recomendaciones registradas.</p>"}`
   })()}
 

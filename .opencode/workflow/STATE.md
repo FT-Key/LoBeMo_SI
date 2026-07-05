@@ -24,10 +24,13 @@
 | US-018 | ✅ Done | feat/US-018-exportacion-pdf | PR #20 → dev | .opencode/workflow/history/US-018.md |
 | US-019 | ✅ Done | feat/US-019-calendario | PR #21 → dev | .opencode/workflow/history/US-019.md |
 | US-020 | ✅ Done | feat/US-020-admin-panel | PR #22 → dev | .opencode/workflow/history/US-020.md |
-| US-022 | ✅ Done | — | Fixes aplicados directo a dev | .opencode/workflow/history/US-022.md |
+| US-022 | ✅ Done | feat/US-022-quality-fixes | PR #23 → dev | .opencode/workflow/history/US-022.md |
+| US-023 | ✅ Done | feat/US-023-lint-export | PR #24 → dev | .opencode/workflow/history/US-023.md |
 
 ## Project Status
-✅ 22 US completadas (US-001 a US-022). Proyecto completo.
+✅ 23 US completadas (US-001 a US-023). Todas completadas.
+✅ Lint: 0 errores, 0 warnings.
+✅ Typecheck: disponible y pasa sin errores.
 
 ## Lint Results
 
@@ -51,8 +54,8 @@
 ✅ `package.json` — Agregado script `typecheck`
 ✅ `typecheck` — Pasa sin errores
 
-### Issues restantes (pre-existentes, fuera del alcance de US-022)
-| Archivo | Línea | Tipo | Mensaje |
-|---------|-------|------|---------|
-| `src/app/api/exportar/informe-auditoria/[id]/route.ts` | 96,101,106,111 | error | Unexpected any. Specify a different type |
-| `src/app/api/exportar/proyecto/[id]/route.ts` | 3 | warning | `NextResponse` defined but never used |
+### Issues corregidos por US-023
+✅ `exportar/informe-auditoria/[id]/route.ts` — Reemplazados `any` por tipo `JsonItem`
+✅ `exportar/proyecto/[id]/route.ts` — Eliminado import `NextResponse` no usado
+✅ `lint` — 0 errores, 0 warnings
+✅ `typecheck` — 0 errores

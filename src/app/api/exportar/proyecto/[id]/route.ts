@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
-import { NextResponse } from "next/server"
+
 
 const ESTADO_LABELS: Record<string, string> = {
   RELEVAMIENTO: "Relevamiento",
