@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 
-const ESTADOS_VALIDOS = ["BORRADOR", "COMPLETADO"]
-
 export async function GET(request: NextRequest) {
   try {
     const session = await auth()

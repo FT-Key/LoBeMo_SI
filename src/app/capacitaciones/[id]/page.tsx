@@ -74,7 +74,6 @@ export default async function CapacitacionDetallePage({
         <CapacitacionDetalle
           capacitacion={JSON.parse(JSON.stringify(capacitacion))}
           sessionRol={session.user.rol}
-          sessionUserId={session.user.id}
         />
       </main>
     </div>

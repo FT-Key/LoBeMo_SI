@@ -3,13 +3,6 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
-const ESTADO_BADGES: Record<string, string> = {
-  PLANIFICADA: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
-  EN_CURSO: "bg-yellow-500/15 text-yellow-400 border border-yellow-500/25",
-  COMPLETADA: "bg-green-500/15 text-green-400 border border-green-500/25",
-  CANCELADA: "bg-red-500/15 text-red-400 border border-red-500/25",
-}
-
 const ESTADO_LABELS: Record<string, string> = {
   PLANIFICADA: "Planificada",
   EN_CURSO: "En curso",
@@ -50,11 +43,9 @@ type Capacitacion = {
 export function CapacitacionDetalle({
   capacitacion: initialData,
   sessionRol,
-  sessionUserId,
 }: {
   capacitacion: Capacitacion
   sessionRol: string
-  sessionUserId: string
 }) {
   const router = useRouter()
   const [capacitacion, setCapacitacion] = useState<Capacitacion>(initialData)
