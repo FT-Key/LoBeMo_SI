@@ -1,9 +1,9 @@
 # Workflow State
 
 ## Current US
-- **ID**: —
-- **Status**: —
-- **Phase**: —
+- **ID**: US-015
+- **Status**: ✅ Done
+- **Phase**: F6 — Trello Done
 
 ## History
 | US | Status | Branch | PR | Detail |
@@ -23,9 +23,39 @@
 | US-012 | ✅ Done | feat/US-012-informes-auditoria | PR #15 → dev | .opencode/workflow/history/US-012.md |
 | US-013 | ✅ Done | — | Quality fixes applied to dev | .opencode/workflow/history/US-013.md |
 | US-014 | ✅ Done | feat/US-014-hallazgos-pentesting | PR #17 → dev | .opencode/workflow/history/US-014.md |
+| US-015 | ✅ Done | feat/US-015-audit-log | PR → dev | .opencode/workflow/history/US-015.md |
 
 ## Project Status
-✅ 15 US completadas (US-001 a US-014). 6 restantes (US-015 a US-020) en backlog.
+✅ 16 US completadas (US-001 a US-015). 5 restantes (US-016 a US-020) en backlog.
 
 ## Next Steps
-- Implementar US restantes del backlog: US-015 a US-020.
+- Implementar US restantes del backlog: US-016 a US-020.
+
+## Lint Results
+
+### Linter
+- **Errores**: 3
+- **Warnings**: 5
+- **Auto-fix aplicado**: si (se ejecutó `--fix`, no se reportaron cambios)
+- **Archivos US-015**: 0 errores, 0 warnings — los 3 archivos pasaron lint sin problemas
+
+### Typecheck
+- **Errores**: No se pudo ejecutar
+- **Motivo**: No existe script `typecheck` en `package.json`. Los permisos del entorno no permiten ejecutar `npx tsc --noEmit` directamente ni editar `package.json` para agregar el script temporalmente.
+- **Recomendación**: Agregar script `"typecheck": "tsc --noEmit"` en `package.json` para habilitar verificación de tipos.
+
+### Detalle de errores (no auto-fixables) — PRE-EXISTENTES (no son de US-015)
+
+| Archivo | Línea | Tipo | Mensaje |
+|---------|-------|------|---------|
+| `src/app/dashboard/page.tsx` | 92 | error | Usar `<a>` para navegar a `/proyectos/`. Usar `<Link />` de `next/link` |
+| `src/app/dashboard/page.tsx` | 107 | error | Usar `<a>` para navegar a `/informes-auditoria/`. Usar `<Link />` de `next/link` |
+| `src/app/dashboard/page.tsx` | 115 | error | Usar `<a>` para navegar a `/api/auth/signout/`. Usar `<Link />` de `next/link` |
+| `src/app/api/informes-auditoria/route.ts` | 5 | warning | `ESTADOS_VALIDOS` asignado pero nunca usado |
+| `src/app/proyectos/[id]/proyecto-detalle.tsx` | 1162 | warning | `<img>` en vez de `<Image />` de `next/image` |
+| `src/components/capacitaciones/capacitacion-detalle.tsx` | 6 | warning | `ESTADO_BADGES` asignado pero nunca usado |
+| `src/components/capacitaciones/capacitacion-detalle.tsx` | 53 | warning | `sessionUserId` definido pero nunca usado |
+| `src/components/pentesting/hallazgo-detalle.tsx` | 62 | warning | `esPentester` asignado pero nunca usado |
+
+### Detalle de errores (no auto-fixables) — DE US-015
+- Ninguno. Los 3 archivos de US-015 pasaron lint sin errores ni warnings.
