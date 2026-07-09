@@ -1,9 +1,11 @@
 import { prisma } from "@/lib/prisma"
 import { requireGerenteGeneral } from "@/lib/auth-helpers"
 import Link from "next/link"
+import { Navbar } from "@/components/navbar"
+import { EmpleadosContent } from "./empleados-content"
 
 export default async function EmpleadosPage() {
-  await requireGerenteGeneral()
+  const session = await requireGerenteGeneral()
 
   const empleados = await prisma.empleado.findMany({
     orderBy: { createdAt: "desc" },
@@ -11,22 +13,7 @@ export default async function EmpleadosPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold">LoBeMo</h1>
-          <nav className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-sm font-medium hover:underline">
-              Dashboard
-            </Link>
-            <Link
-              href="/api/auth/signout"
-              className="text-sm text-muted-foreground hover:underline"
-            >
-              Cerrar sesión
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/empleados" />
 
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
@@ -39,45 +26,7 @@ export default async function EmpleadosPage() {
           </Link>
         </div>
 
-        <div className="rounded-md border">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b bg-muted/50">
-                <th className="text-left p-3 text-sm font-medium">Nombre</th>
-                <th className="text-left p-3 text-sm font-medium">Email</th>
-                <th className="text-left p-3 text-sm font-medium">Rol</th>
-                <th className="text-left p-3 text-sm font-medium">Área</th>
-                <th className="text-left p-3 text-sm font-medium">Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {empleados.map((emp) => (
-                <tr key={emp.id} className="border-b last:border-0">
-                  <td className="p-3 text-sm">
-                    {emp.nombre} {emp.apellido}
-                  </td>
-                  <td className="p-3 text-sm">{emp.email}</td>
-                  <td className="p-3 text-sm">{emp.rol}</td>
-                  <td className="p-3 text-sm">{emp.area}</td>
-                  <td className="p-3 text-sm">
-                    {emp.activo ? (
-                      <span className="text-green-600">Activo</span>
-                    ) : (
-                      <span className="text-red-600">Inactivo</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {empleados.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="p-6 text-center text-sm text-muted-foreground">
-                    No hay empleados registrados
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <EmpleadosContent empleados={JSON.parse(JSON.stringify(empleados))} />
       </main>
     </div>
   )

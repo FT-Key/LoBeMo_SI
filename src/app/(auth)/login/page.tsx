@@ -1,6 +1,11 @@
 import { LoginForm } from "./login-form"
 
-export default function LoginPage() {
+export default async function LoginPage(props: { searchParams?: Promise<{ error?: string }> }) {
+  const searchParams = await props.searchParams ?? {}
+  const errorMessage = searchParams.error === "CredentialsSignin"
+    ? "Email o contraseña incorrectos"
+    : null
+
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-sm space-y-6 px-4">
@@ -10,7 +15,7 @@ export default function LoginPage() {
             Iniciar sesión en el sistema
           </p>
         </div>
-        <LoginForm />
+        <LoginForm externalError={errorMessage} />
       </div>
     </div>
   )

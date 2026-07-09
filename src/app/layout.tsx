@@ -1,20 +1,27 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
+import { QueryProvider } from "@/lib/query-provider";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
+  variable: "--font-heading",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-body",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
   title: "LoBeMo Seguridad Informática",
-  description: "Sistema interno de gestión de proyectos de ciberseguridad",
+  description:
+    "Sistema interno de gestión de proyectos de ciberseguridad para LoBeMo — Tucumán, NOA",
 };
 
 export default function RootLayout({
@@ -25,10 +32,10 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      className={`dark ${jakarta.variable} ${inter.variable} ${mono.variable}`}
     >
-      <body className="min-h-screen bg-background font-sans text-foreground">
-        {children}
+      <body className="min-h-screen bg-background font-body text-foreground antialiased">
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );

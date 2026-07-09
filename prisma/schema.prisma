@@ -80,8 +80,27 @@ model Proyecto {
   tareas    Tarea[]
   hitos     Hito[]
   documentos Documento[]
+  informesAuditoria InformeAuditoria[]
+  historialEstados HistorialEstado[]
+  capacitaciones Capacitacion[]
+  hallazgosPentesting HallazgoPentesting[]
+  ticketsSoporte TicketSoporte[]
 
   @@map("proyectos")
+}
+
+model HistorialEstado {
+  id            String   @id @default(cuid())
+  proyectoId    String   @map("proyecto_id")
+  estadoAnterior String? @map("estado_anterior")
+  estadoNuevo   String   @map("estado_nuevo")
+  empleadoId    String?  @map("empleado_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  proyecto Proyecto  @relation(fields: [proyectoId], references: [id])
+  empleado Empleado? @relation(fields: [empleadoId], references: [id])
+
+  @@map("historial_estados")
 }
 
 model Propuesta {
@@ -115,7 +134,12 @@ model Empleado {
   updatedAt    DateTime     @updatedAt @map("updated_at")
   asignaciones Asignacion[]
   notificaciones Notificacion[]
+  informesAuditoria InformeAuditoria[]
   auditLogs    AuditLog[]
+  historialEstados HistorialEstado[]
+  hallazgosPentesting HallazgoPentesting[]
+  ticketsCreados TicketSoporte[] @relation("CreadorTicket")
+  ticketsAsignados TicketSoporte[] @relation("AsignadoTicket")
 
   @@map("empleados")
 }
@@ -193,6 +217,7 @@ model Notificacion {
   titulo     String
   mensaje    String
   tipo       String
+  link       String?
   leida      Boolean  @default(false)
   empleadoId String   @map("empleado_id")
   createdAt  DateTime @default(now()) @map("created_at")
@@ -201,6 +226,125 @@ model Notificacion {
   empleado Empleado @relation(fields: [empleadoId], references: [id])
 
   @@map("notificaciones")
+}
+
+model InformeAuditoria {
+  id                  String   @id @default(cuid())
+  proyectoId          String   @map("proyecto_id")
+  creadorId           String   @map("creador_id")
+  alcance             String
+  criteriosAuditoria  String   @map("criterios_auditoria")
+  hallazgos           Json     @default("[]")
+  noConformidades     Json     @default("[]") @map("no_conformidades")
+  observaciones       Json     @default("[]")
+  recomendaciones     Json     @default("[]")
+  estado              String   @default("BORRADOR")
+  fechaEmision        DateTime? @map("fecha_emision")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  proyecto Proyecto @relation(fields: [proyectoId], references: [id])
+  creador  Empleado @relation(fields: [creadorId], references: [id])
+
+  @@map("informes_auditoria")
+}
+
+model Capacitacion {
+  id            String   @id @default(cuid())
+  proyectoId    String?  @map("proyecto_id")
+  titulo        String
+  temario       String
+  duracionHoras Int      @map("duracion_horas")
+  modalidad     String   @default("PRESENCIAL")
+  fechaInicio   DateTime @map("fecha_inicio")
+  fechaFin      DateTime? @map("fecha_fin")
+  estado        String   @default("PLANIFICADA")
+  materiales    String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  proyecto  Proyecto?             @relation(fields: [proyectoId], references: [id])
+  asistentes AsistenteCapacitacion[]
+
+  @@map("capacitaciones")
+}
+
+model AsistenteCapacitacion {
+  id              String   @id @default(cuid())
+  capacitacionId  String   @map("capacitacion_id")
+  nombreAsistente String   @map("nombre_asistente")
+  emailAsistente  String   @map("email_asistente")
+  organizacion    String?
+  evaluacion      Int?
+  completado      Boolean  @default(false)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  capacitacion Capacitacion @relation(fields: [capacitacionId], references: [id])
+  certificado  CertificadoCapacitacion?
+
+  @@map("asistentes_capacitacion")
+}
+
+model CertificadoCapacitacion {
+  id                String   @id @default(cuid())
+  asistenteId       String   @unique @map("asistente_id")
+  codigoCertificado String   @unique @map("codigo_certificado")
+  fechaEmision      DateTime @default(now()) @map("fecha_emision")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  asistente AsistenteCapacitacion @relation(fields: [asistenteId], references: [id])
+
+  @@map("certificados_capacitacion")
+}
+
+model HallazgoPentesting {
+  id            String   @id @default(cuid())
+  proyectoId    String   @map("proyecto_id")
+  creadorId     String   @map("creador_id")
+  titulo        String
+  descripcion   String
+  severidad     String   @default("MEDIA")
+  evidencia     String?
+  recomendacion String?
+  estado        String   @default("PENDIENTE")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  proyecto Proyecto @relation(fields: [proyectoId], references: [id])
+  creador  Empleado @relation(fields: [creadorId], references: [id])
+
+  @@map("hallazgos_pentesting")
+}
+
+model TicketSoporte {
+  id          String    @id @default(cuid())
+  titulo      String
+  descripcion String?
+  prioridad   String    @default("MEDIA")
+  estado      String    @default("ABIERTO")
+  categoria   String?
+  clienteNombre String? @map("cliente_nombre")
+  proyectoId  String?   @map("proyecto_id")
+  creadorId   String    @map("creador_id")
+  asignadoAId String?   @map("asignado_a_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  proyecto  Proyecto? @relation(fields: [proyectoId], references: [id])
+  creador   Empleado  @relation("CreadorTicket", fields: [creadorId], references: [id])
+  asignadoA Empleado? @relation("AsignadoTicket", fields: [asignadoAId], references: [id])
+
+  @@map("tickets_soporte")
+}
+
+model Configuracion {
+  id    String @id @default(cuid())
+  clave String @unique
+  valor String
+  descripcion String?
+
+  @@map("configuracion")
 }
 
 model AuditLog {
