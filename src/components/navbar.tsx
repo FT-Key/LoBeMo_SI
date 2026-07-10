@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 
 type NavbarProps = {
@@ -29,7 +30,13 @@ export function Navbar({ name, rol, currentPath }: NavbarProps) {
   return (
     <header className="border-b border-border">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-foreground">LoBeMo</h1>
+        <Image
+          src="/lobemo-mini.png"
+          alt="LoBeMo"
+          width={100}
+          height={28}
+          className="h-7 w-auto"
+        />
         <nav className="flex items-center gap-4">
           {items.map((item) => {
             const isActive =

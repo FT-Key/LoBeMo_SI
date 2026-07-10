@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import { QueryProvider } from "@/lib/query-provider";
 import "./globals.css";
 
-const jakarta = Plus_Jakarta_Sans({
+const display = Bricolage_Grotesque({
   subsets: ["latin"],
-  variable: "--font-heading",
+  variable: "--font-display",
+  weight: ["700", "800"],
 });
 
-const inter = Inter({
+const body = Hanken_Grotesk({
   subsets: ["latin"],
   variable: "--font-body",
+  weight: ["400", "500", "600", "700"],
 });
 
 const mono = JetBrains_Mono({
@@ -21,7 +23,10 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "LoBeMo Seguridad Informática",
   description:
-    "Sistema interno de gestión de proyectos de ciberseguridad para LoBeMo — Tucumán, NOA",
+    "Gestión centralizada de ciberseguridad en el NOA — Clientes, proyectos, tareas y más en un solo lugar.",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
@@ -32,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`dark ${jakarta.variable} ${inter.variable} ${mono.variable}`}
+      className={`dark ${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body className="min-h-screen bg-background font-body text-foreground antialiased">
         <QueryProvider>{children}</QueryProvider>

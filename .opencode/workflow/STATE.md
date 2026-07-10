@@ -29,9 +29,11 @@
 | US-024 | ✅ Done | feat/US-024-middleware-landing | PR #25 → dev | .opencode/workflow/history/US-024.md |
 | US-025 | ✅ Done | feat/US-025-csp-unsafe-inline | PR #26 → dev | .opencode/workflow/history/US-025.md |
 | US-026 | ✅ Done | feat/US-026-login-session-fix | PR #27 → dev | .opencode/workflow/history/US-026.md |
+| US-027 | ✅ Done | feat/US-027-ui-unificacion | (en branch, pendiente PR → dev) | .opencode/workflow/history/US-027.md |
+| US-028 | ✅ Done | feat/US-028-landing-redesign | (en branch, pendiente PR → dev) | .opencode/workflow/history/US-028.md |
  
 ## Project Status
-✅ 26 US completadas (US-001 a US-026). Todas completadas.
+✅ 27 US completadas (US-001 a US-028). Todas completadas.
 ✅ Lint: 0 errores, 0 warnings.
 ✅ Typecheck: disponible y pasa sin errores.
 
