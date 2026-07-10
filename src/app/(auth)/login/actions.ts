@@ -50,12 +50,15 @@ export async function loginAction(
 
   console.log("[loginAction] encodedToken length:", encodedToken.length)
 
+  const secure = process.env.AUTH_URL?.startsWith("https://") ?? process.env.NODE_ENV === "production"
+  const cookieName = secure ? "__Secure-authjs.session-token" : "authjs.session-token"
+
   const cookieJar = await cookies()
-  cookieJar.set("authjs.session-token", encodedToken, {
+  cookieJar.set(cookieName, encodedToken, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
-    secure: false,
+    secure,
     maxAge: 30 * 24 * 60 * 60,
   })
 
