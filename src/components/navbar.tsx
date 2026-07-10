@@ -31,11 +31,11 @@ export function Navbar({ name, rol, currentPath }: NavbarProps) {
     <header className="border-b border-border">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Image
-          src="/lobemo-mini.png"
+          src="/lobemo-logo.png"
           alt="LoBeMo"
-          width={100}
-          height={28}
-          className="h-7 w-auto"
+          width={120}
+          height={32}
+          className="h-8 w-auto"
         />
         <nav className="flex items-center gap-4">
           {items.map((item) => {

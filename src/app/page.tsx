@@ -23,7 +23,7 @@ export default async function Home() {
       <ServicesSection />
       <StatsSection />
       <FeaturesSection />
-      <CtaSection />
+      <CtaSection hasSuperAdmin={!!hasSuperAdmin} />
       <FooterSection />
     </div>
   )
