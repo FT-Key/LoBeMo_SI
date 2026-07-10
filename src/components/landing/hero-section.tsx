@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -31,11 +33,11 @@ export function HeroSection({ hasSuperAdmin }: HeroSectionProps) {
         <div className="flex w-full max-w-6xl items-center justify-between rounded-full border border-border/40 bg-background/60 px-5 py-2.5 backdrop-blur-xl transition-all duration-500">
           <div className="flex items-center">
             <Image
-              src="/lobemo-mini.png"
+              src="/lobemo-logo.png"
               alt="LoBeMo"
-              width={100}
-              height={28}
-              className="h-7 w-auto"
+              width={140}
+              height={36}
+              className="h-8 w-auto"
               priority
             />
           </div>

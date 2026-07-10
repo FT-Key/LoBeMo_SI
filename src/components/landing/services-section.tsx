@@ -1,3 +1,5 @@
+"use client";
+
 import { ScrollReveal } from "@/lib/use-scroll-reveal";
 import { motion } from "framer-motion";
 import {

@@ -31,9 +31,10 @@
 | US-026 | ✅ Done | feat/US-026-login-session-fix | PR #27 → dev | .opencode/workflow/history/US-026.md |
 | US-027 | ✅ Done | feat/US-027-ui-unificacion | PR #29 → dev, PR #30 → main | .opencode/workflow/history/US-027.md |
 | US-028 | ✅ Done | feat/US-027-ui-unificacion | PR #29 → dev, PR #30 → main | .opencode/workflow/history/US-028.md |
+| US-029 | ✅ Done | feat/US-029-landing-client-fixes | TBD | .opencode/workflow/history/US-029.md |
 
 ## Project Status
-✅ 27 US completadas (US-001 a US-028). Todas completadas.
+✅ 28 US completadas (US-001 a US-029). Todas completadas.
 ✅ Lint: 0 errores, 0 warnings.
 ✅ Typecheck: disponible y pasa sin errores.
 

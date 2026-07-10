@@ -1,3 +1,5 @@
+"use client";
+
 import { ScrollReveal } from "@/lib/use-scroll-reveal";
 import { motion } from "framer-motion";
 import { ShieldCheck, Gauge, Lock } from "lucide-react";
@@ -69,12 +71,13 @@ export function FeaturesSection() {
           {features.map((feature, idx) => (
             <motion.div
               key={feature.title}
+              className="h-full"
               variants={{
                 hidden: { opacity: 0, y: 30 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
               }}
             >
-              <ScrollReveal delay={idx * 100}>
+              <ScrollReveal delay={idx * 100} className="h-full">
               <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/40 bg-surface/60 backdrop-blur-sm transition-all duration-500 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10">
                 <div
                   className={`absolute inset-0 ${
