@@ -41,17 +41,17 @@ export async function loginAction(
     picture: null,
   }
 
+  const secure = process.env.AUTH_URL?.startsWith("https://") ?? process.env.NODE_ENV === "production"
+  const cookieName = secure ? "__Secure-authjs.session-token" : "authjs.session-token"
+
   const encodedToken = await encode({
     secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET ?? "",
-    salt: "authjs.session-token",
+    salt: cookieName,
     token,
     maxAge: 30 * 24 * 60 * 60,
   })
 
   console.log("[loginAction] encodedToken length:", encodedToken.length)
-
-  const secure = process.env.AUTH_URL?.startsWith("https://") ?? process.env.NODE_ENV === "production"
-  const cookieName = secure ? "__Secure-authjs.session-token" : "authjs.session-token"
 
   const cookieJar = await cookies()
   cookieJar.set(cookieName, encodedToken, {

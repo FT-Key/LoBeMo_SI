@@ -2,11 +2,13 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
 import { loginSchema, type LoginFormData } from "@/shared/validation"
 import { loginAction } from "./actions"
 import { useTransition, useState } from "react"
 
 export function LoginForm({ externalError }: { externalError: string | null }) {
+  const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [redirecting, setRedirecting] = useState(false)
   const { register, handleSubmit, formState: { errors }, setError } = useForm<LoginFormData>({
@@ -22,7 +24,7 @@ export function LoginForm({ externalError }: { externalError: string | null }) {
       const result = await loginAction(null, formData)
       if (result.success) {
         setRedirecting(true)
-        window.location.href = "/dashboard"
+        router.push("/dashboard")
       } else {
         setError("root", { message: result.error || "Error al iniciar sesión" })
       }
