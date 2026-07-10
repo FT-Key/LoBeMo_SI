@@ -34,6 +34,7 @@
 | US-029 | ✅ Done | feat/US-029-v2 | Merge directo → dev, Merge directo → main | .opencode/workflow/history/US-029.md |
 | US-030 | ✅ Done | feat/US-030-form-validations | Merge directo → dev, Merge directo → main | .opencode/workflow/history/US-030.md |
 | US-031 | ✅ Done | feat/US-031-login-secure-cookie + fix/US-031-salt-router | PR #31 → dev, PR #33 → dev, PR #32 → main, PR #34 → main | .opencode/workflow/history/US-031.md |
+
 ## Project Status
 ✅ 30 US completadas (US-001 a US-031). Todas completadas.
 ✅ Lint: 0 errores, 0 warnings.
