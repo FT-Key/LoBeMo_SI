@@ -1,4 +1,5 @@
 import { ScrollReveal } from "@/lib/use-scroll-reveal";
+import { motion } from "framer-motion";
 import { ShieldCheck, Gauge, Lock } from "lucide-react";
 
 const features = [
@@ -58,9 +59,22 @@ export function FeaturesSection() {
           </div>
         </ScrollReveal>
 
-        <div className="grid gap-8 md:grid-cols-3">
+        <motion.div
+          className="grid gap-8 md:grid-cols-3"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={{ visible: { transition: { staggerChildren: 0.15 } } }}
+        >
           {features.map((feature, idx) => (
-            <ScrollReveal key={feature.title} delay={idx * 100}>
+            <motion.div
+              key={feature.title}
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+              }}
+            >
+              <ScrollReveal delay={idx * 100}>
               <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/40 bg-surface/60 backdrop-blur-sm transition-all duration-500 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10">
                 <div
                   className={`absolute inset-0 ${
@@ -119,8 +133,9 @@ export function FeaturesSection() {
                 </div>
               </div>
             </ScrollReveal>
+          </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

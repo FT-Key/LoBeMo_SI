@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 const techStack = [
   "Next.js",
   "Prisma",
@@ -13,7 +15,13 @@ const techStack = [
 
 export function Marquee() {
   return (
-    <section className="relative overflow-hidden border-y border-border/30 py-6">
+    <motion.section
+      className="relative overflow-hidden border-y border-border/30 py-6"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+    >
       <div
         className="flex animate-marquee"
         style={{ "--marquee-duration": "28s" } as React.CSSProperties}
@@ -45,6 +53,6 @@ export function Marquee() {
           ))}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

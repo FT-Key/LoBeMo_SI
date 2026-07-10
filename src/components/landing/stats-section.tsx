@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ScrollReveal } from "@/lib/use-scroll-reveal";
+import { motion } from "framer-motion";
 
 const stats = [
   {
@@ -110,9 +111,22 @@ export function StatsSection() {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+        <motion.div
+          className="grid grid-cols-2 gap-6 md:grid-cols-4"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
+        >
           {stats.map((stat, idx) => (
-            <ScrollReveal key={stat.label} delay={idx * 100}>
+            <motion.div
+              key={stat.label}
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+              }}
+            >
+              <ScrollReveal delay={idx * 100}>
               <div className="group relative flex h-52 flex-col overflow-hidden rounded-2xl border border-border/30 bg-surface/40 backdrop-blur-sm transition-all duration-500 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/10 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
 
@@ -137,8 +151,9 @@ export function StatsSection() {
                 <div className="absolute bottom-0 left-1/2 h-1 w-0 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary to-transparent transition-all duration-500 group-hover:w-16" />
               </div>
             </ScrollReveal>
+          </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

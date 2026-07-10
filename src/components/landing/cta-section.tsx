@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ScrollReveal } from "@/lib/use-scroll-reveal";
+import { motion } from "framer-motion";
 import Link from "next/link";
 
 function ArgentinaClock() {
@@ -51,7 +52,13 @@ export function CtaSection({ hasSuperAdmin }: CtaSectionProps) {
       </div>
 
       <ScrollReveal>
-        <div className="relative mx-auto max-w-3xl text-center">
+        <motion.div
+          className="relative mx-auto max-w-3xl text-center"
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: "easeOut" as const }}
+        >
           <div className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-primary">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
             Próximo paso
@@ -98,7 +105,7 @@ export function CtaSection({ hasSuperAdmin }: CtaSectionProps) {
             <ArgentinaClock />
             <div className="h-px max-w-xs flex-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
           </div>
-        </div>
+        </motion.div>
       </ScrollReveal>
     </section>
   );

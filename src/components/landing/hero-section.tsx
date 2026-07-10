@@ -1,9 +1,20 @@
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 interface HeroSectionProps {
   hasSuperAdmin: boolean;
 }
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" as const } },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.2, delayChildren: 0.3 } },
+};
 
 export function HeroSection({ hasSuperAdmin }: HeroSectionProps) {
   return (
@@ -48,8 +59,13 @@ export function HeroSection({ hasSuperAdmin }: HeroSectionProps) {
       </nav>
 
       {/* Hero content — left aligned, 1/3 offset */}
-      <div className="relative z-10 flex flex-1 items-center px-4 pt-24 md:px-12 lg:px-20">
-        <div className="max-w-xl md:ml-[8%] lg:ml-[12%]">
+      <motion.div
+        className="relative z-10 flex flex-1 items-center px-4 pt-24 md:px-12 lg:px-20"
+        initial="hidden"
+        animate="visible"
+        variants={stagger}
+      >
+        <motion.div className="max-w-xl md:ml-[8%] lg:ml-[12%]" variants={fadeUp}>
           {/* Decorative accent line */}
           <div className="mb-8 flex items-center gap-4">
             <div className="h-px w-16 bg-primary/60" />
@@ -104,18 +120,23 @@ export function HeroSection({ hasSuperAdmin }: HeroSectionProps) {
               </Link>
             )}
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2">
+      <motion.div
+        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 0.8 }}
+      >
         <div className="flex flex-col items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Scroll</span>
           <div className="flex h-8 w-5 items-center justify-center rounded-full border-2 border-primary/40 p-1.5">
             <div className="h-1.5 w-1 animate-bounce rounded-full bg-primary" />
           </div>
         </div>
-      </div>
+      </motion.div>
     </header>
   );
 }

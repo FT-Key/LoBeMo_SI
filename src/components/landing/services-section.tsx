@@ -1,4 +1,5 @@
 import { ScrollReveal } from "@/lib/use-scroll-reveal";
+import { motion } from "framer-motion";
 import {
   Shield,
   Globe,
@@ -83,9 +84,22 @@ export function ServicesSection() {
           </div>
         </ScrollReveal>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <motion.div
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
+        >
           {services.map((service, idx) => (
-            <ScrollReveal key={service.title} delay={idx * 100}>
+            <motion.div
+              key={service.title}
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } },
+              }}
+            >
+              <ScrollReveal delay={idx * 100}>
               <div className="group relative h-full overflow-hidden rounded-2xl border border-border/40 bg-surface/60 backdrop-blur-sm transition-all duration-500 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10">
                 <div className="relative z-10 flex h-full flex-col p-8">
                   <div
@@ -124,8 +138,9 @@ export function ServicesSection() {
                 />
               </div>
             </ScrollReveal>
+          </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

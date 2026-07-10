@@ -1,9 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export function FooterSection() {
   return (
-    <footer className="relative overflow-hidden border-t border-border/30">
+    <motion.footer
+      className="relative overflow-hidden border-t border-border/30"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+    >
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-surface/50 to-background" />
 
       <div className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-20">
@@ -96,6 +103,6 @@ export function FooterSection() {
           </div>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 }
