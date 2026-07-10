@@ -87,9 +87,9 @@ export function FeaturesSection() {
                   } backdrop-blur-md`}
                 />
 
-                <div className="relative z-10 flex h-full flex-col p-8">
+                <div className="relative z-10 flex h-full flex-col p-6 md:p-8">
                   <div
-                    className={`mb-6 inline-flex h-16 w-16 items-center justify-center rounded-xl border transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 ${
+                    className={`mb-4 md:mb-6 inline-flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-xl border transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 ${
                       isPrimary(feature.accent)
                         ? "border-primary/30 bg-gradient-to-br from-primary/20 to-primary/5 text-primary"
                         : "border-accent/30 bg-gradient-to-br from-accent/20 to-accent/5 text-accent"

@@ -73,10 +73,10 @@ export function CtaSection({ hasSuperAdmin }: CtaSectionProps) {
             </span>
           </p>
 
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row sm:gap-4">
             <Link
               href="/login"
-              className="inline-flex h-13 w-full items-center justify-center rounded-xl bg-primary px-8 text-base font-bold text-primary-foreground transition-all hover:bg-primary-hover hover:shadow-2xl hover:shadow-primary/50 sm:w-auto"
+              className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-primary px-6 text-sm font-bold text-primary-foreground transition-all hover:bg-primary-hover hover:shadow-2xl hover:shadow-primary/50 sm:h-13 sm:w-auto sm:px-8 sm:text-base"
             >
               Acceder al sistema
               <span className="ml-2">→</span>
@@ -85,7 +85,7 @@ export function CtaSection({ hasSuperAdmin }: CtaSectionProps) {
             {!hasSuperAdmin && (
               <Link
                 href="/register"
-                className="inline-flex h-13 w-full items-center justify-center rounded-xl border-2 border-primary/40 px-8 text-base font-bold text-foreground backdrop-blur-sm transition-all hover:border-primary/60 hover:bg-primary/5 sm:w-auto"
+                className="inline-flex h-12 w-full items-center justify-center rounded-xl border-2 border-primary/40 px-6 text-sm font-bold text-foreground backdrop-blur-sm transition-all hover:border-primary/60 hover:bg-primary/5 sm:h-13 sm:w-auto sm:px-8 sm:text-base"
               >
                 Solicitar acceso
                 <span className="ml-2">→</span>

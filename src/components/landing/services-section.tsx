@@ -89,9 +89,9 @@ export function ServicesSection() {
           {services.map((service, idx) => (
             <ScrollReveal key={service.title} delay={idx * 100}>
               <div className="group relative h-full overflow-hidden rounded-2xl border border-border/40 bg-surface/60 backdrop-blur-sm transition-all duration-500 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10">
-                <div className="relative z-10 flex h-full flex-col p-8">
+                <div className="relative z-10 flex h-full flex-col p-6 md:p-8">
                   <div
-                    className={`mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl border transition-all group-hover:scale-110 group-hover:rotate-6 ${
+                    className={`mb-4 md:mb-6 inline-flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-xl border transition-all group-hover:scale-110 group-hover:rotate-6 ${
                       isAccent(service.accent)
                         ? "border-accent/30 bg-gradient-to-br from-accent/20 to-accent/5 text-accent"
                         : "border-primary/30 bg-gradient-to-br from-primary/20 to-primary/5 text-primary"
