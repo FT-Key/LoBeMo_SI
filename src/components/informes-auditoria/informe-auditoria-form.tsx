@@ -1,122 +1,77 @@
 "use client"
 
-import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
+import { createInformeSchema, type CreateInformeFormData } from "@/shared/validation"
 
 type Proyecto = { id: string; nombre: string }
 
 export function InformeAuditoriaForm({ proyectos }: { proyectos: Proyecto[] }) {
   const router = useRouter()
-  const [proyectoId, setProyectoId] = useState("")
-  const [alcance, setAlcance] = useState("")
-  const [criteriosAuditoria, setCriteriosAuditoria] = useState("")
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+  const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<CreateInformeFormData>({
+    resolver: zodResolver(createInformeSchema),
+    defaultValues: { proyectoId: "", alcance: "", criteriosAuditoria: "" },
+  })
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
-
-    if (!proyectoId) {
-      setError("Debe seleccionar un proyecto")
-      setLoading(false)
-      return
-    }
-
-    if (!alcance.trim()) {
-      setError("El alcance no puede estar vacío")
-      setLoading(false)
-      return
-    }
-
-    if (!criteriosAuditoria.trim()) {
-      setError("Los criterios de auditoría no pueden estar vacíos")
-      setLoading(false)
-      return
-    }
-
+  async function onSubmit(data: CreateInformeFormData) {
     try {
       const res = await fetch("/api/informes-auditoria", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ proyectoId, alcance: alcance.trim(), criteriosAuditoria: criteriosAuditoria.trim() }),
+        body: JSON.stringify(data),
       })
 
       if (!res.ok) {
         const err = await res.json()
-        setError(err.error || "Error al crear el informe")
-        setLoading(false)
+        setError("root", { message: err.error || "Error al crear el informe" })
         return
       }
 
       const informe = await res.json()
       router.push(`/informes-auditoria/${informe.id}`)
     } catch {
-      setError("Error de conexión")
-      setLoading(false)
+      setError("root", { message: "Error de conexión" })
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      {error && (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
+      {errors.root?.message && (
         <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
-          {error}
+          {errors.root.message}
         </div>
       )}
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Proyecto *</label>
-        <select
-          value={proyectoId}
-          onChange={(e) => setProyectoId(e.target.value)}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          required
-        >
+        <select {...register("proyectoId")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
           <option value="">Seleccionar proyecto...</option>
           {proyectos.map((p) => (
             <option key={p.id} value={p.id}>{p.nombre}</option>
           ))}
         </select>
         <p className="text-xs text-muted-foreground">Solo proyectos de tipo Auditoría ISO 27001</p>
+        {errors.proyectoId && <p className="text-xs text-destructive">{errors.proyectoId.message}</p>}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Alcance de la auditoría *</label>
-        <textarea
-          value={alcance}
-          onChange={(e) => setAlcance(e.target.value)}
-          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
-          placeholder="Describa el alcance de la auditoría..."
-          required
-        />
+        <textarea {...register("alcance")} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]" placeholder="Describa el alcance de la auditoría..." />
+        {errors.alcance && <p className="text-xs text-destructive">{errors.alcance.message}</p>}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Criterios de auditoría *</label>
-        <textarea
-          value={criteriosAuditoria}
-          onChange={(e) => setCriteriosAuditoria(e.target.value)}
-          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
-          placeholder="Describa los criterios utilizados para la auditoría..."
-          required
-        />
+        <textarea {...register("criteriosAuditoria")} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]" placeholder="Describa los criterios utilizados para la auditoría..." />
+        {errors.criteriosAuditoria && <p className="text-xs text-destructive">{errors.criteriosAuditoria.message}</p>}
       </div>
 
       <div className="flex gap-4">
-        <button
-          type="submit"
-          disabled={loading}
-          className="inline-flex h-10 items-center justify-center rounded-md bg-foreground px-6 text-sm font-medium text-background hover:bg-foreground/90 disabled:opacity-50"
-        >
-          {loading ? "Creando..." : "Crear informe"}
+        <button type="submit" disabled={isSubmitting} className="inline-flex h-10 items-center justify-center rounded-md bg-foreground px-6 text-sm font-medium text-background hover:bg-foreground/90 disabled:opacity-50">
+          {isSubmitting ? "Creando..." : "Crear informe"}
         </button>
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="inline-flex h-10 items-center justify-center rounded-md border border-input px-6 text-sm font-medium hover:bg-muted"
-        >
+        <button type="button" onClick={() => router.back()} className="inline-flex h-10 items-center justify-center rounded-md border border-input px-6 text-sm font-medium hover:bg-muted">
           Cancelar
         </button>
       </div>

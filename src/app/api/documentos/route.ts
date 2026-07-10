@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { createDocumentoSchema } from "@/shared/validation"
 
 const TIPOS_DOCUMENTO = [
   "INFORME_AUDITORIA",
@@ -25,10 +27,6 @@ const MIMES_PERMITIDOS = [
   "text/plain",
   "text/csv",
 ]
-
-function esTipoDocumentoValido(tipo: string): tipo is (typeof TIPOS_DOCUMENTO)[number] {
-  return TIPOS_DOCUMENTO.includes(tipo as (typeof TIPOS_DOCUMENTO)[number])
-}
 
 function validarMimeDataUrl(url: string): boolean {
   const match = url.match(/^data:([^;]+);/)
@@ -98,50 +96,30 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { proyectoId, tareaId, nombreArchivo, tipo, url } = body
+    const result = validateBody(createDocumentoSchema, body)
+    if (!result.success) return result.error
 
-    if (!proyectoId || !nombreArchivo || !tipo || !url) {
-      return NextResponse.json(
-        { error: "proyectoId, nombreArchivo, tipo y url son obligatorios" },
-        { status: 400 }
-      )
-    }
-
-    if (!esTipoDocumentoValido(tipo)) {
-      return NextResponse.json(
-        { error: `Tipo inválido. Debe ser: ${TIPOS_DOCUMENTO.join(", ")}` },
-        { status: 400 }
-      )
-    }
-
-    if (!validarMimeDataUrl(url)) {
+    if (!validarMimeDataUrl(result.data.url)) {
       return NextResponse.json(
         { error: "Tipo de archivo no soportado. Usa PDF, imágenes, Office o texto." },
         { status: 400 }
       )
     }
 
-    if (typeof nombreArchivo !== "string" || nombreArchivo.trim().length === 0 || nombreArchivo.length > 255) {
-      return NextResponse.json(
-        { error: "Nombre de archivo inválido" },
-        { status: 400 }
-      )
-    }
-
-    if (typeof url !== "string" || url.length > 20 * 1024 * 1024) {
+    if (result.data.url.length > 20 * 1024 * 1024) {
       return NextResponse.json(
         { error: "El archivo es demasiado grande (máx 10MB)" },
         { status: 400 }
       )
     }
 
-    const proyecto = await prisma.proyecto.findUnique({ where: { id: proyectoId } })
+    const proyecto = await prisma.proyecto.findUnique({ where: { id: result.data.proyectoId } })
     if (!proyecto) {
       return NextResponse.json({ error: "Proyecto no encontrado" }, { status: 404 })
     }
 
     const estaAsignado = await prisma.asignacion.findFirst({
-      where: { proyectoId, empleadoId: session.user.id },
+      where: { proyectoId: result.data.proyectoId, empleadoId: session.user.id },
     })
     const esCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
 
@@ -152,20 +130,20 @@ export async function POST(request: Request) {
       )
     }
 
-    if (tareaId) {
-      const tarea = await prisma.tarea.findUnique({ where: { id: tareaId } })
-      if (!tarea || tarea.proyectoId !== proyectoId) {
+    if (result.data.tareaId) {
+      const tarea = await prisma.tarea.findUnique({ where: { id: result.data.tareaId } })
+      if (!tarea || tarea.proyectoId !== result.data.proyectoId) {
         return NextResponse.json({ error: "Tarea no encontrada en este proyecto" }, { status: 400 })
       }
     }
 
     const documento = await prisma.documento.create({
       data: {
-        proyectoId,
-        tareaId: tareaId || null,
-        nombreArchivo: nombreArchivo.trim(),
-        tipo,
-        url,
+        proyectoId: result.data.proyectoId,
+        tareaId: result.data.tareaId || null,
+        nombreArchivo: result.data.nombreArchivo.trim(),
+        tipo: result.data.tipo,
+        url: result.data.url,
       },
     })
 
@@ -174,7 +152,7 @@ export async function POST(request: Request) {
         accion: "CREATE",
         entidad: "Documento",
         entidadId: documento.id,
-        detalle: { proyectoId, nombreArchivo: documento.nombreArchivo, tipo: documento.tipo },
+        detalle: { proyectoId: result.data.proyectoId, nombreArchivo: documento.nombreArchivo, tipo: documento.tipo },
         empleadoId: session.user.id,
       },
     })

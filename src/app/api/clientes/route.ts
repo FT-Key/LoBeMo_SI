@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { createClienteSchema } from "@/shared/validation"
 
 const SECTORES = [
   "SALUD", "CONTABLE_JURIDICO", "COMERCIAL", "LOGISTICA",
@@ -71,23 +73,10 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { razonSocial, cuit, emailContacto, telefono, direccion, sector } = body
+    const result = validateBody(createClienteSchema, body)
+    if (!result.success) return result.error
 
-    if (!razonSocial || !cuit) {
-      return NextResponse.json(
-        { error: "Razón social y CUIT son obligatorios" },
-        { status: 400 }
-      )
-    }
-
-    if (sector && !isValidSector(sector)) {
-      return NextResponse.json(
-        { error: "Sector inválido" },
-        { status: 400 }
-      )
-    }
-
-    const existing = await prisma.cliente.findUnique({ where: { cuit } })
+    const existing = await prisma.cliente.findUnique({ where: { cuit: result.data.cuit } })
     if (existing && existing.activo) {
       return NextResponse.json(
         { error: "Ya existe un cliente activo con ese CUIT" },
@@ -96,7 +85,14 @@ export async function POST(request: Request) {
     }
 
     const cliente = await prisma.cliente.create({
-      data: { razonSocial, cuit, emailContacto, telefono, direccion, sector },
+      data: {
+        razonSocial: result.data.razonSocial,
+        cuit: result.data.cuit,
+        emailContacto: result.data.emailContacto || null,
+        telefono: result.data.telefono || null,
+        direccion: result.data.direccion || null,
+        sector: result.data.sector || null,
+      },
     })
 
     await prisma.auditLog.create({
@@ -104,7 +100,7 @@ export async function POST(request: Request) {
         accion: "CREATE",
         entidad: "Cliente",
         entidadId: cliente.id,
-        detalle: { cuit, razonSocial },
+        detalle: { cuit: result.data.cuit, razonSocial: result.data.razonSocial },
         empleadoId: session.user.id,
       },
     })

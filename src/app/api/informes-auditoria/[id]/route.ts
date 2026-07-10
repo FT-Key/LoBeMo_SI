@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { updateInformeSchema } from "@/shared/validation"
 
 const ESTADOS_VALIDOS = ["BORRADOR", "COMPLETADO"]
 
@@ -63,7 +65,8 @@ export async function PATCH(
 
     const { id } = await params
     const body = await request.json()
-    const { alcance, criteriosAuditoria, hallazgos, noConformidades, observaciones, recomendaciones, estado } = body
+    const result = validateBody(updateInformeSchema, body)
+    if (!result.success) return result.error
 
     const informeExistente = await prisma.informeAuditoria.findUnique({
       where: { id },
@@ -91,41 +94,41 @@ export async function PATCH(
       )
     }
 
-    if (estado !== undefined && !ESTADOS_VALIDOS.includes(estado)) {
+    if (result.data.estado !== undefined && !ESTADOS_VALIDOS.includes(result.data.estado)) {
       return NextResponse.json(
         { error: `Estado inválido. Debe ser: ${ESTADOS_VALIDOS.join(", ")}` },
         { status: 400 }
       )
     }
 
-    const data: Record<string, unknown> = {}
-    if (alcance !== undefined) data.alcance = alcance.trim()
-    if (criteriosAuditoria !== undefined) data.criteriosAuditoria = criteriosAuditoria.trim()
-    if (hallazgos !== undefined) data.hallazgos = hallazgos
-    if (noConformidades !== undefined) data.noConformidades = noConformidades
-    if (observaciones !== undefined) data.observaciones = observaciones
-    if (recomendaciones !== undefined) data.recomendaciones = recomendaciones
-    if (estado !== undefined) {
-      data.estado = estado
-      if (estado === "COMPLETADO") {
-        data.fechaEmision = new Date()
+    const updateData: Record<string, unknown> = {}
+    if (result.data.alcance !== undefined) updateData.alcance = result.data.alcance.trim()
+    if (result.data.criteriosAuditoria !== undefined) updateData.criteriosAuditoria = result.data.criteriosAuditoria.trim()
+    if (result.data.hallazgos !== undefined) updateData.hallazgos = result.data.hallazgos
+    if (result.data.noConformidades !== undefined) updateData.noConformidades = result.data.noConformidades
+    if (result.data.observaciones !== undefined) updateData.observaciones = result.data.observaciones
+    if (result.data.recomendaciones !== undefined) updateData.recomendaciones = result.data.recomendaciones
+    if (result.data.estado !== undefined) {
+      updateData.estado = result.data.estado
+      if (result.data.estado === "COMPLETADO") {
+        updateData.fechaEmision = new Date()
       }
     }
 
-    if (Object.keys(data).length === 0) {
+    if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: "No hay campos para actualizar" }, { status: 400 })
     }
 
     const informeActualizado = await prisma.informeAuditoria.update({
       where: { id },
-      data,
+      data: updateData,
       include: {
         proyecto: { select: { id: true, nombre: true } },
         creador: { select: { id: true, nombre: true, apellido: true, rol: true } },
       },
     })
 
-    if (estado === "COMPLETADO" && informeExistente.estado !== "COMPLETADO") {
+    if (result.data.estado === "COMPLETADO" && informeExistente.estado !== "COMPLETADO") {
       const gerente = await prisma.empleado.findFirst({
         where: { rol: "GERENTE_GENERAL", activo: true },
       })
@@ -148,7 +151,7 @@ export async function PATCH(
         accion: "UPDATE",
         entidad: "InformeAuditoria",
         entidadId: id,
-        detalle: { cambios: Object.keys(data), estadoAnterior: informeExistente.estado },
+        detalle: { cambios: Object.keys(updateData), estadoAnterior: informeExistente.estado },
         empleadoId: session.user.id,
       },
     })

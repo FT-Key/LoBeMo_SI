@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { updateTicketSchema } from "@/shared/validation"
 
 const ESTADOS = ["ABIERTO", "EN_PROCESO", "RESUELTO", "CERRADO"]
 const PRIORIDADES = ["BAJA", "MEDIA", "ALTA", "CRITICA"]
@@ -63,82 +65,83 @@ export async function PATCH(
 
     const { id } = await params
     const body = await request.json()
-    const { titulo, descripcion, prioridad, categoria, clienteNombre, proyectoId, asignadoAId, estado } = body
+    const result = validateBody(updateTicketSchema, body)
+    if (!result.success) return result.error
 
     const existente = await prisma.ticketSoporte.findUnique({ where: { id } })
     if (!existente) {
       return NextResponse.json({ error: "Ticket no encontrado" }, { status: 404 })
     }
 
-    const data: Record<string, unknown> = {}
+    const updateData: Record<string, unknown> = {}
 
-    if (titulo !== undefined) {
-      if (!titulo.trim()) {
+    if (result.data.titulo !== undefined) {
+      if (!result.data.titulo.trim()) {
         return NextResponse.json({ error: "El título no puede estar vacío" }, { status: 400 })
       }
-      data.titulo = titulo.trim()
+      updateData.titulo = result.data.titulo.trim()
     }
 
-    if (descripcion !== undefined) data.descripcion = descripcion?.trim() || null
-    if (clienteNombre !== undefined) data.clienteNombre = clienteNombre?.trim() || null
+    if (result.data.descripcion !== undefined) updateData.descripcion = result.data.descripcion?.trim() || null
+    if (result.data.clienteNombre !== undefined) updateData.clienteNombre = result.data.clienteNombre?.trim() || null
 
-    if (prioridad !== undefined) {
-      if (!PRIORIDADES.includes(prioridad)) {
+    if (result.data.prioridad !== undefined) {
+      if (!PRIORIDADES.includes(result.data.prioridad)) {
         return NextResponse.json(
           { error: `Prioridad inválida. Debe ser: ${PRIORIDADES.join(", ")}` },
           { status: 400 }
         )
       }
-      data.prioridad = prioridad
+      updateData.prioridad = result.data.prioridad
     }
 
-    if (categoria !== undefined) {
-      if (categoria && !CATEGORIAS.includes(categoria)) {
+    if (result.data.categoria !== undefined) {
+      if (result.data.categoria && !CATEGORIAS.includes(result.data.categoria)) {
         return NextResponse.json(
           { error: `Categoría inválida. Debe ser: ${CATEGORIAS.join(", ")}` },
           { status: 400 }
         )
       }
-      data.categoria = categoria || null
+      updateData.categoria = result.data.categoria || null
     }
 
-    if (proyectoId !== undefined) {
-      if (proyectoId) {
-        const proyecto = await prisma.proyecto.findUnique({ where: { id: proyectoId } })
+    if (result.data.proyectoId !== undefined) {
+      if (result.data.proyectoId) {
+        const proyecto = await prisma.proyecto.findUnique({ where: { id: result.data.proyectoId } })
         if (!proyecto) {
           return NextResponse.json({ error: "Proyecto no encontrado" }, { status: 404 })
         }
       }
-      data.proyecto = proyectoId ? { connect: { id: proyectoId } } : { disconnect: true }
+      updateData.proyecto = result.data.proyectoId ? { connect: { id: result.data.proyectoId } } : { disconnect: true }
     }
 
-    if (asignadoAId !== undefined) {
-      if (asignadoAId) {
-        const emp = await prisma.empleado.findUnique({ where: { id: asignadoAId } })
+    if (result.data.asignadoAId !== undefined) {
+      if (result.data.asignadoAId) {
+        const emp = await prisma.empleado.findUnique({ where: { id: result.data.asignadoAId } })
         if (!emp) {
           return NextResponse.json({ error: "Empleado no encontrado" }, { status: 404 })
         }
       }
-      data.asignadoA = asignadoAId ? { connect: { id: asignadoAId } } : { disconnect: true }
+      updateData.asignadoA = result.data.asignadoAId ? { connect: { id: result.data.asignadoAId } } : { disconnect: true }
     }
 
-    if (estado !== undefined) {
-      if (!ESTADOS.includes(estado)) {
+    if (result.data.estado !== undefined) {
+      if (!ESTADOS.includes(result.data.estado)) {
         return NextResponse.json(
           { error: `Estado inválido. Debe ser: ${ESTADOS.join(", ")}` },
           { status: 400 }
         )
       }
-      data.estado = estado
+      updateData.estado = result.data.estado
     }
 
-    if (Object.keys(data).length === 0) {
+    if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: "No hay campos para actualizar" }, { status: 400 })
     }
 
     const actualizado = await prisma.ticketSoporte.update({
       where: { id },
-      data,
+      data: updateData,
       include: {
         proyecto: { select: { id: true, nombre: true, estado: true } },
         creador: { select: { id: true, nombre: true, apellido: true, email: true } },
@@ -151,7 +154,7 @@ export async function PATCH(
         accion: "UPDATE",
         entidad: "TicketSoporte",
         entidadId: id,
-        detalle: { cambios: Object.keys(data), estadoAnterior: existente.estado },
+        detalle: { cambios: Object.keys(updateData), estadoAnterior: existente.estado },
         empleadoId: session.user.id,
       },
     })

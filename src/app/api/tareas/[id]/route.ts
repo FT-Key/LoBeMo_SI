@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { updateTareaSchema } from "@/shared/validation"
 
 const ESTADOS_VALIDOS = ["PENDIENTE", "EN_PROGRESO", "COMPLETADA", "CANCELADA"]
-const PRIORIDADES_VALIDAS = ["BAJA", "MEDIA", "ALTA", "CRITICA"]
 
 export async function GET(
   _request: Request,
@@ -76,7 +77,8 @@ export async function PATCH(
 
     const { id } = await params
     const body = await request.json()
-    const { titulo, descripcion, estado, prioridad, fechaLimite } = body
+    const result = validateBody(updateTareaSchema, body)
+    if (!result.success) return result.error
 
     const tareaExistente = await prisma.tarea.findUnique({
       where: { id },
@@ -119,44 +121,30 @@ export async function PATCH(
       }
     }
 
-    const data: {
-      titulo?: string
-      descripcion?: string | null
-      estado?: string
-      prioridad?: string
-      fechaLimite?: Date | null
-    } = {}
-    if (titulo !== undefined) data.titulo = titulo.trim()
-    if (descripcion !== undefined) data.descripcion = descripcion?.trim() || null
-    if (estado !== undefined) {
-      if (!ESTADOS_VALIDOS.includes(estado)) {
+    const updateData: Record<string, unknown> = {}
+    if (result.data.titulo !== undefined) updateData.titulo = result.data.titulo.trim()
+    if (result.data.descripcion !== undefined) updateData.descripcion = result.data.descripcion?.trim() || null
+    if (result.data.estado !== undefined) {
+      if (!ESTADOS_VALIDOS.includes(result.data.estado)) {
         return NextResponse.json(
           { error: `Estado inválido. Debe ser: ${ESTADOS_VALIDOS.join(", ")}` },
           { status: 400 }
         )
       }
-      data.estado = estado
+      updateData.estado = result.data.estado
     }
-    if (prioridad !== undefined) {
-      if (!PRIORIDADES_VALIDAS.includes(prioridad)) {
-        return NextResponse.json(
-          { error: `Prioridad inválida. Debe ser: ${PRIORIDADES_VALIDAS.join(", ")}` },
-          { status: 400 }
-        )
-      }
-      data.prioridad = prioridad
-    }
-    if (fechaLimite !== undefined) {
-      data.fechaLimite = fechaLimite ? new Date(fechaLimite) : null
+    if (result.data.prioridad !== undefined) updateData.prioridad = result.data.prioridad
+    if (result.data.fechaLimite !== undefined) {
+      updateData.fechaLimite = result.data.fechaLimite ? new Date(result.data.fechaLimite) : null
     }
 
-    if (Object.keys(data).length === 0) {
+    if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: "No hay campos para actualizar" }, { status: 400 })
     }
 
     const tareaActualizada = await prisma.tarea.update({
       where: { id },
-      data,
+      data: updateData,
       include: {
         asignacion: {
           include: {
@@ -166,7 +154,7 @@ export async function PATCH(
       },
     })
 
-    if (estado === "COMPLETADA" && tareaExistente.prioridad === "CRITICA") {
+    if (result.data.estado === "COMPLETADA" && tareaExistente.prioridad === "CRITICA") {
       const ciso = await prisma.empleado.findFirst({
         where: { rol: "CISO", activo: true },
       })
@@ -186,8 +174,8 @@ export async function PATCH(
       }
     }
 
-    const cambiosStr = Object.keys(data)
-      .map((k) => `${k}: ${JSON.stringify((data as Record<string, unknown>)[k])}`)
+    const cambiosStr = Object.keys(updateData)
+      .map((k) => `${k}: ${JSON.stringify(updateData[k])}`)
       .join(", ")
 
     await prisma.auditLog.create({

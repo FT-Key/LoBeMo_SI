@@ -36,7 +36,11 @@ function ArgentinaClock() {
   );
 }
 
-export function CtaSection() {
+interface CtaSectionProps {
+  hasSuperAdmin: boolean;
+}
+
+export function CtaSection({ hasSuperAdmin }: CtaSectionProps) {
   return (
     <section className="relative overflow-hidden px-4 py-24 md:px-8 md:py-32">
       <div className="absolute inset-0 -z-10">
@@ -78,13 +82,15 @@ export function CtaSection() {
               <span className="ml-2">→</span>
             </Link>
 
-            <Link
-              href="/register"
-              className="inline-flex h-13 w-full items-center justify-center rounded-xl border-2 border-primary/40 px-8 text-base font-bold text-foreground backdrop-blur-sm transition-all hover:border-primary/60 hover:bg-primary/5 sm:w-auto"
-            >
-              Solicitar acceso
-              <span className="ml-2">→</span>
-            </Link>
+            {!hasSuperAdmin && (
+              <Link
+                href="/register"
+                className="inline-flex h-13 w-full items-center justify-center rounded-xl border-2 border-primary/40 px-8 text-base font-bold text-foreground backdrop-blur-sm transition-all hover:border-primary/60 hover:bg-primary/5 sm:w-auto"
+              >
+                Solicitar acceso
+                <span className="ml-2">→</span>
+              </Link>
+            )}
           </div>
 
           <div className="mt-16 flex items-center justify-center gap-3">

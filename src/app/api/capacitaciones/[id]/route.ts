@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { updateCapacitacionSchema } from "@/shared/validation"
 
 const ESTADOS = ["PLANIFICADA", "EN_CURSO", "COMPLETADA", "CANCELADA"]
 
@@ -65,65 +67,41 @@ export async function PATCH(
 
     const { id } = await params
     const body = await request.json()
-    const { titulo, temario, duracionHoras, modalidad, fechaInicio, fechaFin, materiales, estado } = body
+    const result = validateBody(updateCapacitacionSchema, body)
+    if (!result.success) return result.error
 
     const existente = await prisma.capacitacion.findUnique({ where: { id } })
     if (!existente) {
       return NextResponse.json({ error: "Capacitación no encontrada" }, { status: 404 })
     }
 
-    const data: Record<string, unknown> = {}
-    if (titulo !== undefined) data.titulo = titulo.trim()
-    if (temario !== undefined) data.temario = temario.trim()
-    if (duracionHoras !== undefined) {
-      const horas = parseInt(duracionHoras)
-      if (isNaN(horas) || horas < 1) {
-        return NextResponse.json({ error: "duracionHoras debe ser un número válido mayor a 0" }, { status: 400 })
-      }
-      data.duracionHoras = horas
+    const updateData: Record<string, unknown> = {}
+    if (result.data.titulo !== undefined) updateData.titulo = result.data.titulo.trim()
+    if (result.data.temario !== undefined) updateData.temario = result.data.temario.trim()
+    if (result.data.duracionHoras !== undefined) updateData.duracionHoras = result.data.duracionHoras
+    if (result.data.modalidad !== undefined) updateData.modalidad = result.data.modalidad
+    if (result.data.fechaInicio !== undefined) updateData.fechaInicio = new Date(result.data.fechaInicio)
+    if (result.data.fechaFin !== undefined) {
+      updateData.fechaFin = result.data.fechaFin ? new Date(result.data.fechaFin) : null
     }
-    if (modalidad !== undefined) {
-      if (!["PRESENCIAL", "REMOTA"].includes(modalidad)) {
-        return NextResponse.json({ error: "Modalidad inválida" }, { status: 400 })
-      }
-      data.modalidad = modalidad
-    }
-    if (fechaInicio !== undefined) {
-      const d = new Date(fechaInicio)
-      if (isNaN(d.getTime())) {
-        return NextResponse.json({ error: "fechaInicio no es una fecha válida" }, { status: 400 })
-      }
-      data.fechaInicio = d
-    }
-    if (fechaFin !== undefined) {
-      if (fechaFin) {
-        const d = new Date(fechaFin)
-        if (isNaN(d.getTime())) {
-          return NextResponse.json({ error: "fechaFin no es una fecha válida" }, { status: 400 })
-        }
-        data.fechaFin = d
-      } else {
-        data.fechaFin = null
-      }
-    }
-    if (materiales !== undefined) data.materiales = materiales || null
-    if (estado !== undefined) {
-      if (!ESTADOS.includes(estado)) {
+    if (result.data.materiales !== undefined) updateData.materiales = result.data.materiales || null
+    if (result.data.estado !== undefined) {
+      if (!ESTADOS.includes(result.data.estado)) {
         return NextResponse.json(
           { error: `Estado inválido. Debe ser: ${ESTADOS.join(", ")}` },
           { status: 400 }
         )
       }
-      data.estado = estado
+      updateData.estado = result.data.estado
     }
 
-    if (Object.keys(data).length === 0) {
+    if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: "No hay campos para actualizar" }, { status: 400 })
     }
 
     const actualizada = await prisma.capacitacion.update({
       where: { id },
-      data,
+      data: updateData,
       include: {
         proyecto: { select: { id: true, nombre: true } },
         asistentes: {
@@ -140,7 +118,7 @@ export async function PATCH(
         accion: "UPDATE",
         entidad: "Capacitacion",
         entidadId: id,
-        detalle: { cambios: Object.keys(data), estadoAnterior: existente.estado },
+        detalle: { cambios: Object.keys(updateData), estadoAnterior: existente.estado },
         empleadoId: session.user.id,
       },
     })

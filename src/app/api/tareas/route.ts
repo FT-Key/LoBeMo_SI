@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
-
-const PRIORIDADES_VALIDAS = ["BAJA", "MEDIA", "ALTA", "CRITICA"]
+import { validateBody } from "@/lib/api-validate"
+import { createTareaSchema } from "@/shared/validation"
 
 export async function GET(request: NextRequest) {
   try {
@@ -61,35 +61,20 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { proyectoId, titulo, descripcion, prioridad, fechaLimite } = body
+    const result = validateBody(createTareaSchema, body)
+    if (!result.success) return result.error
 
-    if (!proyectoId || !titulo) {
-      return NextResponse.json(
-        { error: "Proyecto y título son obligatorios" },
-        { status: 400 }
-      )
-    }
-
-    if (!titulo.trim()) {
-      return NextResponse.json(
-        { error: "El título no puede estar vacío" },
-        { status: 400 }
-      )
-    }
-
-    const proyecto = await prisma.proyecto.findUnique({ where: { id: proyectoId } })
+    const proyecto = await prisma.proyecto.findUnique({ where: { id: result.data.proyectoId } })
     if (!proyecto) {
       return NextResponse.json({ error: "Proyecto no encontrado" }, { status: 404 })
     }
-
-    const prioridadFinal = PRIORIDADES_VALIDAS.includes(prioridad) ? prioridad : "MEDIA"
 
     const esCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
 
     if (!esCisoOGerente) {
       const asignacion = await prisma.asignacion.findFirst({
         where: {
-          proyectoId,
+          proyectoId: result.data.proyectoId,
           empleadoId: session.user.id,
         },
       })
@@ -103,11 +88,11 @@ export async function POST(request: Request) {
 
       const tarea = await prisma.tarea.create({
         data: {
-          proyectoId,
-          titulo: titulo.trim(),
-          descripcion: descripcion?.trim() || null,
-          prioridad: prioridadFinal,
-          fechaLimite: fechaLimite ? new Date(fechaLimite) : null,
+          proyectoId: result.data.proyectoId,
+          titulo: result.data.titulo.trim(),
+          descripcion: result.data.descripcion?.trim() || null,
+          prioridad: result.data.prioridad,
+          fechaLimite: result.data.fechaLimite ? new Date(result.data.fechaLimite) : null,
           asignacionId: asignacion.id,
         },
         include: {
@@ -124,7 +109,7 @@ export async function POST(request: Request) {
           accion: "CREATE",
           entidad: "Tarea",
           entidadId: tarea.id,
-          detalle: { proyectoId, titulo: tarea.titulo, prioridad: prioridadFinal },
+          detalle: { proyectoId: result.data.proyectoId, titulo: tarea.titulo, prioridad: result.data.prioridad },
           empleadoId: session.user.id,
         },
       })
@@ -134,11 +119,11 @@ export async function POST(request: Request) {
 
     const tarea = await prisma.tarea.create({
       data: {
-        proyectoId,
-        titulo: titulo.trim(),
-        descripcion: descripcion?.trim() || null,
-        prioridad: prioridadFinal,
-        fechaLimite: fechaLimite ? new Date(fechaLimite) : null,
+        proyectoId: result.data.proyectoId,
+        titulo: result.data.titulo.trim(),
+        descripcion: result.data.descripcion?.trim() || null,
+        prioridad: result.data.prioridad,
+        fechaLimite: result.data.fechaLimite ? new Date(result.data.fechaLimite) : null,
       },
       include: {
         asignacion: {
@@ -154,7 +139,7 @@ export async function POST(request: Request) {
         accion: "CREATE",
         entidad: "Tarea",
         entidadId: tarea.id,
-        detalle: { proyectoId, titulo: tarea.titulo, prioridad: prioridadFinal },
+        detalle: { proyectoId: result.data.proyectoId, titulo: tarea.titulo, prioridad: result.data.prioridad },
         empleadoId: session.user.id,
       },
     })

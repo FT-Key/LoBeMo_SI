@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { createPropuestaSchema } from "@/shared/validation"
 
 const ROLES_PERMITIDOS_CREAR = ["GERENTE_GENERAL", "ADMINISTRACION", "VENTAS"]
 
@@ -85,17 +87,11 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { proyectoId, montoTotal, detalleServicios, fechaEmision, fechaVencimiento, recotizarId } = body
-
-    if (!proyectoId || !montoTotal || !fechaVencimiento) {
-      return NextResponse.json(
-        { error: "Proyecto, monto total y fecha de vencimiento son obligatorios" },
-        { status: 400 }
-      )
-    }
+    const result = validateBody(createPropuestaSchema, body)
+    if (!result.success) return result.error
 
     const proyecto = await prisma.proyecto.findUnique({
-      where: { id: proyectoId },
+      where: { id: result.data.proyectoId },
       select: { id: true, estado: true, nombre: true },
     })
 
@@ -111,7 +107,7 @@ export async function POST(request: Request) {
     }
 
     const ultimaVersion = await prisma.propuesta.findFirst({
-      where: { proyectoId },
+      where: { proyectoId: result.data.proyectoId },
       orderBy: { version: "desc" },
       select: { version: true },
     })
@@ -120,26 +116,27 @@ export async function POST(request: Request) {
 
     if (proyecto.estado === "RELEVAMIENTO") {
       await prisma.proyecto.update({
-        where: { id: proyectoId },
+        where: { id: result.data.proyectoId },
         data: { estado: "PROPUESTA" },
       })
     }
 
     const propuesta = await prisma.propuesta.create({
       data: {
-        proyectoId,
+        proyectoId: result.data.proyectoId,
         version,
-        montoTotal: parseFloat(montoTotal),
-        detalleServicios: detalleServicios ?? null,
-        fechaEmision: fechaEmision ? new Date(fechaEmision) : new Date(),
-        fechaVencimiento: new Date(fechaVencimiento),
+        montoTotal: result.data.montoTotal,
+        detalleServicios: result.data.detalleServicios ?? undefined,
+        fechaEmision: result.data.fechaEmision ? new Date(result.data.fechaEmision) : new Date(),
+        fechaVencimiento: new Date(result.data.fechaVencimiento),
         estado: "ENVIADA",
       },
     })
 
+    const recotizarId = body.recotizarId
     if (recotizarId) {
       const propuestaAnterior = await prisma.propuesta.findUnique({ where: { id: recotizarId } })
-      if (propuestaAnterior && propuestaAnterior.proyectoId === proyectoId) {
+      if (propuestaAnterior && propuestaAnterior.proyectoId === result.data.proyectoId) {
         await prisma.propuesta.update({
           where: { id: recotizarId },
           data: { estado: "RECOTIZADA" },
@@ -152,7 +149,7 @@ export async function POST(request: Request) {
         accion: "CREATE",
         entidad: "Propuesta",
         entidadId: propuesta.id,
-        detalle: { proyectoId, version, montoTotal, recotizarId: recotizarId || null },
+        detalle: { proyectoId: result.data.proyectoId, version, montoTotal: result.data.montoTotal, recotizarId: recotizarId || null },
         empleadoId: session.user.id,
       },
     })

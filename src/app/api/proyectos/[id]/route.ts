@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { updateProyectoSchema } from "@/shared/validation"
 
 export async function GET(
   _request: NextRequest,
@@ -78,7 +80,8 @@ export async function PATCH(
 
     const { id } = await params
     const body = await request.json()
-    const { nombre, descripcion, fechaEstimadaFin, montoAcordado } = body
+    const result = validateBody(updateProyectoSchema, body)
+    if (!result.success) return result.error
 
     const existing = await prisma.proyecto.findUnique({ where: { id } })
     if (!existing) {
@@ -92,15 +95,15 @@ export async function PATCH(
       )
     }
 
-    const data: Record<string, unknown> = {}
-    if (nombre !== undefined) data.nombre = nombre
-    if (descripcion !== undefined) data.descripcion = descripcion
-    if (fechaEstimadaFin !== undefined) data.fechaEstimadaFin = fechaEstimadaFin ? new Date(fechaEstimadaFin) : null
-    if (montoAcordado !== undefined) data.montoAcordado = montoAcordado ? parseFloat(montoAcordado) : null
+    const updateData: Record<string, unknown> = {}
+    if (result.data.nombre !== undefined) updateData.nombre = result.data.nombre
+    if (result.data.descripcion !== undefined) updateData.descripcion = result.data.descripcion || null
+    if (result.data.fechaEstimadaFin !== undefined) updateData.fechaEstimadaFin = result.data.fechaEstimadaFin ? new Date(result.data.fechaEstimadaFin) : null
+    if (result.data.montoAcordado !== undefined) updateData.montoAcordado = result.data.montoAcordado ? parseFloat(result.data.montoAcordado) : null
 
     const proyecto = await prisma.proyecto.update({
       where: { id },
-      data,
+      data: updateData,
     })
 
     await prisma.auditLog.create({
@@ -108,7 +111,7 @@ export async function PATCH(
         accion: "UPDATE",
         entidad: "Proyecto",
         entidadId: id,
-        detalle: { cambios: Object.keys(data) },
+        detalle: { cambios: Object.keys(updateData) },
         empleadoId: session.user.id,
       },
     })
