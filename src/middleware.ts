@@ -2,6 +2,9 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 export function middleware(request: NextRequest) {
+  if (/\.(?:png|jpg|jpeg|gif|webp|svg|ico|avif|css|js|woff2?|json)$/.test(request.nextUrl.pathname)) {
+    return NextResponse.next()
+  }
   const isAuthPage = request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/register")
   const isApiAuth = request.nextUrl.pathname.startsWith("/api/auth")
   const token = request.cookies.get("authjs.session-token")?.value || request.cookies.get("__Secure-authjs.session-token")?.value
@@ -18,5 +21,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|avif|css|js|woff2?|json)).*)"],
 }

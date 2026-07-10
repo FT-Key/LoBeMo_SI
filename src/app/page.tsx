@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { GeometricBackground } from "@/components/landing/geometric-background"
 import { HeroSection } from "@/components/landing/hero-section"
+import { Marquee } from "@/components/landing/marquee"
 import { ServicesSection } from "@/components/landing/services-section"
 import { StatsSection } from "@/components/landing/stats-section"
 import { FeaturesSection } from "@/components/landing/features-section"
@@ -15,9 +16,10 @@ export default async function Home() {
   })
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       <GeometricBackground />
       <HeroSection hasSuperAdmin={!!hasSuperAdmin} />
+      <Marquee />
       <ServicesSection />
       <StatsSection />
       <FeaturesSection />

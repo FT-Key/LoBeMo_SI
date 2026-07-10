@@ -3,19 +3,19 @@
 ## Filosofía de diseño
 
 ### Inspiración y dirección visual
-Inspirado en la potencia visual de **Fortinet** (formas geométricas superpuestas, "rayos" dinámicos, glassmorphism, fondos oscuros con acentos de color), pero con identidad propia. LoBeMo no es una corporación fría — es una empresa tucumana de ciberseguridad con **personalidad, calidez técnica y presencia regional**.
+Inspirado en **Navbar Digital** (limpieza visual, marquee horizontal, pill nav flotante) + estética **cyber-security moderna** (CrowdStrike, Mandiant). LoBeMo no es una corporación fría — es una empresa tucumana de ciberseguridad con **personalidad técnica y presencia regional**.
 
 ### Tono del diseño
 - **Profesional** — transmite confianza, seguridad, solidez técnica
-- **Creativo** — formas dinámicas, geometría expresiva, sin caer en lo corporativo genérico
-- **Inmersivo** — dark mode prioritario que envuelve al usuario en una experiencia tipo "security operations center"
-- **Detallista** — micro-interacciones, gradientes sutiles, glassmorphism en superficies
+- **Moderno** — tipografía display bold, colores sólidos, sin gradientes en textos
+- **Inmersivo** — dark mode prioritario con fondo casi negro `#0a0b0a`
+- **Dinámico** — scroll reveals, marquee horizontal, scan lines sutiles
 
 ### Principios rectores
-- **Dark-first**: modo oscuro es el principal. El claro es adaptación.
-- **Geometría con propósito**: las formas decorativas no son ruido — guían la atención y refuerzan la identidad
-- **Color como señal**: teal es seguridad/calma, amber es atención/urgencia. Cada color tiene un trabajo.
-- **Contraste emocional**: fondos oscuros profundos con acentos vibrantes que "prenden" como alertas en un radar
+- **Dark-first**: modo oscuro es el principal. Fondo `#0a0b0a` (navbardigital).
+- **Un acento fuerte**: lime `#c8f02d` como color de firma (inspirado en navbardigital).
+- **Sin gradientes en textos**: colores sólidos para headings. El gradient solo si existe, va en la hero.
+- **Dinamismo con propósito**: marquee, scroll reveal, scan lines — todos con función.
 
 ---
 
@@ -23,28 +23,28 @@ Inspirado en la potencia visual de **Fortinet** (formas geométricas superpuesta
 
 ### Colores
 
-#### Paleta primaria — Teal (seguridad, confianza, estabilidad)
-Usado en: botones primarios, links, íconos activos, headers, barras de navegación, fondos de sección.
+#### Paleta primaria — Electric Cyan (ciberseguridad, tecnología, alerta)
+Usado en: botones primarios, links, íconos activos, headers, barras de navegación, números destacados.
 
-| Token | HSL | HEX | Uso |
-|-------|-----|-----|-----|
-| `primary` | `hsl(175 84% 32%)` | `#0D9488` | Color principal, botones, links |
-| `primary-foreground` | `hsl(175 40% 90%)` | `#DBF5F0` | Texto sobre fondo primary |
-| `primary-hover` | `hsl(175 84% 27%)` | `#0F766E` | Hover de botón primary |
-| `primary-active` | `hsl(175 84% 22%)` | `#115E59` | Active/pressed |
-| `primary-light` | `hsl(175 50% 88%)` | `#CCFBF1` | Fondo de badges/alertas suaves |
-| `primary-dark` | `hsl(175 60% 8%)` | `#042F2E` | Fondo decorativo en modo oscuro |
+| Token | HEX | Uso |
+|-------|-----|-----|
+| `primary` | `#00D4FF` | Color principal, botones, links |
+| `primary-foreground` | `#050A0F` | Texto sobre fondo primary |
+| `primary-hover` | `#00BDE6` | Hover de botón primary |
+| `primary-active` | `#0099C2` | Active/pressed |
+| `primary-light` | `#CCF5FF` | Fondo de badges/alertas suaves |
+| `primary-dark` | `#00364A` | Fondo decorativo en modo oscuro |
 
-#### Paleta de acento — Burnt Amber (atención, urgencia, calidez)
-Usado en: badges de severidad ALTA/CRÍTICA, alertas, features destacados, notificaciones importantes, precios, porcentajes.
+#### Paleta de acento — Lime (atención, firma visual, selección)
+Usado en: selection color, badges, features destacados, iconos de marca, detalles decorativos.
 
-| Token | HSL | HEX | Uso |
-|-------|-----|-----|-----|
-| `accent` | `hsl(32 94% 44%)` | `#D97706` | Color de acento principal |
-| `accent-foreground` | `hsl(32 40% 95%)` | `#FFF7ED` | Texto sobre fondo accent |
-| `accent-hover` | `hsl(32 94% 38%)` | `#B45309` | Hover de botón accent |
-| `accent-light` | `hsl(32 50% 90%)` | `#FEF3C7` | Fondo de badges/alertas suaves |
-| `accent-dark` | `hsl(32 60% 10%)` | `#2D1504` | Fondo decorativo en modo oscuro |
+| Token | HEX | Uso |
+|-------|-----|-----|
+| `accent` | `#c8f02d` | Color de acento principal (inspirado en navbardigital) |
+| `accent-foreground` | `#0a0b0a` | Texto sobre fondo accent |
+| `accent-hover` | `#b3d926` | Hover de botón accent |
+| `accent-light` | `#f2ffcc` | Fondo de badges/alertas suaves |
+| `accent-dark` | `#3d4d0a` | Fondo decorativo en modo oscuro |
 
 #### Colores semánticos
 
@@ -66,16 +66,16 @@ Usado en: badges de severidad ALTA/CRÍTICA, alertas, features destacados, notif
 
 #### Colores neutros — Modo oscuro (PRIMARIO)
 
-| Token | HSL | HEX | Uso |
-|-------|-----|-----|-----|
-| `background` | `hsl(200 15% 8%)` | `#0B1317` | Fondo principal de la app |
-| `foreground` | `hsl(210 20% 96%)` | `#F0F4F8` | Texto principal |
-| `surface` | `hsl(195 12% 12%)` | `#171F24` | Superficie de cards, sidebar |
-| `surface-elevated` | `hsl(195 10% 16%)` | `#212A2F` | Cards elevados, dropdown, modales |
-| `muted` | `hsl(195 8% 22%)` | `#2E383E` | Fondos secundarios, hover de items |
-| `muted-foreground` | `hsl(195 6% 55%)` | `#889198` | Texto secundario, placeholders |
-| `border` | `hsl(195 8% 24%)` | `#303C42` | Bordes de componentes |
-| `ring` | `hsl(175 84% 32%)` | `#0D9488` | Focus ring (primary) |
+| Token | HEX | Uso |
+|-------|-----|-----|
+| `background` | `#0a0b0a` | Fondo principal (inspirado navbardigital) |
+| `foreground` | `#f3f4ec` | Texto principal (warm off-white) |
+| `surface` | `#121413` | Superficie de cards, sidebar |
+| `surface-elevated` | `#1a1c1a` | Cards elevados, dropdown, modales |
+| `muted` | `#1e201e` | Fondos secundarios, hover de items |
+| `muted-foreground` | `#8a8f86` | Texto secundario, placeholders |
+| `border` | `#2a2d2a` | Bordes de componentes |
+| `ring` | `#00D4FF` | Focus ring (primary) |
 
 #### Colores neutros — Modo claro
 
@@ -104,8 +104,8 @@ Usado en: badges de severidad ALTA/CRÍTICA, alertas, features destacados, notif
 
 | Uso | Font | Fallback | Variable CSS |
 |-----|------|----------|--------------|
-| **Headings (h1-h4)** | `Plus Jakarta Sans` | `system-ui, sans-serif` | `--font-heading` |
-| **Body** | `Inter` | `system-ui, sans-serif` | `--font-body` |
+| **Headings / Display (h1-h4)** | `Bricolage Grotesque` (700, 800) | `Arial Black, sans-serif` | `--font-display` |
+| **Body** | `Hanken Grotesk` (400-700) | `system-ui, sans-serif` | `--font-body` |
 | **Monospace / Código** | `JetBrains Mono` | `Fira Code, monospace` | `--font-mono` |
 
 #### Escala tipográfica
@@ -186,14 +186,16 @@ Modo claro:
 | Uso | Clase/Duración | Easing |
 |-----|----------------|--------|
 | Hover (buttons, cards, links) | `transition-all duration-200` | `ease-out` |
+| Marquee horizontal | `animate-marquee` (28-32s linear infinite) | `linear` |
+| Scroll reveal | `animate-slide-up` (0.6s ease-out) | `ease-out` |
+| Scan line (geometric bg) | `animate-scanline` (8s linear infinite) | `linear` |
 | Focus ring | `transition-shadow duration-150` | `ease-in` |
-| Page enter | `animate-in fade-in duration-300` | `ease-out` |
-| Page enter (slide) | `animate-in slide-in-from-bottom-4 fade-in duration-300` | `ease-out` |
-| Modal/dialog | `animate-in zoom-in-95 fade-in duration-200` | `ease-out` |
+| Page enter | `animate-fade-in duration-300` | `ease-out` |
+| Modal/dialog | `animate-fade-scale duration-200` | `ease-out` |
 | Sidebar toggle | `transition-transform duration-300` | `ease-in-out` |
 | Skeleton loading | `animate-pulse duration-1500` | — |
 | Badge pulse (severity) | `animate-pulse duration-2000` (solo CRÍTICA) | — |
-| Dropdown | `animate-in fade-in slide-in-from-top-1 duration-150` | `ease-out` |
+| Dropdown | `animate-fade-in slide-in-from-top-1 duration-150` | `ease-out` |
 
 ---
 
@@ -216,11 +218,10 @@ border: 1px solid hsl(195 8% 24% / 0.5);
 ```
 
 ### 3. Gradientes decorativos
-- **Teal → Amber** para elementos hero o destacados:
-  `bg-gradient-to-br from-primary via-primary to-accent/40`
-- **Teal oscuro → Fondo** para secciones:
-  `bg-gradient-to-b from-primary-dark/60 to-background`
-- **Amber sutil** para hover de filas en tablas:
+- **Solo fondos**: no usar gradientes en textos (solo colores sólidos).
+- **Cyan → transparente** para fondos de cards hover:
+  `bg-gradient-to-br from-primary/10 to-transparent`
+- **Lime sutil** para hover de filas en tablas:
   `hover:bg-accent/5`
 
 ### 4. Badges de severidad tipo "alerta"
