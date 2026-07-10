@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { createAsignacionSchema } from "@/shared/validation"
 
 export async function GET(request: NextRequest) {
   try {
@@ -59,17 +61,11 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { proyectoId, empleadoId, rolEnProyecto } = body
-
-    if (!proyectoId || !empleadoId || !rolEnProyecto) {
-      return NextResponse.json(
-        { error: "Proyecto, empleado y rol en proyecto son obligatorios" },
-        { status: 400 }
-      )
-    }
+    const result = validateBody(createAsignacionSchema, body)
+    if (!result.success) return result.error
 
     const proyecto = await prisma.proyecto.findUnique({
-      where: { id: proyectoId },
+      where: { id: result.data.proyectoId },
       include: { servicio: { select: { nombre: true } } },
     })
 
@@ -98,7 +94,7 @@ export async function POST(request: Request) {
     }
 
     const empleado = await prisma.empleado.findUnique({
-      where: { id: empleadoId },
+      where: { id: result.data.empleadoId },
     })
 
     if (!empleado || !empleado.activo) {
@@ -106,7 +102,7 @@ export async function POST(request: Request) {
     }
 
     const asignacionExistente = await prisma.asignacion.findUnique({
-      where: { proyectoId_empleadoId: { proyectoId, empleadoId } },
+      where: { proyectoId_empleadoId: { proyectoId: result.data.proyectoId, empleadoId: result.data.empleadoId } },
     })
 
     if (asignacionExistente) {
@@ -123,7 +119,7 @@ export async function POST(request: Request) {
 
     const proyectosActivos = await prisma.asignacion.count({
       where: {
-        empleadoId,
+        empleadoId: result.data.empleadoId,
         proyecto: {
           estado: { in: ["EN_EJECUCION", "EN_REVISION"] },
         },
@@ -139,9 +135,9 @@ export async function POST(request: Request) {
 
     const asignacion = await prisma.asignacion.create({
       data: {
-        proyectoId,
-        empleadoId,
-        rolEnProyecto,
+        proyectoId: result.data.proyectoId,
+        empleadoId: result.data.empleadoId,
+        rolEnProyecto: result.data.rolEnProyecto,
       },
       include: {
         empleado: { select: { id: true, nombre: true, apellido: true, rol: true } },
@@ -151,11 +147,11 @@ export async function POST(request: Request) {
 
     await prisma.notificacion.create({
       data: {
-        empleadoId,
+        empleadoId: result.data.empleadoId,
         titulo: "Nueva asignación a proyecto",
-        mensaje: `Has sido asignado al proyecto "${proyecto.nombre}" con el rol de ${rolEnProyecto}.`,
+        mensaje: `Has sido asignado al proyecto "${proyecto.nombre}" con el rol de ${result.data.rolEnProyecto}.`,
         tipo: "ASIGNACION_PROYECTO",
-        link: `/proyectos/${proyectoId}`,
+        link: `/proyectos/${result.data.proyectoId}`,
       },
     })
 
@@ -164,7 +160,7 @@ export async function POST(request: Request) {
         accion: "CREATE",
         entidad: "Asignacion",
         entidadId: asignacion.id,
-        detalle: { proyectoId, empleadoId, rolEnProyecto },
+        detalle: { proyectoId: result.data.proyectoId, empleadoId: result.data.empleadoId, rolEnProyecto: result.data.rolEnProyecto },
         empleadoId: session.user.id,
       },
     })

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
-
-const MODALIDADES = ["PRESENCIAL", "REMOTA"]
+import { validateBody } from "@/lib/api-validate"
+import { createCapacitacionSchema } from "@/shared/validation"
 
 export async function GET(request: NextRequest) {
   try {
@@ -73,43 +73,11 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { proyectoId, titulo, temario, duracionHoras, modalidad, fechaInicio, fechaFin, materiales } = body
+    const result = validateBody(createCapacitacionSchema, body)
+    if (!result.success) return result.error
 
-    if (!titulo || !temario || !duracionHoras || !modalidad || !fechaInicio) {
-      return NextResponse.json(
-        { error: "titulo, temario, duracionHoras, modalidad y fechaInicio son obligatorios" },
-        { status: 400 }
-      )
-    }
-
-    if (!titulo.trim()) {
-      return NextResponse.json({ error: "El título no puede estar vacío" }, { status: 400 })
-    }
-
-    if (!MODALIDADES.includes(modalidad)) {
-      return NextResponse.json(
-        { error: `Modalidad inválida. Debe ser: ${MODALIDADES.join(", ")}` },
-        { status: 400 }
-      )
-    }
-
-    const horas = parseInt(duracionHoras)
-    if (isNaN(horas) || horas < 1) {
-      return NextResponse.json({ error: "duracionHoras debe ser un número válido mayor a 0" }, { status: 400 })
-    }
-
-    const fechaInicioDate = new Date(fechaInicio)
-    if (isNaN(fechaInicioDate.getTime())) {
-      return NextResponse.json({ error: "fechaInicio no es una fecha válida" }, { status: 400 })
-    }
-
-    const fechaFinDate = fechaFin ? new Date(fechaFin) : null
-    if (fechaFin && isNaN(fechaFinDate!.getTime())) {
-      return NextResponse.json({ error: "fechaFin no es una fecha válida" }, { status: 400 })
-    }
-
-    if (proyectoId) {
-      const proyecto = await prisma.proyecto.findUnique({ where: { id: proyectoId } })
+    if (result.data.proyectoId) {
+      const proyecto = await prisma.proyecto.findUnique({ where: { id: result.data.proyectoId } })
       if (!proyecto) {
         return NextResponse.json({ error: "Proyecto no encontrado" }, { status: 404 })
       }
@@ -117,14 +85,14 @@ export async function POST(request: Request) {
 
     const capacitacion = await prisma.capacitacion.create({
       data: {
-        proyectoId: proyectoId || null,
-        titulo: titulo.trim(),
-        temario: temario.trim(),
-        duracionHoras: horas,
-        modalidad,
-        fechaInicio: fechaInicioDate,
-        fechaFin: fechaFinDate,
-        materiales: materiales || null,
+        proyectoId: result.data.proyectoId || null,
+        titulo: result.data.titulo.trim(),
+        temario: result.data.temario.trim(),
+        duracionHoras: result.data.duracionHoras,
+        modalidad: result.data.modalidad,
+        fechaInicio: new Date(result.data.fechaInicio),
+        fechaFin: result.data.fechaFin ? new Date(result.data.fechaFin) : null,
+        materiales: result.data.materiales || null,
         estado: "PLANIFICADA",
       },
       include: {
@@ -138,7 +106,7 @@ export async function POST(request: Request) {
         accion: "CREATE",
         entidad: "Capacitacion",
         entidadId: capacitacion.id,
-        detalle: { titulo: capacitacion.titulo, modalidad },
+        detalle: { titulo: capacitacion.titulo, modalidad: result.data.modalidad },
         empleadoId: session.user.id,
       },
     })

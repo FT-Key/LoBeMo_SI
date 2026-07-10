@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { createProyectoSchema } from "@/shared/validation"
 
 const ROLES_PERMITIDOS_CREAR = ["GERENTE_GENERAL", "CISO"]
 
@@ -93,16 +95,10 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { nombre, descripcion, clienteId, servicioId, fechaEstimadaFin, montoAcordado } = body
+    const result = validateBody(createProyectoSchema, body)
+    if (!result.success) return result.error
 
-    if (!nombre || !clienteId || !servicioId) {
-      return NextResponse.json(
-        { error: "Nombre, cliente y servicio son obligatorios" },
-        { status: 400 }
-      )
-    }
-
-    const cliente = await prisma.cliente.findUnique({ where: { id: clienteId } })
+    const cliente = await prisma.cliente.findUnique({ where: { id: result.data.clienteId } })
     if (!cliente || !cliente.activo) {
       return NextResponse.json(
         { error: "Cliente no encontrado o inactivo" },
@@ -110,7 +106,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const servicio = await prisma.servicio.findUnique({ where: { id: servicioId } })
+    const servicio = await prisma.servicio.findUnique({ where: { id: result.data.servicioId } })
     if (!servicio) {
       return NextResponse.json(
         { error: "Servicio no encontrado" },
@@ -120,12 +116,12 @@ export async function POST(request: Request) {
 
     const proyecto = await prisma.proyecto.create({
       data: {
-        nombre,
-        descripcion,
-        clienteId,
-        servicioId,
-        fechaEstimadaFin: fechaEstimadaFin ? new Date(fechaEstimadaFin) : null,
-        montoAcordado: montoAcordado ? parseFloat(montoAcordado) : null,
+        nombre: result.data.nombre,
+        descripcion: result.data.descripcion || null,
+        clienteId: result.data.clienteId,
+        servicioId: result.data.servicioId,
+        fechaEstimadaFin: result.data.fechaEstimadaFin ? new Date(result.data.fechaEstimadaFin) : null,
+        montoAcordado: result.data.montoAcordado ? parseFloat(result.data.montoAcordado) : null,
         estado: "RELEVAMIENTO",
       },
     })
@@ -144,7 +140,7 @@ export async function POST(request: Request) {
         accion: "CREATE",
         entidad: "Proyecto",
         entidadId: proyecto.id,
-        detalle: { nombre, clienteId, servicioId },
+        detalle: { nombre: result.data.nombre, clienteId: result.data.clienteId, servicioId: result.data.servicioId },
         empleadoId: session.user.id,
       },
     })

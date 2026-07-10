@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
-
-const PRIORIDADES = ["BAJA", "MEDIA", "ALTA", "CRITICA"]
-const CATEGORIAS = ["INCIDENTE", "CONSULTA", "SOLICITUD"]
+import { validateBody } from "@/lib/api-validate"
+import { createTicketSchema } from "@/shared/validation"
 
 export async function GET(request: NextRequest) {
   try {
@@ -70,35 +69,18 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { titulo, descripcion, prioridad, categoria, clienteNombre, proyectoId, asignadoAId } = body
+    const result = validateBody(createTicketSchema, body)
+    if (!result.success) return result.error
 
-    if (!titulo || !titulo.trim()) {
-      return NextResponse.json({ error: "El título es obligatorio" }, { status: 400 })
-    }
-
-    if (prioridad && !PRIORIDADES.includes(prioridad)) {
-      return NextResponse.json(
-        { error: `Prioridad inválida. Debe ser: ${PRIORIDADES.join(", ")}` },
-        { status: 400 }
-      )
-    }
-
-    if (categoria && !CATEGORIAS.includes(categoria)) {
-      return NextResponse.json(
-        { error: `Categoría inválida. Debe ser: ${CATEGORIAS.join(", ")}` },
-        { status: 400 }
-      )
-    }
-
-    if (proyectoId) {
-      const proyecto = await prisma.proyecto.findUnique({ where: { id: proyectoId } })
+    if (result.data.proyectoId) {
+      const proyecto = await prisma.proyecto.findUnique({ where: { id: result.data.proyectoId } })
       if (!proyecto) {
         return NextResponse.json({ error: "Proyecto no encontrado" }, { status: 404 })
       }
     }
 
-    if (asignadoAId) {
-      const empleado = await prisma.empleado.findUnique({ where: { id: asignadoAId } })
+    if (result.data.asignadoAId) {
+      const empleado = await prisma.empleado.findUnique({ where: { id: result.data.asignadoAId } })
       if (!empleado) {
         return NextResponse.json({ error: "Empleado no encontrado" }, { status: 404 })
       }
@@ -106,14 +88,14 @@ export async function POST(request: Request) {
 
     const ticket = await prisma.ticketSoporte.create({
       data: {
-        titulo: titulo.trim(),
-        descripcion: descripcion?.trim() || null,
-        prioridad: prioridad || "MEDIA",
-        categoria: categoria || null,
-        clienteNombre: clienteNombre?.trim() || null,
-        proyectoId: proyectoId || null,
+        titulo: result.data.titulo.trim(),
+        descripcion: result.data.descripcion?.trim() || null,
+        prioridad: result.data.prioridad,
+        categoria: result.data.categoria || null,
+        clienteNombre: result.data.clienteNombre?.trim() || null,
+        proyectoId: result.data.proyectoId || null,
         creadorId: session.user.id,
-        asignadoAId: asignadoAId || null,
+        asignadoAId: result.data.asignadoAId || null,
         estado: "ABIERTO",
       },
       include: {

@@ -2,18 +2,16 @@ import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { createEmpleadoSchema } from "@/shared/validation"
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { nombre, apellido, email, password, rol, area, isInitialSetup } = body
+    const result = validateBody(createEmpleadoSchema, body)
+    if (!result.success) return result.error
 
-    if (!nombre || !apellido || !email || !password || !rol || !area) {
-      return NextResponse.json(
-        { error: "Todos los campos son obligatorios" },
-        { status: 400 }
-      )
-    }
+    const { isInitialSetup } = body
 
     if (!isInitialSetup) {
       const session = await auth()
@@ -32,7 +30,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const existing = await prisma.empleado.findUnique({ where: { email } })
+    const existing = await prisma.empleado.findUnique({ where: { email: result.data.email } })
     if (existing) {
       return NextResponse.json(
         { error: "Ya existe un empleado con ese email" },
@@ -40,16 +38,16 @@ export async function POST(request: Request) {
       )
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12)
+    const hashedPassword = await bcrypt.hash(result.data.password, 12)
 
     const empleado = await prisma.empleado.create({
       data: {
-        nombre,
-        apellido,
-        email,
+        nombre: result.data.nombre,
+        apellido: result.data.apellido,
+        email: result.data.email,
         password: hashedPassword,
-        rol,
-        area,
+        rol: result.data.rol,
+        area: result.data.area,
       },
     })
 
@@ -58,7 +56,7 @@ export async function POST(request: Request) {
         accion: "CREATE",
         entidad: "Empleado",
         entidadId: empleado.id,
-        detalle: { email, rol },
+        detalle: { email: result.data.email, rol: result.data.rol },
       },
     })
 

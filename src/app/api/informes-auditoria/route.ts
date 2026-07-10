@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { createInformeSchema } from "@/shared/validation"
 
 export async function GET(request: NextRequest) {
   try {
@@ -63,31 +65,11 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { proyectoId, alcance, criteriosAuditoria, hallazgos, noConformidades, observaciones, recomendaciones } = body
-
-    if (!proyectoId || !alcance || !criteriosAuditoria) {
-      return NextResponse.json(
-        { error: "proyectoId, alcance y criteriosAuditoria son obligatorios" },
-        { status: 400 }
-      )
-    }
-
-    if (!alcance.trim()) {
-      return NextResponse.json(
-        { error: "El alcance no puede estar vacío" },
-        { status: 400 }
-      )
-    }
-
-    if (!criteriosAuditoria.trim()) {
-      return NextResponse.json(
-        { error: "Los criterios de auditoría no pueden estar vacíos" },
-        { status: 400 }
-      )
-    }
+    const result = validateBody(createInformeSchema, body)
+    if (!result.success) return result.error
 
     const proyecto = await prisma.proyecto.findUnique({
-      where: { id: proyectoId },
+      where: { id: result.data.proyectoId },
       include: { servicio: { select: { nombre: true } } },
     })
     if (!proyecto) {
@@ -103,14 +85,14 @@ export async function POST(request: Request) {
 
     const informe = await prisma.informeAuditoria.create({
       data: {
-        proyectoId,
+        proyectoId: result.data.proyectoId,
         creadorId: session.user.id,
-        alcance: alcance.trim(),
-        criteriosAuditoria: criteriosAuditoria.trim(),
-        hallazgos: hallazgos || [],
-        noConformidades: noConformidades || [],
-        observaciones: observaciones || [],
-        recomendaciones: recomendaciones || [],
+        alcance: result.data.alcance.trim(),
+        criteriosAuditoria: result.data.criteriosAuditoria.trim(),
+        hallazgos: [],
+        noConformidades: [],
+        observaciones: [],
+        recomendaciones: [],
         estado: "BORRADOR",
       },
       include: {
@@ -124,7 +106,7 @@ export async function POST(request: Request) {
         accion: "CREATE",
         entidad: "InformeAuditoria",
         entidadId: informe.id,
-        detalle: { proyectoId, alcance: informe.alcance },
+        detalle: { proyectoId: result.data.proyectoId, alcance: informe.alcance },
         empleadoId: session.user.id,
       },
     })

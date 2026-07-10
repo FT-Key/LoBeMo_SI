@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { createHitoSchema } from "@/shared/validation"
 
 export async function GET(request: NextRequest) {
   try {
@@ -56,33 +58,20 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { proyectoId, nombre, descripcion, fechaPrevista } = body
+    const result = validateBody(createHitoSchema, body)
+    if (!result.success) return result.error
 
-    if (!proyectoId || !nombre || !fechaPrevista) {
-      return NextResponse.json(
-        { error: "Proyecto, nombre y fecha prevista son obligatorios" },
-        { status: 400 }
-      )
-    }
-
-    if (!nombre.trim()) {
-      return NextResponse.json(
-        { error: "El nombre no puede estar vacío" },
-        { status: 400 }
-      )
-    }
-
-    const proyecto = await prisma.proyecto.findUnique({ where: { id: proyectoId } })
+    const proyecto = await prisma.proyecto.findUnique({ where: { id: result.data.proyectoId } })
     if (!proyecto) {
       return NextResponse.json({ error: "Proyecto no encontrado" }, { status: 404 })
     }
 
     const hito = await prisma.hito.create({
       data: {
-        proyectoId,
-        nombre: nombre.trim(),
-        descripcion: descripcion?.trim() || null,
-        fechaPrevista: new Date(fechaPrevista),
+        proyectoId: result.data.proyectoId,
+        nombre: result.data.nombre.trim(),
+        descripcion: result.data.descripcion?.trim() || null,
+        fechaPrevista: new Date(result.data.fechaPrevista),
       },
     })
 
@@ -91,7 +80,7 @@ export async function POST(request: Request) {
         accion: "CREATE",
         entidad: "Hito",
         entidadId: hito.id,
-        detalle: { proyectoId, nombre: hito.nombre, fechaPrevista: hito.fechaPrevista },
+        detalle: { proyectoId: result.data.proyectoId, nombre: hito.nombre, fechaPrevista: hito.fechaPrevista },
         empleadoId: session.user.id,
       },
     })

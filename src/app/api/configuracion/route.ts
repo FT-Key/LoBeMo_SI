@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+
+const configItemSchema = z.object({
+  clave: z.string().min(1, "La clave es obligatoria"),
+  valor: z.string().min(1, "El valor es obligatorio"),
+})
+
+const updateConfigSchema = z.object({
+  configuraciones: z.array(configItemSchema).min(1, "Se requiere al menos una configuración"),
+})
 
 export async function GET() {
   const session = await auth()
@@ -22,13 +33,8 @@ export async function PATCH(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { configuraciones } = body as {
-    configuraciones: { clave: string; valor: string }[]
-  }
-
-  if (!Array.isArray(configuraciones) || configuraciones.length === 0) {
-    return NextResponse.json({ error: "Se requiere al menos una configuración" }, { status: 400 })
-  }
+  const result = validateBody(updateConfigSchema, body)
+  if (!result.success) return result.error
 
   const CLAVES_VALIDAS = [
     "MAX_PROYECTOS_ACTIVOS_POR_EMPLEADO",
@@ -36,7 +42,7 @@ export async function PATCH(request: NextRequest) {
     "DIAS_AVISO_HITO",
   ]
 
-  for (const c of configuraciones) {
+  for (const c of result.data.configuraciones) {
     if (!CLAVES_VALIDAS.includes(c.clave)) {
       return NextResponse.json({ error: `Clave inválida: ${c.clave}` }, { status: 400 })
     }
@@ -50,7 +56,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const results = []
-  for (const c of configuraciones) {
+  for (const c of result.data.configuraciones) {
     const updated = await prisma.configuracion.upsert({
       where: { clave: c.clave },
       update: { valor: c.valor },
@@ -64,7 +70,7 @@ export async function PATCH(request: NextRequest) {
       accion: "UPDATE",
       entidad: "Configuracion",
       entidadId: "all",
-      detalle: { configuraciones },
+      detalle: { configuraciones: result.data.configuraciones },
       empleadoId: session.user.id,
     },
   })

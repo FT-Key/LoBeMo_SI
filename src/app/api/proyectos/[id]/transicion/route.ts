@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { Rol } from "@/generated/prisma/enums"
+import { validateBody } from "@/lib/api-validate"
+import { transicionEstadoSchema } from "@/shared/validation"
 
 interface TransicionValida {
   desde: string[]
@@ -103,14 +105,10 @@ export async function POST(
 
     const { id } = await params
     const body = await request.json()
-    const { nuevoEstado } = body
+    const result = validateBody(transicionEstadoSchema, body)
+    if (!result.success) return result.error
 
-    if (!nuevoEstado) {
-      return NextResponse.json(
-        { error: "El campo nuevoEstado es obligatorio" },
-        { status: 400 }
-      )
-    }
+    const { nuevoEstado } = result.data
 
     const proyecto = await prisma.proyecto.findUnique({
       where: { id },

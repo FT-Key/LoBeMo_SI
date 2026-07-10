@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { validateBody } from "@/lib/api-validate"
+import { updateClienteSchema } from "@/shared/validation"
 
 export async function GET(
   _request: Request,
@@ -36,14 +38,16 @@ export async function PATCH(
 
     const { id } = await params
     const body = await request.json()
-    const { razonSocial, cuit, emailContacto, telefono, direccion, sector, confirmCuit } = body
+    const result = validateBody(updateClienteSchema, body)
+    if (!result.success) return result.error
 
     const existing = await prisma.cliente.findUnique({ where: { id } })
     if (!existing) {
       return NextResponse.json({ error: "Cliente no encontrado" }, { status: 404 })
     }
 
-    if (cuit && cuit !== existing.cuit && !confirmCuit) {
+    const cuit = result.data.cuit
+    if (cuit && cuit !== existing.cuit && !body.confirmCuit) {
       return NextResponse.json(
         { error: "Cambiar el CUIT requiere confirmación adicional", requiereConfirmacion: true },
         { status: 400 }
@@ -60,17 +64,17 @@ export async function PATCH(
       }
     }
 
-    const data: Record<string, unknown> = {}
-    if (razonSocial !== undefined) data.razonSocial = razonSocial
-    if (cuit !== undefined) data.cuit = cuit
-    if (emailContacto !== undefined) data.emailContacto = emailContacto
-    if (telefono !== undefined) data.telefono = telefono
-    if (direccion !== undefined) data.direccion = direccion
-    if (sector !== undefined) data.sector = sector
+    const updateData: Record<string, unknown> = {}
+    if (result.data.razonSocial !== undefined) updateData.razonSocial = result.data.razonSocial
+    if (result.data.cuit !== undefined) updateData.cuit = result.data.cuit
+    if (result.data.emailContacto !== undefined) updateData.emailContacto = result.data.emailContacto || null
+    if (result.data.telefono !== undefined) updateData.telefono = result.data.telefono || null
+    if (result.data.direccion !== undefined) updateData.direccion = result.data.direccion || null
+    if (result.data.sector !== undefined) updateData.sector = result.data.sector || null
 
     const cliente = await prisma.cliente.update({
       where: { id },
-      data,
+      data: updateData,
     })
 
     await prisma.auditLog.create({
@@ -78,7 +82,7 @@ export async function PATCH(
         accion: "UPDATE",
         entidad: "Cliente",
         entidadId: id,
-        detalle: { cambios: Object.keys(data) },
+        detalle: { cambios: Object.keys(updateData) },
         empleadoId: session.user.id,
       },
     })

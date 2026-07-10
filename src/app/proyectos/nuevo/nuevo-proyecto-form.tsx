@@ -1,7 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
+import { createProyectoSchema, type CreateProyectoFormData } from "@/shared/validation"
 
 export function NuevoProyectoForm({
   clientes,
@@ -11,36 +13,17 @@ export function NuevoProyectoForm({
   servicios: { id: string; nombre: string }[]
 }) {
   const router = useRouter()
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState("")
-  const [form, setForm] = useState({
-    nombre: "",
-    descripcion: "",
-    clienteId: "",
-    servicioId: "",
-    fechaEstimadaFin: "",
-    montoAcordado: "",
+  const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<CreateProyectoFormData>({
+    resolver: zodResolver(createProyectoSchema),
+    defaultValues: { nombre: "", descripcion: "", clienteId: "", servicioId: "", fechaEstimadaFin: "", montoAcordado: "" },
   })
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError("")
-
-    if (!form.nombre || !form.clienteId || !form.servicioId) {
-      setError("Nombre, cliente y servicio son obligatorios")
-      return
-    }
-
-    setSaving(true)
+  async function onSubmit(data: CreateProyectoFormData) {
     try {
       const res = await fetch("/api/proyectos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(data),
       })
 
       if (res.ok) {
@@ -48,101 +31,69 @@ export function NuevoProyectoForm({
         router.refresh()
       } else {
         const json = await res.json()
-        setError(json.error || "Error al crear el proyecto")
+        setError("root", { message: json.error || "Error al crear el proyecto" })
       }
     } catch {
-      setError("Error de conexión")
-    } finally {
-      setSaving(false)
+      setError("root", { message: "Error de conexión" })
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      {error && (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
+      {errors.root?.message && (
         <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
-          {error}
+          {errors.root.message}
         </div>
       )}
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Nombre del proyecto *</label>
-        <input
-          name="nombre"
-          value={form.nombre}
-          onChange={handleChange}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          placeholder="Ej: Auditoría ISO 27001 - Cliente X"
-        />
+        <input {...register("nombre")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ej: Auditoría ISO 27001 - Cliente X" />
+        {errors.nombre && <p className="text-xs text-destructive">{errors.nombre.message}</p>}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Descripción</label>
-        <textarea
-          name="descripcion"
-          value={form.descripcion}
-          onChange={handleChange}
-          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
-          placeholder="Descripción del proyecto..."
-        />
+        <textarea {...register("descripcion")} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]" placeholder="Descripción del proyecto..." />
+        {errors.descripcion && <p className="text-xs text-destructive">{errors.descripcion.message}</p>}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Cliente *</label>
-        <select
-          name="clienteId"
-          value={form.clienteId}
-          onChange={handleChange}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
+        <select {...register("clienteId")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
           <option value="">Seleccionar cliente</option>
           {clientes.map((c) => (
             <option key={c.id} value={c.id}>{c.razonSocial}</option>
           ))}
         </select>
+        {errors.clienteId && <p className="text-xs text-destructive">{errors.clienteId.message}</p>}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Servicio *</label>
-        <select
-          name="servicioId"
-          value={form.servicioId}
-          onChange={handleChange}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
+        <select {...register("servicioId")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
           <option value="">Seleccionar servicio</option>
           {servicios.map((s) => (
             <option key={s.id} value={s.id}>{s.nombre.replace(/_/g, " ")}</option>
           ))}
         </select>
+        {errors.servicioId && <p className="text-xs text-destructive">{errors.servicioId.message}</p>}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Fecha estimada de finalización</label>
-        <input
-          name="fechaEstimadaFin"
-          type="date"
-          value={form.fechaEstimadaFin}
-          onChange={handleChange}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-        />
+        <input {...register("fechaEstimadaFin")} type="date" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+        {errors.fechaEstimadaFin && <p className="text-xs text-destructive">{errors.fechaEstimadaFin.message}</p>}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Monto acordado (ARS)</label>
-        <input
-          name="montoAcordado"
-          type="number"
-          step="0.01"
-          value={form.montoAcordado}
-          onChange={handleChange}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          placeholder="0.00"
-        />
+        <input {...register("montoAcordado")} type="number" step="0.01" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="0.00" />
+        {errors.montoAcordado && <p className="text-xs text-destructive">{errors.montoAcordado.message}</p>}
       </div>
 
-      <button type="submit" disabled={saving} className="w-full h-10 rounded-md bg-foreground text-background text-sm font-medium hover:bg-foreground/90 disabled:opacity-50">
-        {saving ? "Guardando..." : "Crear proyecto"}
+      <button type="submit" disabled={isSubmitting} className="w-full h-10 rounded-md bg-foreground text-background text-sm font-medium hover:bg-foreground/90 disabled:opacity-50">
+        {isSubmitting ? "Guardando..." : "Crear proyecto"}
       </button>
     </form>
   )
