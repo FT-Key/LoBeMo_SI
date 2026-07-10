@@ -113,17 +113,17 @@ export function StatsSection() {
         <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
           {stats.map((stat, idx) => (
             <ScrollReveal key={stat.label} delay={idx * 100}>
-              <div className="group relative flex h-52 flex-col overflow-hidden rounded-2xl border border-border/30 bg-surface/40 backdrop-blur-sm transition-all duration-500 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10">
+              <div className="group relative flex h-44 sm:h-52 flex-col overflow-hidden rounded-2xl border border-border/30 bg-surface/40 backdrop-blur-sm transition-all duration-500 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/10 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
 
                 <div className="flex flex-1 flex-col items-center justify-center px-6 transition-all duration-500 group-hover:translate-y-[-8px]">
                   <div
-                    className="mb-2 text-5xl font-black text-primary transition-transform duration-500 group-hover:scale-110 md:text-6xl"
+                    className="mb-2 text-4xl font-black text-primary transition-transform duration-500 group-hover:scale-110 md:text-6xl"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
                     <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                   </div>
-                  <div className="text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors group-hover:text-primary">
+                  <div className="text-[11px] sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors group-hover:text-primary">
                     {stat.label}
                   </div>
                 </div>
