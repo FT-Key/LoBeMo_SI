@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { InformeAuditoriaForm } from "@/components/informes-auditoria/informe-auditoria-form"
 import Link from "next/link"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default async function NuevoInformePage() {
   const session = await requireAuth()
@@ -10,9 +10,11 @@ export default async function NuevoInformePage() {
   const puedeCrear = session.user.rol === "AUDITOR" || session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
   if (!puedeCrear) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">No autorizado</p>
-      </div>
+      <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/informes-auditoria">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-muted-foreground">No autorizado</p>
+        </div>
+      </AdminSidebar>
     )
   }
 
@@ -23,17 +25,15 @@ export default async function NuevoInformePage() {
   })
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/informes-auditoria" />
-
-      <main className="container mx-auto px-4 py-8">
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/informes-auditoria">
+      <div className="max-w-lg">
         <div className="mb-6">
-          <Link href="/informes-auditoria" className="text-sm text-primary hover:underline">← Volver</Link>
+          <Link href="/informes-auditoria" className="text-sm text-muted-foreground hover:text-foreground transition-colors">&larr; Volver</Link>
           <h2 className="text-2xl font-bold mt-2">Nuevo informe de auditoría</h2>
         </div>
 
         <InformeAuditoriaForm proyectos={JSON.parse(JSON.stringify(proyectos))} />
-      </main>
-    </div>
+      </div>
+    </AdminSidebar>
   )
 }

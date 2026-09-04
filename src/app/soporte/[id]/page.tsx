@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { TicketDetalle } from "@/components/soporte/ticket-detalle"
 import { notFound } from "next/navigation"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default async function TicketDetallePage({
   params,
@@ -15,9 +15,11 @@ export default async function TicketDetallePage({
   const puedeVer = ["SOPORTE_TECNICO", "GERENTE_GENERAL", "CISO"].includes(session.user.rol)
   if (!puedeVer) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">No autorizado</p>
-      </div>
+      <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/soporte">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-muted-foreground">No autorizado</p>
+        </div>
+      </AdminSidebar>
     )
   }
 
@@ -35,12 +37,8 @@ export default async function TicketDetallePage({
   }
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/soporte" />
-
-      <main className="container mx-auto px-4 py-8">
-        <TicketDetalle ticket={JSON.parse(JSON.stringify(ticket))} sessionRol={session.user.rol} />
-      </main>
-    </div>
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/soporte">
+      <TicketDetalle ticket={JSON.parse(JSON.stringify(ticket))} sessionRol={session.user.rol} />
+    </AdminSidebar>
   )
 }

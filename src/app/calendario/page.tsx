@@ -1,22 +1,20 @@
 import { requireAuth } from "@/lib/auth-helpers"
 import { CalendarioView } from "./calendario-view"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default async function CalendarioPage() {
   const session = await requireAuth()
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/calendario" />
-
-      <main className="container mx-auto px-4 py-8 max-w-5xl">
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/calendario">
+      <div className="max-w-5xl">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold">Calendario</h2>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Calendario</h1>
           <p className="text-sm text-muted-foreground mt-1">Hitos y vencimientos de propuestas</p>
         </div>
 
         <CalendarioView />
-      </main>
-    </div>
+      </div>
+    </AdminSidebar>
   )
 }

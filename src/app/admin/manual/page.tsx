@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { redirect } from "next/navigation"
 import { readdir, readFile } from "fs/promises"
 import { join } from "path"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { ManualView } from "./manual-view"
 
 const MANUALS_DIR = join(process.cwd(), "src", "content", "manuals")
@@ -48,12 +48,8 @@ export default async function ManualPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/admin/manual" />
-      <main className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-6">Manuales del Sistema</h2>
-        <ManualView manuals={manuals} />
-      </main>
-    </div>
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/admin/manual">
+      <ManualView manuals={manuals} />
+    </AdminSidebar>
   )
 }

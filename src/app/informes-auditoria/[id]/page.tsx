@@ -4,7 +4,7 @@ import { InformeAuditoriaDetalle } from "@/components/informes-auditoria/informe
 import { ExportarPDFButton } from "@/components/exportar/exportar-pdf-button"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default async function InformeAuditoriaDetallePage({
   params,
@@ -37,19 +37,19 @@ export default async function InformeAuditoriaDetallePage({
   const esGerenteOCiso = session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
   if (!esCreador && !esGerenteOCiso) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">No autorizado</p>
-      </div>
+      <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/informes-auditoria">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-muted-foreground">No autorizado</p>
+        </div>
+      </AdminSidebar>
     )
   }
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/informes-auditoria" />
-
-      <main className="container mx-auto px-4 py-8">
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/informes-auditoria">
+      <div className="max-w-5xl">
         <div className="mb-6 flex items-center justify-between">
-          <Link href="/informes-auditoria" className="text-sm text-primary hover:underline">← Volver a informes</Link>
+          <Link href="/informes-auditoria" className="text-sm text-muted-foreground hover:text-foreground transition-colors">&larr; Volver a informes</Link>
           <ExportarPDFButton url={`/api/exportar/informe-auditoria/${id}`} label="Exportar PDF" />
         </div>
 
@@ -58,7 +58,7 @@ export default async function InformeAuditoriaDetallePage({
           sessionRol={session.user.rol}
           sessionUserId={session.user.id}
         />
-      </main>
-    </div>
+      </div>
+    </AdminSidebar>
   )
 }

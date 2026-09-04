@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { NuevoProyectoForm } from "./nuevo-proyecto-form"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default async function NuevoProyectoPage() {
   const session = await requireAuth()
@@ -25,12 +25,10 @@ export default async function NuevoProyectoPage() {
   ])
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/proyectos" />
-
-      <main className="container mx-auto px-4 py-8">
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/proyectos">
+      <div className="max-w-lg">
         <div className="mb-6">
-          <Link href="/proyectos" className="text-sm text-primary hover:underline">← Volver</Link>
+          <Link href="/proyectos" className="text-sm text-muted-foreground hover:text-foreground transition-colors">&larr; Volver</Link>
           <h2 className="text-2xl font-bold mt-2">Nuevo proyecto</h2>
         </div>
 
@@ -38,7 +36,7 @@ export default async function NuevoProyectoPage() {
           clientes={JSON.parse(JSON.stringify(clientes))}
           servicios={JSON.parse(JSON.stringify(servicios))}
         />
-      </main>
-    </div>
+      </div>
+    </AdminSidebar>
   )
 }

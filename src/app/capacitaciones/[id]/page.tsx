@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { CapacitacionDetalle } from "@/components/capacitaciones/capacitacion-detalle"
 import Link from "next/link"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { notFound } from "next/navigation"
 
 export default async function CapacitacionDetallePage({
@@ -16,9 +16,11 @@ export default async function CapacitacionDetallePage({
   const puedeVer = session.user.rol === "CAPACITADOR" || session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
   if (!puedeVer) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">No autorizado</p>
-      </div>
+      <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/capacitaciones">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-muted-foreground">No autorizado</p>
+        </div>
+      </AdminSidebar>
     )
   }
 
@@ -40,19 +42,17 @@ export default async function CapacitacionDetallePage({
   }
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/capacitaciones" />
-
-      <main className="container mx-auto px-4 py-8">
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/capacitaciones">
+      <div className="max-w-5xl">
         <div className="mb-6">
-          <Link href="/capacitaciones" className="text-sm text-primary hover:underline">← Volver a capacitaciones</Link>
+          <Link href="/capacitaciones" className="text-sm text-muted-foreground hover:text-foreground transition-colors">&larr; Volver a capacitaciones</Link>
         </div>
 
         <CapacitacionDetalle
           capacitacion={JSON.parse(JSON.stringify(capacitacion))}
           sessionRol={session.user.rol}
         />
-      </main>
-    </div>
+      </div>
+    </AdminSidebar>
   )
 }

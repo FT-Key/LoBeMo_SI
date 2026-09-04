@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import { AdminView } from "./admin-view"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 const CLAVES_LABELS: Record<string, { label: string; descripcion: string }> = {
   MAX_PROYECTOS_ACTIVOS_POR_EMPLEADO: {
@@ -49,20 +49,8 @@ export default async function AdminPage() {
   }))
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/admin" />
-
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Panel de Administración</h2>
-        </div>
-
-        <p className="text-muted-foreground mb-6">
-          Configura los parámetros generales del sistema.
-        </p>
-
-        <AdminView initialItems={items} />
-      </main>
-    </div>
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/admin">
+      <AdminView initialItems={items} />
+    </AdminSidebar>
   )
 }
