@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { CapacitacionList } from "@/components/capacitaciones/capacitacion-list"
 import Link from "next/link"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default async function CapacitacionesPage() {
   const session = await requireAuth()
@@ -12,9 +12,11 @@ export default async function CapacitacionesPage() {
 
   if (!puedeVer) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">No autorizado</p>
-      </div>
+      <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/capacitaciones">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-muted-foreground">No autorizado</p>
+        </div>
+      </AdminSidebar>
     )
   }
 
@@ -31,27 +33,26 @@ export default async function CapacitacionesPage() {
   ])
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/capacitaciones" />
-
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Capacitaciones</h2>
-          {puedeCrear && (
-            <Link
-              href="/capacitaciones/nuevo"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90"
-            >
-              Nueva capacitación
-            </Link>
-          )}
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/capacitaciones">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Capacitaciones</h1>
+          <p className="text-sm text-muted-foreground mt-1">Gestión de capacitaciones y entrenamientos</p>
         </div>
+        {puedeCrear && (
+          <Link
+            href="/capacitaciones/nuevo"
+            className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
+          >
+            Nueva capacitación
+          </Link>
+        )}
+      </div>
 
-        <CapacitacionList
-          initialData={JSON.parse(JSON.stringify(capacitaciones))}
-          initialTotal={total}
-        />
-      </main>
-    </div>
+      <CapacitacionList
+        initialData={JSON.parse(JSON.stringify(capacitaciones))}
+        initialTotal={total}
+      />
+    </AdminSidebar>
   )
 }

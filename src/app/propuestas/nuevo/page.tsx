@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { NuevaPropuestaForm } from "./form"
 
 export default async function NuevaPropuestaPage(props: {
@@ -30,12 +30,10 @@ export default async function NuevaPropuestaPage(props: {
   })
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/propuestas" />
-
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/propuestas">
+      <div className="max-w-2xl">
         <div className="mb-6">
-          <Link href="/propuestas" className="text-sm text-muted-foreground hover:underline">&larr; Volver a propuestas</Link>
+          <Link href="/propuestas" className="text-sm text-muted-foreground hover:text-foreground transition-colors">&larr; Volver a propuestas</Link>
         </div>
         <h2 className="text-2xl font-bold mb-6">
           {recotizarId ? "Recotizar propuesta" : "Nueva propuesta"}
@@ -46,7 +44,7 @@ export default async function NuevaPropuestaPage(props: {
           proyectoIdInicial={proyectoIdPreseleccionado}
           recotizarId={recotizarId}
         />
-      </main>
-    </div>
+      </div>
+    </AdminSidebar>
   )
 }

@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { PropuestasList } from "./propuestas-list"
 import Link from "next/link"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 const ESTADO_PROPUESTA_LABELS: Record<string, string> = {
   ENVIADA: "Enviada",
@@ -34,28 +34,27 @@ export default async function PropuestasPage() {
   ])
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/propuestas" />
-
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Propuestas</h2>
-          {puedeCrear && (
-            <Link
-              href="/propuestas/nuevo"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90"
-            >
-              Nueva propuesta
-            </Link>
-          )}
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/propuestas">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Propuestas</h1>
+          <p className="text-sm text-muted-foreground mt-1">Gestión de propuestas comerciales</p>
         </div>
+        {puedeCrear && (
+          <Link
+            href="/propuestas/nuevo"
+            className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
+          >
+            Nueva propuesta
+          </Link>
+        )}
+      </div>
 
-        <PropuestasList
-          initialData={JSON.parse(JSON.stringify(propuestas))}
-          initialTotal={total}
-          estadoLabels={ESTADO_PROPUESTA_LABELS}
-        />
-      </main>
-    </div>
+      <PropuestasList
+        initialData={JSON.parse(JSON.stringify(propuestas))}
+        initialTotal={total}
+        estadoLabels={ESTADO_PROPUESTA_LABELS}
+      />
+    </AdminSidebar>
   )
 }

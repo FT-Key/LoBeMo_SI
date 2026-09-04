@@ -2,6 +2,14 @@
 
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
+import {
+  FolderOpen,
+  Users,
+  DollarSign,
+  UserPlus,
+  TrendingUp,
+  BarChart3,
+} from "lucide-react"
 
 const MAPA_ESTADOS: Record<string, { label: string; color: string }> = {
   RELEVAMIENTO: { label: "Relevamiento", color: "bg-info" },
@@ -53,137 +61,170 @@ export function DashboardContent({ initialData }: { initialData: DashboardData }
     ...dashboard.proyectosPorEstado.map((p) => p._count)
   )
 
+  const statsCards = [
+    {
+      title: "Proyectos Activos",
+      value: dashboard.proyectosPorEstado
+        .filter((p) => !["CERRADO", "ENTREGADO"].includes(p.estado))
+        .reduce((sum, p) => sum + p._count, 0),
+      icon: <FolderOpen className="size-5" />,
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+    },
+    {
+      title: "Empleados Ocupados",
+      value: dashboard.statsEmpleados.ocupados,
+      subtitle: `/ ${dashboard.statsEmpleados.total}`,
+      icon: <Users className="size-5" />,
+      color: "text-warning",
+      bgColor: "bg-warning/10",
+      progress: dashboard.statsEmpleados.total > 0
+        ? (dashboard.statsEmpleados.ocupados / dashboard.statsEmpleados.total) * 100
+        : 0,
+    },
+    {
+      title: "Ingresos del Mes",
+      value: formatearMonto(Number(dashboard.ingresosDelMes)),
+      icon: <DollarSign className="size-5" />,
+      color: "text-success",
+      bgColor: "bg-success/10",
+    },
+    {
+      title: "Clientes Nuevos",
+      value: dashboard.clientesNuevos,
+      icon: <UserPlus className="size-5" />,
+      color: "text-accent",
+      bgColor: "bg-accent/10",
+    },
+  ]
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
-        <div className="flex items-center gap-2 ml-auto">
-          <label className="text-sm text-muted-foreground">Desde:</label>
-          <input
-            type="date"
-            value={desde}
-            onChange={(e) => setDesde(e.target.value)}
-            className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
-          />
-          <label className="text-sm text-muted-foreground">Hasta:</label>
-          <input
-            type="date"
-            value={hasta}
-            onChange={(e) => setHasta(e.target.value)}
-            className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground"
-          />
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-1">Resumen general del sistema</p>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface border border-border">
+            <label className="text-xs text-muted-foreground">Desde</label>
+            <input
+              type="date"
+              value={desde}
+              onChange={(e) => setDesde(e.target.value)}
+              className="bg-transparent text-sm text-foreground border-0 outline-none w-[130px]"
+            />
+          </div>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface border border-border">
+            <label className="text-xs text-muted-foreground">Hasta</label>
+            <input
+              type="date"
+              value={hasta}
+              onChange={(e) => setHasta(e.target.value)}
+              className="bg-transparent text-sm text-foreground border-0 outline-none w-[130px]"
+            />
+          </div>
           {isFetching && (
-            <span className="text-sm text-muted-foreground animate-pulse">
-              Actualizando...
+            <span className="text-xs text-muted-foreground animate-pulse flex items-center gap-1">
+              <TrendingUp className="size-3" /> Actualizando...
             </span>
           )}
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-lg border border-border bg-surface p-5">
-          <p className="text-sm text-muted-foreground">Proyectos Activos</p>
-          <p className="mt-1 text-3xl font-bold text-foreground">
-            {dashboard.proyectosPorEstado
-              .filter((p) => !["CERRADO", "ENTREGADO"].includes(p.estado))
-              .reduce((sum, p) => sum + p._count, 0)}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-border bg-surface p-5">
-          <p className="text-sm text-muted-foreground">Empleados Ocupados</p>
-          <p className="mt-1 text-3xl font-bold text-foreground">
-            {dashboard.statsEmpleados.ocupados}
-            <span className="text-lg text-muted-foreground">
-              {" "}
-              / {dashboard.statsEmpleados.total}
-            </span>
-          </p>
-          {dashboard.statsEmpleados.total > 0 && (
-            <div className="mt-2 h-2 w-full rounded-full bg-muted">
-              <div
-                className="h-2 rounded-full bg-success transition-all"
-                style={{
-                  width: `${(dashboard.statsEmpleados.ocupados / dashboard.statsEmpleados.total) * 100}%`,
-                }}
-              />
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-lg border border-border bg-surface p-5">
-          <p className="text-sm text-muted-foreground">Ingresos del Mes</p>
-          <p className="mt-1 text-3xl font-bold text-success">
-            {formatearMonto(Number(dashboard.ingresosDelMes))}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-border bg-surface p-5">
-          <p className="text-sm text-muted-foreground">Clientes Nuevos</p>
-          <p className="mt-1 text-3xl font-bold text-primary">
-            {dashboard.clientesNuevos}
-          </p>
-        </div>
-      </div>
-
-      <div className="rounded-lg border border-border bg-surface p-5">
-        <h3 className="text-lg font-semibold text-foreground mb-4">
-          Proyectos por Estado
-        </h3>
-        <div className="space-y-3">
-          {dashboard.proyectosPorEstado.length === 0 && (
-            <p className="text-sm text-muted-foreground">
-              No hay proyectos registrados
-            </p>
-          )}
-          {dashboard.proyectosPorEstado.map((p) => {
-            const info = MAPA_ESTADOS[p.estado] ?? {
-              label: p.estado,
-              color: "bg-muted-foreground",
-            }
-            const porcentaje = (p._count / maxProyectos) * 100
-            return (
-              <div key={p.estado}>
-                <div className="flex items-center justify-between text-sm mb-1">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`inline-block h-2.5 w-2.5 rounded-full ${info.color}`}
-                    />
-                    <span className="text-foreground">{info.label}</span>
-                  </div>
-                  <span className="font-medium text-foreground">
-                    {p._count}
-                  </span>
+      {/* Stats Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {statsCards.map((card) => (
+          <div
+            key={card.title}
+            className="group relative rounded-2xl border border-border bg-surface/50 backdrop-blur-sm p-5 hover:bg-surface/80 transition-all duration-200 hover:shadow-lg hover:shadow-black/10"
+          >
+            <div className="flex items-start justify-between">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">{card.title}</p>
+                <div className="flex items-baseline gap-1.5">
+                  <span className={`text-3xl font-bold ${card.color}`}>{card.value}</span>
+                  {card.subtitle && (
+                    <span className="text-base text-muted-foreground font-medium">{card.subtitle}</span>
+                  )}
                 </div>
-                <div className="h-2 w-full rounded-full bg-muted">
+              </div>
+              <div className={`p-2.5 rounded-xl ${card.bgColor} ${card.color} transition-transform group-hover:scale-110`}>
+                {card.icon}
+              </div>
+            </div>
+            {card.progress !== undefined && (
+              <div className="mt-3">
+                <div className="h-1.5 w-full rounded-full bg-muted/50">
                   <div
-                    className={`h-2 rounded-full ${info.color} transition-all`}
-                    style={{ width: `${porcentaje}%` }}
+                    className="h-1.5 rounded-full bg-warning transition-all duration-500"
+                    style={{ width: `${card.progress}%` }}
                   />
                 </div>
               </div>
-            )
-          })}
-        </div>
+            )}
+          </div>
+        ))}
       </div>
 
-      <div className="rounded-lg border border-border bg-surface p-5">
-        <h3 className="text-lg font-semibold text-foreground mb-2">
-          Empleados
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          <span className="text-success font-medium">
-            {dashboard.statsEmpleados.ocupados} ocupados
-          </span>
-          <span> · </span>
-          <span className="text-muted-foreground">
-            {dashboard.statsEmpleados.disponibles} disponibles
-          </span>
-          <span> · </span>
-          <span className="text-muted-foreground">
-            {dashboard.statsEmpleados.total} total
-          </span>
-        </p>
+      {/* Charts Row */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        {/* Projects by Status */}
+        <div className="lg:col-span-2 rounded-2xl border border-border bg-surface/50 backdrop-blur-sm p-6">
+          <div className="flex items-center gap-2 mb-5">
+            <BarChart3 className="size-5 text-primary" />
+            <h3 className="text-lg font-semibold text-foreground">Proyectos por Estado</h3>
+          </div>
+          <div className="space-y-3.5">
+            {dashboard.proyectosPorEstado.length === 0 && (
+              <p className="text-sm text-muted-foreground">No hay proyectos registrados</p>
+            )}
+            {dashboard.proyectosPorEstado.map((p) => {
+              const info = MAPA_ESTADOS[p.estado] ?? { label: p.estado, color: "bg-muted-foreground" }
+              const porcentaje = (p._count / maxProyectos) * 100
+              return (
+                <div key={p.estado}>
+                  <div className="flex items-center justify-between text-sm mb-1.5">
+                    <div className="flex items-center gap-2.5">
+                      <span className={`inline-block h-2.5 w-2.5 rounded-full ${info.color}`} />
+                      <span className="text-foreground font-medium">{info.label}</span>
+                    </div>
+                    <span className="text-sm font-semibold text-foreground tabular-nums">{p._count}</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-muted/30">
+                    <div
+                      className={`h-2 rounded-full ${info.color} transition-all duration-500`}
+                      style={{ width: `${porcentaje}%` }}
+                    />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Employees Summary */}
+        <div className="rounded-2xl border border-border bg-surface/50 backdrop-blur-sm p-6">
+          <div className="flex items-center gap-2 mb-5">
+            <Users className="size-5 text-success" />
+            <h3 className="text-lg font-semibold text-foreground">Empleados</h3>
+          </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-success/10">
+              <span className="text-sm font-medium text-success">Ocupados</span>
+              <span className="text-lg font-bold text-success">{dashboard.statsEmpleados.ocupados}</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
+              <span className="text-sm font-medium text-muted-foreground">Disponibles</span>
+              <span className="text-lg font-bold text-foreground">{dashboard.statsEmpleados.disponibles}</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-xl bg-muted/30">
+              <span className="text-sm font-medium text-muted-foreground">Total</span>
+              <span className="text-lg font-bold text-foreground">{dashboard.statsEmpleados.total}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
