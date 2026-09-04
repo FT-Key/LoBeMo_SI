@@ -16,7 +16,7 @@ export default async function SoportePage() {
     )
   }
 
-  const [tickets, total] = await Promise.all([
+  const [tickets, total, proyectos] = await Promise.all([
     prisma.ticketSoporte.findMany({
       orderBy: { createdAt: "desc" },
       take: 10,
@@ -27,6 +27,10 @@ export default async function SoportePage() {
       },
     }),
     prisma.ticketSoporte.count(),
+    prisma.proyecto.findMany({
+      orderBy: { nombre: "asc" },
+      select: { id: true, nombre: true },
+    }),
   ])
 
   return (
@@ -44,7 +48,11 @@ export default async function SoportePage() {
           </Link>
         </div>
 
-        <TicketList initialData={JSON.parse(JSON.stringify(tickets))} initialTotal={total} />
+        <TicketList
+          initialData={JSON.parse(JSON.stringify(tickets))}
+          initialTotal={total}
+          proyectos={JSON.parse(JSON.stringify(proyectos))}
+        />
       </main>
     </div>
   )

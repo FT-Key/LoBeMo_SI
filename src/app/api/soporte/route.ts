@@ -17,11 +17,19 @@ export async function GET(request: NextRequest) {
     const estado = searchParams.get("estado") ?? ""
     const prioridad = searchParams.get("prioridad") ?? ""
     const proyectoId = searchParams.get("proyectoId") ?? ""
+    const search = searchParams.get("search") ?? ""
 
     const where: Record<string, unknown> = {}
     if (estado) where.estado = estado
     if (prioridad) where.prioridad = prioridad
     if (proyectoId) where.proyectoId = proyectoId
+    if (search) {
+      where.OR = [
+        { titulo: { contains: search, mode: "insensitive" } },
+        { clienteNombre: { contains: search, mode: "insensitive" } },
+        { proyecto: { nombre: { contains: search, mode: "insensitive" } } },
+      ]
+    }
 
     const puedeVer = ["SOPORTE_TECNICO", "GERENTE_GENERAL", "CISO"].includes(session.user.rol)
     if (!puedeVer) {

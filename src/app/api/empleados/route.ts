@@ -73,25 +73,55 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await auth()
   if (!session?.user || session.user.rol !== "GERENTE_GENERAL") {
     return NextResponse.json({ error: "No autorizado" }, { status: 403 })
   }
 
-  const empleados = await prisma.empleado.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      nombre: true,
-      apellido: true,
-      email: true,
-      rol: true,
-      area: true,
-      activo: true,
-      fechaIngreso: true,
-    },
-  })
+  const { searchParams } = new URL(request.url)
+  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
+  const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
+  const search = searchParams.get("search") ?? ""
+  const rol = searchParams.get("rol") ?? ""
+  const area = searchParams.get("area") ?? ""
+  const activo = searchParams.get("activo") ?? ""
 
-  return NextResponse.json(empleados)
+  const where: Record<string, unknown> = {}
+  if (rol) where.rol = rol
+  if (area) where.area = area
+  if (activo === "true") where.activo = true
+  if (activo === "false") where.activo = false
+  if (search) {
+    where.OR = [
+      { nombre: { contains: search, mode: "insensitive" } },
+      { apellido: { contains: search, mode: "insensitive" } },
+      { email: { contains: search, mode: "insensitive" } },
+    ]
+  }
+
+  const [empleados, total] = await Promise.all([
+    prisma.empleado.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * limit,
+      take: limit,
+      select: {
+        id: true,
+        nombre: true,
+        apellido: true,
+        email: true,
+        rol: true,
+        area: true,
+        activo: true,
+        fechaIngreso: true,
+      },
+    }),
+    prisma.empleado.count({ where }),
+  ])
+
+  return NextResponse.json({
+    data: empleados,
+    pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+  })
 }

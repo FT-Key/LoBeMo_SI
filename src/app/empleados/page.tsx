@@ -7,9 +7,22 @@ import { EmpleadosContent } from "./empleados-content"
 export default async function EmpleadosPage() {
   const session = await requireGerenteGeneral()
 
-  const empleados = await prisma.empleado.findMany({
-    orderBy: { createdAt: "desc" },
-  })
+  const [empleados, total] = await Promise.all([
+    prisma.empleado.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: {
+        id: true,
+        nombre: true,
+        apellido: true,
+        email: true,
+        rol: true,
+        area: true,
+        activo: true,
+      },
+    }),
+    prisma.empleado.count(),
+  ])
 
   return (
     <div className="min-h-screen">
@@ -26,7 +39,10 @@ export default async function EmpleadosPage() {
           </Link>
         </div>
 
-        <EmpleadosContent empleados={JSON.parse(JSON.stringify(empleados))} />
+        <EmpleadosContent
+          initialData={JSON.parse(JSON.stringify(empleados))}
+          initialTotal={total}
+        />
       </main>
     </div>
   )
