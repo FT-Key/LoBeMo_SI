@@ -43,6 +43,7 @@
 ## Project Status
 ✅ 30 US completadas (US-001 a US-031). Todas completadas.
 📋 1 US en Backlog (US-032).
+🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores, 0 warnings.
 ✅ Typecheck: disponible y pasa sin errores.
 
