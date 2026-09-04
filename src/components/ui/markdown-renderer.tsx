@@ -12,42 +12,42 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
       <ReactMarkdown
         components={{
           h1: ({ children }) => (
-            <h1 className="text-3xl font-bold mb-6 mt-8 first:mt-0 border-b border-border pb-3">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 mt-6 sm:mt-8 first:mt-0 border-b border-border pb-3">
               {children}
             </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-2xl font-semibold mb-4 mt-8 first:mt-0 border-b border-border pb-2">
+            <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 mt-6 sm:mt-8 first:mt-0 border-b border-border pb-2">
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="text-xl font-semibold mb-3 mt-6 first:mt-0">
+            <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 mt-4 sm:mt-6 first:mt-0">
               {children}
             </h3>
           ),
           h4: ({ children }) => (
-            <h4 className="text-lg font-semibold mb-2 mt-4 first:mt-0">
+            <h4 className="text-base sm:text-lg font-semibold mb-2 mt-3 sm:mt-4 first:mt-0">
               {children}
             </h4>
           ),
           p: ({ children }) => (
-            <p className="mb-4 leading-7 text-foreground">
+            <p className="mb-3 sm:mb-4 leading-6 sm:leading-7 text-sm sm:text-base text-foreground">
               {children}
             </p>
           ),
           ul: ({ children }) => (
-            <ul className="mb-4 ml-6 list-disc space-y-1.5">
+            <ul className="mb-3 sm:mb-4 ml-5 sm:ml-6 list-disc space-y-1">
               {children}
             </ul>
           ),
           ol: ({ children }) => (
-            <ol className="mb-4 ml-6 list-decimal space-y-1.5">
+            <ol className="mb-3 sm:mb-4 ml-5 sm:ml-6 list-decimal space-y-1">
               {children}
             </ol>
           ),
           li: ({ children }) => (
-            <li className="leading-7 text-foreground">
+            <li className="leading-6 sm:leading-7 text-sm sm:text-base text-foreground">
               {children}
             </li>
           ),
@@ -108,16 +108,16 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
               {children}
             </tr>
           ),
-          th: ({ children }) => (
-            <th className="px-4 py-2 text-left font-semibold text-foreground border border-border">
-              {children}
-            </th>
-          ),
-          td: ({ children }) => (
-            <td className="px-4 py-2 text-foreground border border-border">
-              {children}
-            </td>
-          ),
+            th: ({ children }) => (
+              <th className="px-2 sm:px-4 py-2 text-left font-semibold text-foreground border border-border text-xs sm:text-sm">
+                {children}
+              </th>
+            ),
+            td: ({ children }) => (
+              <td className="px-2 sm:px-4 py-2 text-foreground border border-border text-xs sm:text-sm">
+                {children}
+              </td>
+            ),
           hr: () => (
             <hr className="my-8 border-border" />
           ),
