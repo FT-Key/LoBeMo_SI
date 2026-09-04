@@ -43,8 +43,17 @@
 ## Project Status
 ✅ 30 US completadas (US-001 a US-031). Todas completadas.
 📋 1 US en Backlog (US-032).
+🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores, 0 warnings.
 ✅ Typecheck: disponible y pasa sin errores.
+
+## Último Cambio
+**Mejora de paneles admin (filtros, búsqueda, paginación)** — Branch `feat/admin-filtros-paginacion-busqueda`
+- **Empleados**: Agregados filtros por rol, área, estado; búsqueda por nombre/email; paginación (API + frontend)
+- **Pentesting**: Agregada búsqueda por título/proyecto y filtro por proyecto (API + frontend)
+- **Informes Auditoría**: Agregada búsqueda por alcance/proyecto (API + frontend)
+- **Soporte**: Agregada búsqueda por título/cliente/proyecto y filtro por proyecto (API + frontend)
+- Todas las tablas ahora son responsive (columnas ocultas en mobile, texto trunca)
 
 ## Lint Results
 
