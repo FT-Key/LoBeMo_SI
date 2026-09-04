@@ -35,8 +35,14 @@
 | US-030 | ✅ Done | feat/US-030-form-validations | Merge directo → dev, Merge directo → main | .opencode/workflow/history/US-030.md |
 | US-031 | ✅ Done | feat/US-031-login-secure-cookie + fix/US-031-salt-router | PR #31 → dev, PR #33 → dev, PR #32 → main, PR #34 → main | .opencode/workflow/history/US-031.md |
 
+## Backlog
+| US | Status | Detail |
+|----|--------|--------|
+| US-032 | 📋 Backlog | Upload de Documentos PDF con Cloudflare R2 — .opencode/workflow/history/US-032.md |
+
 ## Project Status
 ✅ 30 US completadas (US-001 a US-031). Todas completadas.
+📋 1 US en Backlog (US-032).
 ✅ Lint: 0 errores, 0 warnings.
 ✅ Typecheck: disponible y pasa sin errores.
 
