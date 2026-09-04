@@ -16,10 +16,17 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
     const proyectoId = searchParams.get("proyectoId") ?? ""
     const estado = searchParams.get("estado") ?? ""
+    const search = searchParams.get("search") ?? ""
 
     const where: Record<string, unknown> = {}
     if (proyectoId) where.proyectoId = proyectoId
     if (estado) where.estado = estado
+    if (search) {
+      where.OR = [
+        { alcance: { contains: search, mode: "insensitive" } },
+        { proyecto: { nombre: { contains: search, mode: "insensitive" } } },
+      ]
+    }
 
     if (session.user.rol !== "GERENTE_GENERAL" && session.user.rol !== "CISO") {
       where.creadorId = session.user.id

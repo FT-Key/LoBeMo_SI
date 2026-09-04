@@ -39,6 +39,8 @@ type Ticket = {
   createdAt: string
 }
 
+type Proyecto = { id: string; nombre: string }
+
 type Pagination = {
   page: number
   limit: number
@@ -49,9 +51,11 @@ type Pagination = {
 export function TicketList({
   initialData,
   initialTotal,
+  proyectos,
 }: {
   initialData: Ticket[]
   initialTotal: number
+  proyectos: Proyecto[]
 }) {
   const [tickets, setTickets] = useState<Ticket[]>(initialData)
   const [pagination, setPagination] = useState<Pagination>({
@@ -60,37 +64,67 @@ export function TicketList({
     total: initialTotal,
     totalPages: Math.ceil(initialTotal / 10),
   })
+  const [search, setSearch] = useState("")
+  const [proyectoId, setProyectoId] = useState("")
   const [estado, setEstado] = useState("")
   const [prioridad, setPrioridad] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const fetchTickets = useCallback(async (p: number, e: string, pr: string) => {
-    setLoading(true)
-    const params = new URLSearchParams()
-    params.set("page", String(p))
-    if (e) params.set("estado", e)
-    if (pr) params.set("prioridad", pr)
-    params.set("limit", "10")
+  const fetchTickets = useCallback(
+    async (p: number, s: string, pid: string, e: string, pr: string) => {
+      setLoading(true)
+      const params = new URLSearchParams()
+      params.set("page", String(p))
+      params.set("limit", "10")
+      if (s) params.set("search", s)
+      if (pid) params.set("proyectoId", pid)
+      if (e) params.set("estado", e)
+      if (pr) params.set("prioridad", pr)
 
-    const res = await fetch(`/api/soporte?${params}`)
-    if (res.ok) {
-      const json = await res.json()
-      setTickets(json.data)
-      setPagination(json.pagination)
-    }
-    setLoading(false)
-  }, [])
+      const res = await fetch(`/api/soporte?${params}`)
+      if (res.ok) {
+        const json = await res.json()
+        setTickets(json.data)
+        setPagination(json.pagination)
+      }
+      setLoading(false)
+    },
+    []
+  )
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <input
+          type="text"
+          placeholder="Buscar por título, cliente o proyecto..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") fetchTickets(1, search, proyectoId, estado, prioridad)
+          }}
+          className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm w-full sm:w-64"
+        />
+        <select
+          value={proyectoId}
+          onChange={(e) => {
+            setProyectoId(e.target.value)
+            fetchTickets(1, search, e.target.value, estado, prioridad)
+          }}
+          className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+        >
+          <option value="">Todos los proyectos</option>
+          {proyectos.map((p) => (
+            <option key={p.id} value={p.id}>{p.nombre}</option>
+          ))}
+        </select>
         <select
           value={estado}
           onChange={(e) => {
             setEstado(e.target.value)
-            fetchTickets(1, e.target.value, prioridad)
+            fetchTickets(1, search, proyectoId, e.target.value, prioridad)
           }}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
           <option value="">Todos los estados</option>
           {ESTADOS.map((e) => (
@@ -101,9 +135,9 @@ export function TicketList({
           value={prioridad}
           onChange={(e) => {
             setPrioridad(e.target.value)
-            fetchTickets(1, estado, e.target.value)
+            fetchTickets(1, search, proyectoId, estado, e.target.value)
           }}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
           <option value="">Todas las prioridades</option>
           <option value="BAJA">Baja</option>
@@ -111,28 +145,37 @@ export function TicketList({
           <option value="ALTA">Alta</option>
           <option value="CRITICA">Crítica</option>
         </select>
+        <button
+          onClick={() => fetchTickets(1, search, proyectoId, estado, prioridad)}
+          className="h-10 rounded-md bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90"
+        >
+          Buscar
+        </button>
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b bg-muted/50">
               <th className="text-left p-3 text-sm font-medium">Título</th>
-              <th className="text-left p-3 text-sm font-medium">Cliente</th>
-              <th className="text-left p-3 text-sm font-medium">Proyecto</th>
+              <th className="text-left p-3 text-sm font-medium hidden sm:table-cell">Cliente</th>
+              <th className="text-left p-3 text-sm font-medium hidden md:table-cell">Proyecto</th>
               <th className="text-left p-3 text-sm font-medium">Prioridad</th>
               <th className="text-left p-3 text-sm font-medium">Estado</th>
-              <th className="text-left p-3 text-sm font-medium">Asignado a</th>
-              <th className="text-left p-3 text-sm font-medium">Creado</th>
+              <th className="text-left p-3 text-sm font-medium hidden lg:table-cell">Asignado a</th>
+              <th className="text-left p-3 text-sm font-medium hidden xl:table-cell">Creado</th>
               <th className="text-left p-3 text-sm font-medium">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {tickets.map((t) => (
               <tr key={t.id} className="border-b last:border-0">
-                <td className="p-3 text-sm font-medium">{t.titulo}</td>
-                <td className="p-3 text-sm text-muted-foreground">{t.clienteNombre ?? "—"}</td>
-                <td className="p-3 text-sm text-muted-foreground">
+                <td className="p-3 text-sm font-medium">
+                  <div>{t.titulo}</div>
+                  <div className="text-xs text-muted-foreground sm:hidden">{t.clienteNombre ?? "—"}</div>
+                </td>
+                <td className="p-3 text-sm text-muted-foreground hidden sm:table-cell">{t.clienteNombre ?? "—"}</td>
+                <td className="p-3 text-sm text-muted-foreground hidden md:table-cell">
                   {t.proyecto?.nombre ?? "—"}
                 </td>
                 <td className="p-3 text-sm">
@@ -145,10 +188,10 @@ export function TicketList({
                     {ESTADO_LABELS[t.estado] ?? t.estado}
                   </span>
                 </td>
-                <td className="p-3 text-sm text-muted-foreground">
+                <td className="p-3 text-sm text-muted-foreground hidden lg:table-cell">
                   {t.asignadoA ? `${t.asignadoA.nombre} ${t.asignadoA.apellido}` : "—"}
                 </td>
-                <td className="p-3 text-sm">{new Date(t.createdAt).toLocaleDateString("es-AR")}</td>
+                <td className="p-3 text-sm hidden xl:table-cell">{new Date(t.createdAt).toLocaleDateString("es-AR")}</td>
                 <td className="p-3 text-sm">
                   <Link href={`/soporte/${t.id}`} className="text-primary hover:underline">
                     Ver detalle
@@ -168,20 +211,20 @@ export function TicketList({
       </div>
 
       {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-sm">
           <span className="text-muted-foreground">
             Mostrando {(pagination.page - 1) * pagination.limit + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total}
           </span>
           <div className="flex gap-2">
             <button
-              onClick={() => { const np = Math.max(1, pagination.page - 1); fetchTickets(np, estado, prioridad) }}
+              onClick={() => { const np = Math.max(1, pagination.page - 1); fetchTickets(np, search, proyectoId, estado, prioridad) }}
               disabled={pagination.page <= 1}
               className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
             >
               Anterior
             </button>
             <button
-              onClick={() => { const np = Math.min(pagination.totalPages, pagination.page + 1); fetchTickets(np, estado, prioridad) }}
+              onClick={() => { const np = Math.min(pagination.totalPages, pagination.page + 1); fetchTickets(np, search, proyectoId, estado, prioridad) }}
               disabled={pagination.page >= pagination.totalPages}
               className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
             >
