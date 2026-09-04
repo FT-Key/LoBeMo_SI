@@ -23,6 +23,7 @@ const NAV_ITEMS: { href: string; label: string; roles: string[] | null }[] = [
   { href: "/soporte", label: "Soporte", roles: ["SOPORTE_TECNICO", "GERENTE_GENERAL", "CISO"] },
   { href: "/informes-auditoria", label: "Auditoría", roles: ["AUDITOR", "GERENTE_GENERAL", "CISO"] },
   { href: "/calendario", label: "Calendario", roles: null },
+  { href: "/admin/manual", label: "Manual", roles: ["GERENTE_GENERAL"] },
 ]
 
 export function Navbar({ name, rol, currentPath }: NavbarProps) {
