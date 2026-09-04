@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { EditarClienteForm } from "./form"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default async function EditarClientePage({
   params,
@@ -24,12 +24,11 @@ export default async function EditarClientePage({
   }
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/clientes" />
-      <main className="container mx-auto px-4 py-8 max-w-md">
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/clientes">
+      <div className="max-w-md">
         <h2 className="text-2xl font-bold mb-6">Editar cliente</h2>
         <EditarClienteForm cliente={JSON.parse(JSON.stringify(cliente))} />
-      </main>
-    </div>
+      </div>
+    </AdminSidebar>
   )
 }

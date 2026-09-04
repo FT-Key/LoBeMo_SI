@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { InformeAuditoriaList } from "@/components/informes-auditoria/informe-auditoria-list"
 import Link from "next/link"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default async function InformesAuditoriaPage() {
   const session = await requireAuth()
@@ -33,28 +33,27 @@ export default async function InformesAuditoriaPage() {
   ])
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/informes-auditoria" />
-
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Informes de Auditoría</h2>
-          {puedeCrear && (
-            <Link
-              href="/informes-auditoria/nuevo"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90"
-            >
-              Nuevo informe
-            </Link>
-          )}
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/informes-auditoria">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Informes de Auditoría</h1>
+          <p className="text-sm text-muted-foreground mt-1">Gestión de informes de auditoría ISO 27001</p>
         </div>
+        {puedeCrear && (
+          <Link
+            href="/informes-auditoria/nuevo"
+            className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
+          >
+            Nuevo informe
+          </Link>
+        )}
+      </div>
 
-        <InformeAuditoriaList
-          initialData={JSON.parse(JSON.stringify(informes))}
-          initialTotal={total}
-          proyectos={JSON.parse(JSON.stringify(proyectos))}
-        />
-      </main>
-    </div>
+      <InformeAuditoriaList
+        initialData={JSON.parse(JSON.stringify(informes))}
+        initialTotal={total}
+        proyectos={JSON.parse(JSON.stringify(proyectos))}
+      />
+    </AdminSidebar>
   )
 }

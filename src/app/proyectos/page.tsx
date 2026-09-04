@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { ProyectosList } from "./proyectos-list"
 import Link from "next/link"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 const ESTADO_LABELS: Record<string, string> = {
   RELEVAMIENTO: "Relevamiento",
@@ -39,30 +39,29 @@ export default async function ProyectosPage() {
   ])
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/proyectos" />
-
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Proyectos</h2>
-          {puedeCrear && (
-            <Link
-              href="/proyectos/nuevo"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90"
-            >
-              Nuevo proyecto
-            </Link>
-          )}
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/proyectos">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Proyectos</h1>
+          <p className="text-sm text-muted-foreground mt-1">Gestión de proyectos de la empresa</p>
         </div>
+        {puedeCrear && (
+          <Link
+            href="/proyectos/nuevo"
+            className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
+          >
+            Nuevo proyecto
+          </Link>
+        )}
+      </div>
 
-        <ProyectosList
-          initialData={JSON.parse(JSON.stringify(proyectos))}
-          initialTotal={total}
-          clientes={JSON.parse(JSON.stringify(clientes))}
-          servicios={JSON.parse(JSON.stringify(servicios))}
-          estadoLabels={ESTADO_LABELS}
-        />
-      </main>
-    </div>
+      <ProyectosList
+        initialData={JSON.parse(JSON.stringify(proyectos))}
+        initialTotal={total}
+        clientes={JSON.parse(JSON.stringify(clientes))}
+        servicios={JSON.parse(JSON.stringify(servicios))}
+        estadoLabels={ESTADO_LABELS}
+      />
+    </AdminSidebar>
   )
 }

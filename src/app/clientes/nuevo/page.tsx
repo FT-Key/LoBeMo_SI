@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { NuevoClienteForm } from "./form"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default async function NuevoClientePage() {
   const session = await requireAuth()
@@ -13,15 +13,14 @@ export default async function NuevoClientePage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/clientes" />
-      <main className="container mx-auto px-4 py-8">
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/clientes">
+      <div className="max-w-md">
         <div className="mb-6">
-          <Link href="/clientes" className="text-sm text-primary hover:underline">← Volver a clientes</Link>
+          <Link href="/clientes" className="text-sm text-muted-foreground hover:text-foreground transition-colors">&larr; Volver a clientes</Link>
           <h2 className="text-2xl font-bold mt-2">Nuevo cliente</h2>
         </div>
         <NuevoClienteForm />
-      </main>
-    </div>
+      </div>
+    </AdminSidebar>
   )
 }

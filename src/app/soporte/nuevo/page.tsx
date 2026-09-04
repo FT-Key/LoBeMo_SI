@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { TicketForm } from "@/components/soporte/ticket-form"
 import Link from "next/link"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default async function NuevoTicketPage() {
   const session = await requireAuth()
@@ -10,9 +10,11 @@ export default async function NuevoTicketPage() {
   const puedeCrear = ["SOPORTE_TECNICO", "GERENTE_GENERAL", "CISO"].includes(session.user.rol)
   if (!puedeCrear) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">No autorizado</p>
-      </div>
+      <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/soporte">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-muted-foreground">No autorizado</p>
+        </div>
+      </AdminSidebar>
     )
   }
 
@@ -33,12 +35,10 @@ export default async function NuevoTicketPage() {
   ])
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/soporte" />
-
-      <main className="container mx-auto px-4 py-8">
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/soporte">
+      <div className="max-w-lg">
         <div className="mb-6">
-          <Link href="/soporte" className="text-sm text-primary hover:underline">← Volver</Link>
+          <Link href="/soporte" className="text-sm text-muted-foreground hover:text-foreground transition-colors">&larr; Volver</Link>
           <h2 className="text-2xl font-bold mt-2">Nuevo ticket de soporte</h2>
         </div>
 
@@ -46,7 +46,7 @@ export default async function NuevoTicketPage() {
           empleados={JSON.parse(JSON.stringify(empleados))}
           proyectos={JSON.parse(JSON.stringify(proyectos))}
         />
-      </main>
-    </div>
+      </div>
+    </AdminSidebar>
   )
 }

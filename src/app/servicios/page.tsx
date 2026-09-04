@@ -1,7 +1,7 @@
 import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { ServiciosList } from "./servicios-list"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default async function ServiciosPage() {
   const session = await requireAuth()
@@ -17,20 +17,19 @@ export default async function ServiciosPage() {
   ])
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/servicios" />
-
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Servicios</h2>
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/servicios">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Servicios</h1>
+          <p className="text-sm text-muted-foreground mt-1">Catálogo de servicios de la empresa</p>
         </div>
+      </div>
 
-        <ServiciosList
-          esGerenteGeneral={esGerenteGeneral}
-          initialData={JSON.parse(JSON.stringify(servicios))}
-          initialTotal={total}
-        />
-      </main>
-    </div>
+      <ServiciosList
+        esGerenteGeneral={esGerenteGeneral}
+        initialData={JSON.parse(JSON.stringify(servicios))}
+        initialTotal={total}
+      />
+    </AdminSidebar>
   )
 }

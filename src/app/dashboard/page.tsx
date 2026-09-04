@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { DashboardContent } from "./dashboard-content"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 const ROLES_PERMITIDOS = ["GERENTE_GENERAL", "CISO", "ADMINISTRACION"]
 
@@ -79,12 +79,8 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/dashboard" />
-
-      <main className="container mx-auto px-4 py-8">
-        <DashboardContent initialData={initialData} />
-      </main>
-    </div>
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/dashboard">
+      <DashboardContent initialData={initialData} />
+    </AdminSidebar>
   )
 }

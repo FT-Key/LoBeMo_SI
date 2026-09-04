@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { Navbar } from "@/components/navbar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { PropuestaDetalle } from "./propuesta-detalle"
 
 const ESTADO_PROPUESTA_LABELS: Record<string, string> = {
@@ -33,12 +33,10 @@ export default async function PropuestaDetallePage(props: { params: Promise<{ id
   }
 
   return (
-    <div className="min-h-screen">
-      <Navbar name={session.user.name} rol={session.user.rol} currentPath="/propuestas" />
-
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+    <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/propuestas">
+      <div className="max-w-4xl">
         <div className="mb-6">
-          <Link href="/propuestas" className="text-sm text-muted-foreground hover:underline">&larr; Volver a propuestas</Link>
+          <Link href="/propuestas" className="text-sm text-muted-foreground hover:text-foreground transition-colors">&larr; Volver a propuestas</Link>
         </div>
 
         <PropuestaDetalle
@@ -46,7 +44,7 @@ export default async function PropuestaDetallePage(props: { params: Promise<{ id
           sessionRol={session.user.rol}
           estadoLabels={ESTADO_PROPUESTA_LABELS}
         />
-      </main>
-    </div>
+      </div>
+    </AdminSidebar>
   )
 }
