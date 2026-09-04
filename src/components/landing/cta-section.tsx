@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { ScrollReveal } from "@/lib/use-scroll-reveal";
-import Link from "next/link";
 
 function ArgentinaClock() {
   const [time, setTime] = useState("");
@@ -36,11 +35,7 @@ function ArgentinaClock() {
   );
 }
 
-interface CtaSectionProps {
-  hasSuperAdmin: boolean;
-}
-
-export function CtaSection({ hasSuperAdmin }: CtaSectionProps) {
+export function CtaSection() {
   return (
     <section className="relative overflow-hidden px-4 py-24 md:px-8 md:py-32">
       <div className="absolute inset-0 -z-10">
@@ -67,30 +62,20 @@ export function CtaSection({ hasSuperAdmin }: CtaSectionProps) {
           </h2>
 
           <p className="mx-auto mb-12 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-            Accedé al sistema y comenzá a gestionar proyectos, clientes y equipos
+            ¿Necesitás proteger tu infraestructura?
             <span className="mt-2 block font-semibold text-foreground">
-              de manera centralizada y segura.
+              Contactanos para una consulta sin compromiso.
             </span>
           </p>
 
           <div className="flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row sm:gap-4">
-            <Link
-              href="/login"
+            <a
+              href="#contacto"
               className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-primary px-6 text-sm font-bold text-primary-foreground transition-all hover:bg-primary-hover hover:shadow-2xl hover:shadow-primary/50 sm:h-13 sm:w-auto sm:px-8 sm:text-base"
             >
-              Acceder al sistema
+              Solicitar cotización
               <span className="ml-2">→</span>
-            </Link>
-
-            {!hasSuperAdmin && (
-              <Link
-                href="/register"
-                className="inline-flex h-12 w-full items-center justify-center rounded-xl border-2 border-primary/40 px-6 text-sm font-bold text-foreground backdrop-blur-sm transition-all hover:border-primary/60 hover:bg-primary/5 sm:h-13 sm:w-auto sm:px-8 sm:text-base"
-              >
-                Solicitar acceso
-                <span className="ml-2">→</span>
-              </Link>
-            )}
+            </a>
           </div>
 
           <div className="mt-16 flex items-center justify-center gap-3">

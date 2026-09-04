@@ -3,11 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-interface HeroSectionProps {
-  hasSuperAdmin: boolean;
-}
-
-export function HeroSection({ hasSuperAdmin }: HeroSectionProps) {
+export function HeroSection() {
   return (
     <header className="relative flex min-h-screen flex-col overflow-x-hidden">
       {/* Hero background */}
@@ -33,18 +29,10 @@ export function HeroSection({ hasSuperAdmin }: HeroSectionProps) {
           <div className="flex items-center gap-1.5 sm:gap-2">
             <Link
               href="/login"
-              className="inline-flex h-8 sm:h-9 items-center justify-center rounded-full bg-primary px-3 sm:px-5 text-xs sm:text-sm font-bold text-primary-foreground transition-all hover:bg-primary-hover"
+              className="inline-flex h-8 sm:h-9 items-center justify-center rounded-full px-3 sm:px-4 text-xs sm:text-sm font-semibold text-muted-foreground transition-all hover:text-foreground"
             >
-              Iniciar sesión
+              Acceso empleados
             </Link>
-            {!hasSuperAdmin && (
-              <Link
-                href="/register"
-                className="inline-flex h-8 sm:h-9 items-center justify-center rounded-full border border-primary/40 px-3 sm:px-5 text-xs sm:text-sm font-semibold text-foreground transition-all hover:border-primary/60 hover:bg-primary/5"
-              >
-                Primer inicio
-              </Link>
-            )}
           </div>
         </div>
       </nav>
@@ -68,7 +56,7 @@ export function HeroSection({ hasSuperAdmin }: HeroSectionProps) {
             >
               <span className="block text-foreground/90">Gestión de</span>
               <span
-                className="block text-transparent pointer-events-none break-words"
+                className="block w-fit text-transparent pointer-events-none"
                 style={{
                   backgroundImage: "url('/multiply-effect-image.webp')",
                   backgroundSize: "cover",
@@ -89,22 +77,13 @@ export function HeroSection({ hasSuperAdmin }: HeroSectionProps) {
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-            <Link
-              href="/login"
+            <a
+              href="#contacto"
               className="inline-flex h-12 sm:h-13 items-center justify-center rounded-xl bg-primary px-6 sm:px-8 text-sm sm:text-base font-bold text-primary-foreground transition-all hover:bg-primary-hover hover:shadow-2xl hover:shadow-primary/30"
             >
-              Comenzar ahora
+              Contactanos
               <span className="ml-2">→</span>
-            </Link>
-            {!hasSuperAdmin && (
-              <Link
-                href="/register"
-                className="inline-flex h-12 sm:h-13 items-center justify-center rounded-xl border-2 border-primary/40 px-6 sm:px-8 text-sm sm:text-base font-bold text-foreground backdrop-blur-sm transition-all hover:border-primary/60 hover:bg-primary/5"
-              >
-                Primer inicio — Registrar
-                <span className="ml-2">→</span>
-              </Link>
-            )}
+            </a>
           </div>
         </div>
       </div>
