@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { BookOpen, FileText } from "lucide-react"
+import { BookOpen, FileText, ChevronDown } from "lucide-react"
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer"
 
 interface ManualFile {
@@ -18,6 +18,7 @@ export function ManualView({ manuals }: ManualViewProps) {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(
     manuals.length > 0 ? manuals[0].slug : null
   )
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const selectedManual = manuals.find((m) => m.slug === selectedSlug)
 
@@ -31,9 +32,47 @@ export function ManualView({ manuals }: ManualViewProps) {
   }
 
   return (
-    <div className="flex gap-6 min-h-[600px]">
-      {/* Sidebar de manuales */}
-      <aside className="w-64 shrink-0 border border-border rounded-lg bg-surface overflow-hidden">
+    <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 min-h-[400px] lg:min-h-[600px]">
+      {/* Selector mobile */}
+      <div className="lg:hidden">
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="w-full flex items-center justify-between gap-2 px-4 py-3 border border-border rounded-lg bg-surface text-sm font-medium"
+        >
+          <span className="flex items-center gap-2">
+            <FileText className="size-4" />
+            {selectedManual?.title ?? "Seleccionar manual"}
+          </span>
+          <ChevronDown className={`size-4 transition-transform ${mobileMenuOpen ? "rotate-180" : ""}`} />
+        </button>
+        {mobileMenuOpen && (
+          <div className="mt-1 border border-border rounded-lg bg-surface overflow-hidden">
+            {manuals.map((manual) => {
+              const isSelected = manual.slug === selectedSlug
+              return (
+                <button
+                  key={manual.slug}
+                  onClick={() => {
+                    setSelectedSlug(manual.slug)
+                    setMobileMenuOpen(false)
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors text-left border-b border-border last:border-b-0 ${
+                    isSelected
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground hover:bg-muted/50"
+                  }`}
+                >
+                  <FileText className="size-4 shrink-0" />
+                  <span>{manual.title}</span>
+                </button>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Sidebar desktop */}
+      <aside className="hidden lg:block w-64 shrink-0 border border-border rounded-lg bg-surface overflow-hidden">
         <div className="p-4 border-b border-border">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Manuales
@@ -61,13 +100,13 @@ export function ManualView({ manuals }: ManualViewProps) {
       </aside>
 
       {/* Panel de contenido */}
-      <div className="flex-1 border border-border rounded-lg bg-surface overflow-hidden">
+      <div className="flex-1 border border-border rounded-lg bg-surface overflow-hidden min-h-0">
         {selectedManual ? (
-          <div className="p-6 overflow-y-auto max-h-[600px]">
+          <div className="p-4 sm:p-6 overflow-y-auto max-h-[500px] lg:max-h-[600px]">
             <MarkdownRenderer content={selectedManual.content} />
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
+          <div className="flex items-center justify-center h-full text-muted-foreground py-12">
             <p>Selecciona un manual para ver su contenido.</p>
           </div>
         )}
