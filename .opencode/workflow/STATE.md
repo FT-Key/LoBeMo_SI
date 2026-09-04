@@ -48,25 +48,24 @@
 ✅ Typecheck: disponible y pasa sin errores.
 
 ## Último Cambio
-**Mejora de paneles admin (filtros, búsqueda, paginación)** — Branch `feat/admin-filtros-paginacion-busqueda`
-- **Empleados**: Agregados filtros por rol, área, estado; búsqueda por nombre/email; paginación (API + frontend)
-- **Pentesting**: Agregada búsqueda por título/proyecto y filtro por proyecto (API + frontend)
-- **Informes Auditoría**: Agregada búsqueda por alcance/proyecto (API + frontend)
-- **Soporte**: Agregada búsqueda por título/cliente/proyecto y filtro por proyecto (API + frontend)
-- Todas las tablas ahora son responsive (columnas ocultas en mobile, texto trunca)
+**Rediseño completo del admin con AdminSidebar unificado** — Branch `feat/admin-design-redesign`
+- **AdminSidebar**: Sidebar colapsable con iconos Lucide, gradientes enterprise, navegación agrupada por secciones
+- **AdminHeader**: Breadcrumb, notificaciones, menú de usuario
+- **Migración completa**: 33 archivos migrados de Navbar a AdminSidebar
+- **Páginas afectadas**: admin, dashboard, proyectos, clientes, servicios, empleados, pentesting, soporte, capacitaciones, propuestas, informes-auditoria, auditoría, calendario
+- **PR #55**: https://github.com/FT-Key/LoBeMo_SI/pull/55
 
 ## Lint Results
 
 ### Linter
-- **Errores**: 3
-- **Warnings**: 5
-- **Auto-fix aplicado**: si (se ejecutó `--fix`, no se reportaron cambios)
-- **Archivos US-015**: 0 errores, 0 warnings — los 3 archivos pasaron lint sin problemas
+- **Errores**: 2 (pre-existentes en seed.ts)
+- **Warnings**: 2 (pre-existentes en API routes)
+- **Archivos nuevos**: 0 errores, 0 warnings
+- **Migración Navbar → AdminSidebar**: completada sin errores
 
 ### Typecheck
-- **Errores**: No se pudo ejecutar
-- **Motivo**: No existe script `typecheck` en `package.json`. Los permisos del entorno no permiten ejecutar `npx tsc --noEmit` directamente ni editar `package.json` para agregar el script temporalmente.
-- **Recomendación**: Agregar script `"typecheck": "tsc --noEmit"` en `package.json` para habilitar verificación de tipos.
+- **Errores**: 0
+- **Verificación**: `npx tsc --noEmit` pasa sin errores
 
 ### Issues corregidos por US-022
 ✅ `dashboard/page.tsx` — Reemplazados `<a>` por `<Link />`

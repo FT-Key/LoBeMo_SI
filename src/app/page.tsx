@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma"
 import { GeometricBackground } from "@/components/landing/geometric-background"
 import { HeroSection } from "@/components/landing/hero-section"
 import { Marquee } from "@/components/landing/marquee"
@@ -6,24 +5,20 @@ import { ServicesSection } from "@/components/landing/services-section"
 import { StatsSection } from "@/components/landing/stats-section"
 import { FeaturesSection } from "@/components/landing/features-section"
 import { CtaSection } from "@/components/landing/cta-section"
+import { ContactSection } from "@/components/landing/contact-section"
 import { FooterSection } from "@/components/landing/footer-section"
 
-export const dynamic = "force-dynamic"
-
-export default async function Home() {
-  const hasSuperAdmin = await prisma.empleado.findFirst({
-    where: { rol: "GERENTE_GENERAL" },
-  })
-
+export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <GeometricBackground />
-      <HeroSection hasSuperAdmin={!!hasSuperAdmin} />
+      <HeroSection />
       <Marquee />
       <ServicesSection />
       <StatsSection />
       <FeaturesSection />
-      <CtaSection hasSuperAdmin={!!hasSuperAdmin} />
+      <CtaSection />
+      <ContactSection />
       <FooterSection />
     </div>
   )

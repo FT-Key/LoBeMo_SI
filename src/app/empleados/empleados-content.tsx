@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import Link from "next/link"
 
 const ROLES: Record<string, string> = {
   GERENTE_GENERAL: "Gerente General",
@@ -61,6 +62,7 @@ export function EmpleadosContent({
   const [area, setArea] = useState("")
   const [activo, setActivo] = useState("")
   const [loading, setLoading] = useState(false)
+  const [togglingId, setTogglingId] = useState<string | null>(null)
 
   const fetchEmpleados = useCallback(
     async (p: number, s: string, r: string, a: string, act: string) => {
@@ -83,6 +85,17 @@ export function EmpleadosContent({
     },
     []
   )
+
+  async function toggleActivo(id: string) {
+    setTogglingId(id)
+    const res = await fetch(`/api/empleados/${id}`, { method: "DELETE" })
+    if (res.ok) {
+      setEmpleados((prev) =>
+        prev.map((e) => (e.id === id ? { ...e, activo: !e.activo } : e))
+      )
+    }
+    setTogglingId(null)
+  }
 
   return (
     <div className="space-y-4">
@@ -152,6 +165,7 @@ export function EmpleadosContent({
               <th className="text-left p-3 text-sm font-medium">Rol</th>
               <th className="text-left p-3 text-sm font-medium hidden md:table-cell">Área</th>
               <th className="text-left p-3 text-sm font-medium">Estado</th>
+              <th className="text-right p-3 text-sm font-medium">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -171,11 +185,32 @@ export function EmpleadosContent({
                     <span className="inline-flex items-center rounded-full bg-red-500/15 text-red-400 border border-red-500/25 px-2 py-0.5 text-xs font-semibold">Inactivo</span>
                   )}
                 </td>
+                <td className="p-3 text-sm text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <Link
+                      href={`/empleados/${emp.id}/editar`}
+                      className="inline-flex items-center gap-1 rounded-md border border-input px-2 py-1 text-xs font-medium hover:bg-muted transition-colors"
+                    >
+                      Editar
+                    </Link>
+                    <button
+                      onClick={() => toggleActivo(emp.id)}
+                      disabled={togglingId === emp.id}
+                      className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-colors disabled:opacity-50 ${
+                        emp.activo
+                          ? "border-red-500/25 text-red-400 hover:bg-red-500/15"
+                          : "border-green-500/25 text-green-400 hover:bg-green-500/15"
+                      }`}
+                    >
+                      {togglingId === emp.id ? "..." : emp.activo ? "Desactivar" : "Activar"}
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
             {!loading && empleados.length === 0 && (
               <tr>
-                <td colSpan={5} className="p-6 text-center text-sm text-muted-foreground">
+                <td colSpan={6} className="p-6 text-center text-sm text-muted-foreground">
                   No hay empleados registrados
                 </td>
               </tr>
