@@ -30,25 +30,13 @@ export function FooterSection() {
               className="mb-6 text-sm font-bold uppercase tracking-wider text-foreground"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Accesos
+              Contacto
             </h4>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <Link
-                  href="/login"
-                  className="font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  Iniciar sesión
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/register"
-                  className="font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  Registro
-                </Link>
-              </li>
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              <li className="font-medium">+54 9 381 123-4567</li>
+              <li className="font-medium">info@lobemo.com</li>
+              <li className="font-medium">Rivadavia 1050, Tucumán</li>
+              <li className="font-medium">Lun - Vie: 9:00 - 18:00 ART</li>
             </ul>
           </div>
 
@@ -57,11 +45,17 @@ export function FooterSection() {
               className="mb-6 text-sm font-bold uppercase tracking-wider text-foreground"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Contacto
+              Acceso
             </h4>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="font-medium">Tucumán, Argentina</li>
-              <li className="font-medium">NOA — Región Noroeste</li>
+            <ul className="space-y-3 text-sm">
+              <li>
+                <Link
+                  href="/login"
+                  className="font-medium text-muted-foreground transition-colors hover:text-primary"
+                >
+                  Empleados
+                </Link>
+              </li>
             </ul>
           </div>
 

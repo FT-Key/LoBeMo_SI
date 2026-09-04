@@ -250,3 +250,10 @@ textarea:focus,
 select:focus {
   border-color: color-mix(in srgb, var(--primary) 50%, transparent);
 }
+
+/* Leaflet — override Tailwind preflight que rompe los tiles */
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img {
+  max-width: none !important;
+  height: auto !important;
+}
