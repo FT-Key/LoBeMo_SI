@@ -11,23 +11,9 @@ export async function POST(request: Request) {
     const result = validateBody(createEmpleadoSchema, body)
     if (!result.success) return result.error
 
-    const { isInitialSetup } = body
-
-    if (!isInitialSetup) {
-      const session = await auth()
-      if (!session?.user || session.user.rol !== "GERENTE_GENERAL") {
-        return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-      }
-    } else {
-      const existingAdmin = await prisma.empleado.findFirst({
-        where: { rol: "GERENTE_GENERAL" },
-      })
-      if (existingAdmin) {
-        return NextResponse.json(
-          { error: "El superadmin ya existe" },
-          { status: 400 }
-        )
-      }
+    const session = await auth()
+    if (!session?.user || session.user.rol !== "GERENTE_GENERAL") {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
     }
 
     const existing = await prisma.empleado.findUnique({ where: { email: result.data.email } })

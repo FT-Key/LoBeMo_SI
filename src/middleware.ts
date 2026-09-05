@@ -5,11 +5,13 @@ export function middleware(request: NextRequest) {
   if (/\.(?:png|jpg|jpeg|gif|webp|svg|ico|avif|css|js|woff2?|json)$/.test(request.nextUrl.pathname)) {
     return NextResponse.next()
   }
-  const isAuthPage = request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/register")
+  const isAuthPage = request.nextUrl.pathname.startsWith("/login")
   const isApiAuth = request.nextUrl.pathname.startsWith("/api/auth")
+  const isPortalPublic = request.nextUrl.pathname.startsWith("/seguimiento")
+  const isPortalApi = request.nextUrl.pathname.startsWith("/api/portal")
   const token = request.cookies.get("authjs.session-token")?.value || request.cookies.get("__Secure-authjs.session-token")?.value
 
-  if (isAuthPage || isApiAuth || request.nextUrl.pathname === "/") {
+  if (isAuthPage || isApiAuth || isPortalPublic || isPortalApi || request.nextUrl.pathname === "/") {
     return NextResponse.next()
   }
 

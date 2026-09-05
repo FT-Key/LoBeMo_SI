@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { PortalSection } from "./portal-section"
 
 const ESTADO_BADGES: Record<string, string> = {
   RELEVAMIENTO: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
@@ -119,8 +120,10 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
     fechaEstimadaFin: string | null
     fechaEntregaReal: string | null
     montoAcordado: string | null
-    cliente: { id: string; razonSocial: string; cuit: string }
+    cliente: { id: string; razonSocial: string; cuit: string; emailContacto: string | null }
     servicio: { id: string; nombre: string }
+    portalActivo: boolean
+    portalClave: string | null
     propuestas: Array<{ id: string; version: number; montoTotal: string; estado: string }>
     asignaciones: Array<{
       id: string
@@ -1183,6 +1186,13 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
           </div>
         )}
       </div>
+
+      <PortalSection
+        proyectoId={p.id}
+        portalActivo={p.portalActivo}
+        portalClaveExiste={!!p.portalClave}
+        clienteEmail={p.cliente.emailContacto}
+      />
 
       <div className="rounded-lg border bg-surface-elevated/80 p-6">
         <h3 className="text-lg font-semibold mb-3">Historial de estados</h3>

@@ -12,10 +12,22 @@ export const createProyectoSchema = z.object({
   servicioId: z.string().min(1, "Debe seleccionar un servicio"),
   fechaEstimadaFin: z.string().optional().or(z.literal("")),
   montoAcordado: z.string().optional().or(z.literal("")),
+  portalClave: z.string().min(6, "La clave del portal debe tener al menos 6 caracteres").optional().or(z.literal("")),
+  portalActivo: z.boolean().optional(),
 })
 
 export const updateProyectoSchema = createProyectoSchema.partial().extend({
   estado: z.enum(ESTADOS_PROYECTO).optional(),
+})
+
+export const portalAccesoSchema = z.object({
+  proyectoId: z.string().min(1, "El ID del proyecto es requerido"),
+  clave: z.string().min(1, "La clave es requerida"),
+})
+
+export const portalCambioClaveSchema = z.object({
+  claveActual: z.string().min(1, "La clave actual es requerida"),
+  nuevaClave: z.string().min(6, "La nueva clave debe tener al menos 6 caracteres"),
 })
 
 export const transicionEstadoSchema = z.object({
@@ -25,3 +37,5 @@ export const transicionEstadoSchema = z.object({
 export type CreateProyectoFormData = z.infer<typeof createProyectoSchema>
 export type UpdateProyectoFormData = z.infer<typeof updateProyectoSchema>
 export type TransicionEstadoFormData = z.infer<typeof transicionEstadoSchema>
+export type PortalAccesoFormData = z.infer<typeof portalAccesoSchema>
+export type PortalCambioClaveFormData = z.infer<typeof portalCambioClaveSchema>
