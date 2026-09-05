@@ -7,6 +7,7 @@ import { auth } from "@/auth"
 import { Rol } from "@/generated/prisma/enums"
 import { validateBody } from "@/lib/api-validate"
 import { transicionEstadoSchema } from "@/shared/validation"
+import { resolverDestinatario } from "@/lib/email"
 
 interface TransicionValida {
   desde: string[]
@@ -239,7 +240,7 @@ export async function POST(
 
             await transport.sendMail({
               from: `"LoBeMo Seguridad" <${user}>`,
-              to: proyCompleto.cliente.emailContacto,
+              to: resolverDestinatario(proyCompleto.cliente.emailContacto),
               subject: `Estado del proyecto "${proyecto.nombre}" actualizado`,
               html: `
                 <!DOCTYPE html>
