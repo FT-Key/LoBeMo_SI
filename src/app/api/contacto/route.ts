@@ -4,6 +4,7 @@ import { readFile } from "fs/promises"
 import { join } from "path"
 import { createContactoSchema, SERVICIOS_CONTACTO_LABELS } from "@/shared/validation/contacto"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { resolverDestinatario } from "@/lib/email"
 
 function sanitize(input: string): string {
   return input
@@ -261,7 +262,7 @@ export async function POST(request: Request) {
     // Enviar email al dueño
     await transporter.sendMail({
       from: `"LoBeMo Web" <${smtpUser}>`,
-      to: contactEmail,
+      to: resolverDestinatario(contactEmail),
       replyTo: email,
       subject: `[LoBeMo] ${safeNombre} te escribió desde la web`,
       html: ownerHtml,
@@ -271,7 +272,7 @@ export async function POST(request: Request) {
     // Enviar confirmación al que contacta
     await transporter.sendMail({
       from: `"LoBeMo" <${smtpUser}>`,
-      to: email,
+      to: resolverDestinatario(email),
       subject: `¡Gracias por contactarnos, ${safeNombre}!`,
       html: confirmationHtml,
       attachments: [logoAttachment],

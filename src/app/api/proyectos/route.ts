@@ -8,6 +8,7 @@ import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { createProyectoSchema } from "@/shared/validation"
 import { generarCodigoProyecto } from "@/lib/proyecto-codigo"
+import { resolverDestinatario } from "@/lib/email"
 
 const ROLES_PERMITIDOS_CREAR = ["GERENTE_GENERAL", "CISO"]
 
@@ -156,7 +157,7 @@ export async function POST(request: Request) {
 
           await transport.sendMail({
             from: `"LoBeMo Seguridad" <${user}>`,
-            to: cliente.emailContacto,
+            to: resolverDestinatario(cliente.emailContacto),
             subject: `Acceso al portal de seguimiento - ${proyecto.nombre}`,
             html: `
               <!DOCTYPE html>
