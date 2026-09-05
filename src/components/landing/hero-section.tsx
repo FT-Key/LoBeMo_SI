@@ -28,6 +28,12 @@ export function HeroSection() {
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <Link
+              href="/seguimiento"
+              className="inline-flex h-8 sm:h-9 items-center justify-center rounded-full px-3 sm:px-4 text-xs sm:text-sm font-semibold text-muted-foreground transition-all hover:text-foreground"
+            >
+              Seguimiento
+            </Link>
+            <Link
               href="/login"
               className="inline-flex h-8 sm:h-9 items-center justify-center rounded-full px-3 sm:px-4 text-xs sm:text-sm font-semibold text-muted-foreground transition-all hover:text-foreground"
             >

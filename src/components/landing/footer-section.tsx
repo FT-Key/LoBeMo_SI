@@ -50,6 +50,14 @@ export function FooterSection() {
             <ul className="space-y-3 text-sm">
               <li>
                 <Link
+                  href="/seguimiento"
+                  className="font-medium text-muted-foreground transition-colors hover:text-primary"
+                >
+                  Clientes (Seguimiento)
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/login"
                   className="font-medium text-muted-foreground transition-colors hover:text-primary"
                 >
