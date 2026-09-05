@@ -4,7 +4,6 @@ import { Marquee } from "@/components/landing/marquee"
 import { ServicesSection } from "@/components/landing/services-section"
 import { StatsSection } from "@/components/landing/stats-section"
 import { FeaturesSection } from "@/components/landing/features-section"
-import { CtaSection } from "@/components/landing/cta-section"
 import { ContactSection } from "@/components/landing/contact-section"
 
 export default function Home() {
@@ -16,7 +15,6 @@ export default function Home() {
       <ServicesSection />
       <StatsSection />
       <FeaturesSection />
-      <CtaSection />
       <ContactSection />
     </div>
   )

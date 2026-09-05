@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ScrollReveal } from "@/lib/use-scroll-reveal"
-import { Send, Phone, Mail, MapPin, Clock, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
+import { Send, Phone, Mail, MapPin, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
 import { MapLeaflet } from "./map-leaflet"
 import { createContactoSchema, SERVICIOS_CONTACTO_LABELS } from "@/shared/validation/contacto"
 import type { CreateContactoFormData } from "@/shared/validation/contacto"
@@ -28,13 +28,39 @@ const CONTACT_INFO = [
     value: "Rivadavia 1050, San Miguel de Tucumán",
     href: null,
   },
-  {
-    icon: Clock,
-    label: "Horario",
-    value: "Lun - Vie: 9:00 - 18:00 ART",
-    href: null,
-  },
 ]
+
+function ArgentinaClock() {
+  const [time, setTime] = useState("")
+
+  useEffect(() => {
+    const update = () => {
+      setTime(
+        new Intl.DateTimeFormat("es-AR", {
+          timeZone: "America/Argentina/Tucuman",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        }).format(new Date())
+      )
+    }
+    update()
+    const interval = setInterval(update, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+      <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
+      <span className="font-semibold">Argentina</span>
+      <span className="font-mono text-base font-bold text-foreground tabular-nums">
+        {time}
+      </span>
+      <span className="text-xs">ART (UTC-3)</span>
+    </div>
+  )
+}
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null
@@ -112,11 +138,11 @@ export function ContactSection() {
               className="mb-6 text-5xl font-black tracking-tighter md:text-6xl"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              <span className="text-foreground">Hablemos de tu</span>{" "}
-              <span className="text-primary">seguridad</span>
+              <span className="text-foreground">Gestioná tu seguridad con</span>{" "}
+              <span className="text-primary">LoBeMo</span>
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              Contactanos para una consulta sin compromiso. Te respondemos en menos de 24 horas.
+              ¿Necesitás proteger tu infraestructura? Contactanos para una consulta sin compromiso. Te respondemos en menos de 24 horas.
             </p>
           </div>
         </ScrollReveal>
@@ -297,6 +323,11 @@ export function ContactSection() {
                   zoom={16}
                   height="256px"
                 />
+              </div>
+
+              {/* Reloj Argentina */}
+              <div className="flex items-center justify-center rounded-2xl border border-border/40 bg-surface/60 p-5 backdrop-blur-sm">
+                <ArgentinaClock />
               </div>
             </div>
           </ScrollReveal>
