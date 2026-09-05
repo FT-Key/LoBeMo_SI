@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 
 type FormModalProps = {
   open: boolean
@@ -11,26 +11,6 @@ type FormModalProps = {
 }
 
 export function FormModal({ open, onClose, title, children, maxWidth = "max-w-lg" }: FormModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null)
-
-  useEffect(() => {
-    const dialog = dialogRef.current
-    if (!dialog) return
-    if (open && !dialog.open) {
-      dialog.showModal()
-    } else if (!open && dialog.open) {
-      dialog.close()
-    }
-  }, [open])
-
-  useEffect(() => {
-    const dialog = dialogRef.current
-    if (!dialog) return
-    const handler = () => onClose()
-    dialog.addEventListener("close", handler)
-    return () => dialog.removeEventListener("close", handler)
-  }, [onClose])
-
   useEffect(() => {
     if (!open) return
     function handleKeyDown(e: KeyboardEvent) {
@@ -42,12 +22,12 @@ export function FormModal({ open, onClose, title, children, maxWidth = "max-w-lg
     return () => document.removeEventListener("keydown", handleKeyDown)
   }, [open])
 
+  if (!open) return null
+
   return (
-    <dialog
-      ref={dialogRef}
-      className={`rounded-lg border border-border bg-background p-0 backdrop:bg-black/50 ${maxWidth} w-full open:flex`}
-    >
-      <div className="p-6 w-full max-h-[85vh] overflow-y-auto">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className={`relative z-10 w-full ${maxWidth} mx-4 max-h-[85vh] overflow-y-auto rounded-2xl border border-border/50 bg-background p-6 shadow-2xl`}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">{title}</h2>
           <button
@@ -59,6 +39,6 @@ export function FormModal({ open, onClose, title, children, maxWidth = "max-w-lg
         </div>
         {children}
       </div>
-    </dialog>
+    </div>
   )
 }
