@@ -70,6 +70,8 @@ model Proyecto {
   montoAcordado   Decimal? @map("monto_acordado")
   clienteId       String   @map("cliente_id")
   servicioId      String   @map("servicio_id")
+  portalClave     String?  @map("portal_clave")
+  portalActivo    Boolean  @default(false) @map("portal_activo")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
@@ -85,6 +87,7 @@ model Proyecto {
   capacitaciones Capacitacion[]
   hallazgosPentesting HallazgoPentesting[]
   ticketsSoporte TicketSoporte[]
+  sesionesPortal SesionPortal[]
 
   @@map("proyectos")
 }
@@ -359,4 +362,16 @@ model AuditLog {
   empleado Empleado? @relation(fields: [empleadoId], references: [id])
 
   @@map("audit_logs")
+}
+
+model SesionPortal {
+  id         String   @id @default(cuid())
+  proyectoId String   @map("proyecto_id")
+  token      String   @unique
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  proyecto Proyecto @relation(fields: [proyectoId], references: [id])
+
+  @@map("sesiones_portal")
 }
