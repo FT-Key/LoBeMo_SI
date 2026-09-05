@@ -67,6 +67,7 @@ export function Navbar({ name, rol, currentPath }: NavbarProps) {
               width={100}
               height={28}
               className="h-7 w-auto"
+              style={{ width: "auto", height: "auto" }}
             />
           </div>
           <div className="flex items-center gap-3">
@@ -103,6 +104,7 @@ export function Navbar({ name, rol, currentPath }: NavbarProps) {
             width={100}
             height={28}
             className="h-7 w-auto"
+            style={{ width: "auto", height: "auto" }}
           />
           <button
             onClick={() => setSidebarOpen(false)}

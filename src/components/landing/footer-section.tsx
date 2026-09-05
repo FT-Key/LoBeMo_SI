@@ -17,6 +17,7 @@ export function FooterSection({ onOpenLogin, onOpenPortal }: { onOpenLogin: () =
                 width={140}
                 height={36}
                 className="h-9 w-auto"
+                style={{ width: "auto", height: "auto" }}
               />
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">
