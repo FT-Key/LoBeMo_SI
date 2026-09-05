@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
+import { FormModal } from "@/components/ui/form-modal"
+import { InformeAuditoriaForm } from "@/components/informes-auditoria/informe-auditoria-form"
 
 const ESTADOS = ["BORRADOR", "COMPLETADO"] as const
 
@@ -33,10 +35,12 @@ export function InformeAuditoriaList({
   initialData,
   initialTotal,
   proyectos,
+  puedeCrear,
 }: {
   initialData: InformeAuditoria[]
   initialTotal: number
   proyectos: Proyecto[]
+  puedeCrear?: boolean
 }) {
   const [informes, setInformes] = useState<InformeAuditoria[]>(initialData)
   const [pagination, setPagination] = useState<Pagination>({
@@ -49,6 +53,7 @@ export function InformeAuditoriaList({
   const [proyectoId, setProyectoId] = useState("")
   const [estado, setEstado] = useState("")
   const [loading, setLoading] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const fetchInformes = useCallback(
     async (p: number, s: string, pid: string, e: string) => {
@@ -116,6 +121,14 @@ export function InformeAuditoriaList({
         >
           Buscar
         </button>
+        {puedeCrear && (
+          <button
+            onClick={() => setModalOpen(true)}
+            className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
+          >
+            Nuevo informe
+          </button>
+        )}
       </div>
 
       <div className="rounded-md border overflow-x-auto">
@@ -190,6 +203,13 @@ export function InformeAuditoriaList({
           </div>
         </div>
       )}
+
+      <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Nuevo informe de auditoría" maxWidth="max-w-xl">
+        <InformeAuditoriaForm
+          proyectos={proyectos}
+          onSuccess={() => { setModalOpen(false); fetchInformes(1, search, proyectoId, estado) }}
+        />
+      </FormModal>
     </div>
   )
 }

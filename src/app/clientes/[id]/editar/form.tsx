@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
-import { updateClienteSchema, SECTORES, type UpdateClienteFormData } from "@/shared/validation"
+import { updateClienteSchema, SECTORES, SECTORES_LABELS, type UpdateClienteFormData } from "@/shared/validation"
 
 type ClienteData = {
   id: string
@@ -106,7 +106,7 @@ export function EditarClienteForm({ cliente }: { cliente: ClienteData }) {
         <select id="sector" {...register("sector")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
           <option value="">Seleccionar...</option>
           {SECTORES.map((s) => (
-            <option key={s} value={s}>{s.replace(/_/g, " ")}</option>
+            <option key={s} value={s}>{SECTORES_LABELS[s] || s}</option>
           ))}
         </select>
         {errors.sector && <p className="text-xs text-destructive">{errors.sector.message}</p>}

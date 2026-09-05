@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
+import { FormModal } from "@/components/ui/form-modal"
+import { NuevoEmpleadoForm } from "@/app/empleados/nuevo/form"
 
 const ROLES: Record<string, string> = {
   GERENTE_GENERAL: "Gerente General",
@@ -63,6 +65,7 @@ export function EmpleadosContent({
   const [activo, setActivo] = useState("")
   const [loading, setLoading] = useState(false)
   const [togglingId, setTogglingId] = useState<string | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const fetchEmpleados = useCallback(
     async (p: number, s: string, r: string, a: string, act: string) => {
@@ -154,6 +157,12 @@ export function EmpleadosContent({
         >
           Buscar
         </button>
+        <button
+          onClick={() => setModalOpen(true)}
+          className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
+        >
+          Nuevo empleado
+        </button>
       </div>
 
       <div className="rounded-md border overflow-x-auto">
@@ -242,6 +251,10 @@ export function EmpleadosContent({
           </div>
         </div>
       )}
+
+      <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Nuevo empleado" maxWidth="max-w-xl">
+        <NuevoEmpleadoForm onSuccess={() => { setModalOpen(false); fetchEmpleados(1, search, rol, area, activo) }} />
+      </FormModal>
     </div>
   )
 }

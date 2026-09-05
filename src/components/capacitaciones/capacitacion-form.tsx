@@ -9,7 +9,7 @@ import { createCapacitacionSchema } from "@/shared/validation"
 
 type Proyecto = { id: string; nombre: string }
 
-export function CapacitacionForm({ proyectos }: { proyectos: Proyecto[] }) {
+export function CapacitacionForm({ proyectos, onSuccess }: { proyectos: Proyecto[]; onSuccess?: () => void }) {
   const router = useRouter()
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm({
     resolver: zodResolver(createCapacitacionSchema),
@@ -39,8 +39,12 @@ export function CapacitacionForm({ proyectos }: { proyectos: Proyecto[] }) {
       })
 
       if (res.ok) {
-        const capacitacion = await res.json()
-        router.push(`/capacitaciones/${capacitacion.id}`)
+        if (onSuccess) {
+          onSuccess()
+        } else {
+          const capacitacion = await res.json()
+          router.push(`/capacitaciones/${capacitacion.id}`)
+        }
       } else {
         const json = await res.json()
         setError("root", { message: json.error || "Error al crear la capacitación" })

@@ -8,9 +8,11 @@ import { createProyectoSchema, type CreateProyectoFormData } from "@/shared/vali
 export function NuevoProyectoForm({
   clientes,
   servicios,
+  onSuccess,
 }: {
   clientes: { id: string; razonSocial: string }[]
   servicios: { id: string; nombre: string }[]
+  onSuccess?: () => void
 }) {
   const router = useRouter()
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<CreateProyectoFormData>({
@@ -27,8 +29,12 @@ export function NuevoProyectoForm({
       })
 
       if (res.ok) {
-        router.push("/proyectos")
-        router.refresh()
+        if (onSuccess) {
+          onSuccess()
+        } else {
+          router.push("/proyectos")
+          router.refresh()
+        }
       } else {
         const json = await res.json()
         setError("root", { message: json.error || "Error al crear el proyecto" })

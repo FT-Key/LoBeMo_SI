@@ -3,9 +3,9 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
-import { createClienteSchema, SECTORES, type CreateClienteFormData } from "@/shared/validation"
+import { createClienteSchema, SECTORES, SECTORES_LABELS, type CreateClienteFormData } from "@/shared/validation"
 
-export function NuevoClienteForm() {
+export function NuevoClienteForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter()
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<CreateClienteFormData>({
     resolver: zodResolver(createClienteSchema),
@@ -25,7 +25,11 @@ export function NuevoClienteForm() {
       return
     }
 
-    router.push("/clientes")
+    if (onSuccess) {
+      onSuccess()
+    } else {
+      router.push("/clientes")
+    }
   }
 
   return (
@@ -69,7 +73,7 @@ export function NuevoClienteForm() {
         <select id="sector" {...register("sector")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
           <option value="">Seleccionar...</option>
           {SECTORES.map((s) => (
-            <option key={s} value={s}>{s.replace(/_/g, " ")}</option>
+            <option key={s} value={s}>{SECTORES_LABELS[s] || s}</option>
           ))}
         </select>
         {errors.sector && <p className="text-xs text-destructive">{errors.sector.message}</p>}

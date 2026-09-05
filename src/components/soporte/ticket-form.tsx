@@ -13,9 +13,11 @@ type Proyecto = { id: string; nombre: string }
 export function TicketForm({
   empleados,
   proyectos,
+  onSuccess,
 }: {
   empleados: Empleado[]
   proyectos: Proyecto[]
+  onSuccess?: () => void
 }) {
   const router = useRouter()
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm({
@@ -44,8 +46,12 @@ export function TicketForm({
       })
 
       if (res.ok) {
-        const ticket = await res.json()
-        router.push(`/soporte/${ticket.id}`)
+        if (onSuccess) {
+          onSuccess()
+        } else {
+          const ticket = await res.json()
+          router.push(`/soporte/${ticket.id}`)
+        }
       } else {
         const json = await res.json()
         setError("root", { message: json.error || "Error al crear el ticket" })
@@ -130,9 +136,6 @@ export function TicketForm({
         <button type="submit" disabled={isSubmitting} className="inline-flex h-10 items-center justify-center rounded-md bg-foreground px-6 text-sm font-medium text-background hover:bg-foreground/90 disabled:opacity-50">
           {isSubmitting ? "Creando..." : "Crear ticket"}
         </button>
-        <Link href="/soporte" className="inline-flex h-10 items-center justify-center rounded-md border border-input px-6 text-sm font-medium hover:bg-muted">
-          Cancelar
-        </Link>
       </div>
     </form>
   )

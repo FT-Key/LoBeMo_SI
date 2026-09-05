@@ -22,6 +22,7 @@ import {
   LogOut,
 } from "lucide-react"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
+import { SignOutModal } from "@/components/modals/signout-modal"
 
 type AdminSidebarProps = {
   name: string | null | undefined
@@ -54,6 +55,7 @@ const NAV_ITEMS: {
 export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
+  const [signOutOpen, setSignOutOpen] = useState(false)
   const items = NAV_ITEMS.filter((item) => !item.roles || item.roles.includes(rol))
 
   useEffect(() => {
@@ -136,16 +138,16 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
         </nav>
 
         <div className={`border-t border-border p-3 ${collapsed ? "flex justify-center" : ""}`}>
-          <Link
-            href="/api/auth/signout"
-            className={`flex items-center gap-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors ${
+          <button
+            onClick={() => setSignOutOpen(true)}
+            className={`flex items-center gap-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors w-full ${
               collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5"
             }`}
             title={collapsed ? "Cerrar sesión" : undefined}
           >
             <LogOut className="size-4" />
             {!collapsed && <span>Cerrar sesión</span>}
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -203,13 +205,13 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
             </div>
           ))}
           <div className="mt-auto border-t border-border pt-3">
-            <Link
-              href="/api/auth/signout"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            <button
+              onClick={() => { setSidebarOpen(false); setSignOutOpen(true) }}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors w-full"
             >
               <LogOut className="size-4" />
               <span>Cerrar sesión</span>
-            </Link>
+            </button>
           </div>
         </nav>
       </aside>
@@ -249,6 +251,8 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
           </div>
         </main>
       </div>
+
+      <SignOutModal open={signOutOpen} onClose={() => setSignOutOpen(false)} />
     </div>
   )
 }

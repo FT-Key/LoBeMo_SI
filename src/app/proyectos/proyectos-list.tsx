@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
+import { FormModal } from "@/components/ui/form-modal"
+import { NuevoProyectoForm } from "@/app/proyectos/nuevo/nuevo-proyecto-form"
 
 const ESTADOS = [
   "RELEVAMIENTO", "PROPUESTA", "APROBADO", "EN_EJECUCION",
@@ -49,12 +51,14 @@ export function ProyectosList({
   clientes,
   servicios,
   estadoLabels,
+  puedeCrear,
 }: {
   initialData: Proyecto[]
   initialTotal: number
   clientes: Cliente[]
   servicios: Servicio[]
   estadoLabels: Record<string, string>
+  puedeCrear?: boolean
 }) {
   const [proyectos, setProyectos] = useState<Proyecto[]>(initialData)
   const [pagination, setPagination] = useState<Pagination>({
@@ -68,6 +72,7 @@ export function ProyectosList({
   const [clienteId, setClienteId] = useState("")
   const [servicioId, setServicioId] = useState("")
   const [loading, setLoading] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const fetchProyectos = useCallback(async (p: number, s: string, e: string, c: string, sv: string) => {
     setLoading(true)
@@ -133,6 +138,14 @@ export function ProyectosList({
             <option key={s.id} value={s.id}>{s.nombre.replace(/_/g, " ")}</option>
           ))}
         </select>
+        {puedeCrear && (
+          <button
+            onClick={() => setModalOpen(true)}
+            className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
+          >
+            Nuevo proyecto
+          </button>
+        )}
       </div>
 
       <div className="rounded-md border">
@@ -204,6 +217,14 @@ export function ProyectosList({
           </div>
         </div>
       )}
+
+      <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Nuevo proyecto" maxWidth="max-w-2xl">
+        <NuevoProyectoForm
+          clientes={clientes}
+          servicios={servicios}
+          onSuccess={() => { setModalOpen(false); fetchProyectos(1, search, estado, clienteId, servicioId) }}
+        />
+      </FormModal>
     </div>
   )
 }

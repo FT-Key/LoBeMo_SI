@@ -1,7 +1,6 @@
 import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { CapacitacionList } from "@/components/capacitaciones/capacitacion-list"
-import Link from "next/link"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 export default async function CapacitacionesPage() {
@@ -20,7 +19,7 @@ export default async function CapacitacionesPage() {
     )
   }
 
-  const [capacitaciones, total] = await Promise.all([
+  const [capacitaciones, total, proyectos] = await Promise.all([
     prisma.capacitacion.findMany({
       orderBy: { createdAt: "desc" },
       take: 10,
@@ -30,28 +29,25 @@ export default async function CapacitacionesPage() {
       },
     }),
     prisma.capacitacion.count(),
+    prisma.proyecto.findMany({
+      where: { estado: { in: ["APROBADO", "EN_EJECUCION", "EN_REVISION"] } },
+      orderBy: { nombre: "asc" },
+      select: { id: true, nombre: true },
+    }),
   ])
 
   return (
     <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/capacitaciones">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Capacitaciones</h1>
-          <p className="text-sm text-muted-foreground mt-1">Gestión de capacitaciones y entrenamientos</p>
-        </div>
-        {puedeCrear && (
-          <Link
-            href="/capacitaciones/nuevo"
-            className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
-          >
-            Nueva capacitación
-          </Link>
-        )}
+      <div className="mb-6">
+        <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Capacitaciones</h1>
+        <p className="text-sm text-muted-foreground mt-1">Gestión de capacitaciones y entrenamientos</p>
       </div>
 
       <CapacitacionList
         initialData={JSON.parse(JSON.stringify(capacitaciones))}
         initialTotal={total}
+        proyectos={JSON.parse(JSON.stringify(proyectos))}
+        puedeCrear={puedeCrear}
       />
     </AdminSidebar>
   )
