@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import Link from "next/link"
 import { SECTORES, SECTORES_LABELS } from "@/shared/validation"
 import { FormModal } from "@/components/ui/form-modal"
+import { TableActionButton } from "@/components/ui/table-actions"
 import { NuevoClienteForm } from "@/app/clientes/nuevo/form"
+import { EditarClienteForm } from "@/app/clientes/[id]/editar/form"
 
 type Cliente = {
   id: string
@@ -46,6 +47,8 @@ export function ClientesList({
   const [sector, setSector] = useState("")
   const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [editingCliente, setEditingCliente] = useState<Cliente | null>(null)
 
   const fetchClientes = useCallback(async (p: number, s: string, sec: string) => {
     setLoading(true)
@@ -72,6 +75,15 @@ export function ClientesList({
     } else {
       const json = await res.json()
       alert(json.error || "Error al desactivar cliente")
+    }
+  }
+
+  async function openEditModal(cliente: Cliente) {
+    const res = await fetch(`/api/clientes/${cliente.id}`)
+    if (res.ok) {
+      const data = await res.json()
+      setEditingCliente(data)
+      setEditModalOpen(true)
     }
   }
 
@@ -138,20 +150,17 @@ export function ClientesList({
                 </td>
                 {puedeEditar && (
                   <td className="p-3 text-sm">
-                    <div className="flex gap-2">
-                      <Link
-                        href={`/clientes/${c.id}/editar`}
-                        className="text-primary hover:underline"
-                      >
+                    <div className="flex gap-1">
+                      <TableActionButton onClick={() => openEditModal(c)}>
                         Editar
-                      </Link>
+                      </TableActionButton>
                       {c.activo && (
-                        <button
+                        <TableActionButton
                           onClick={() => handleDesactivar(c.id, c.razonSocial)}
-                          className="text-danger hover:underline"
+                          variant="danger"
                         >
                           Desactivar
-                        </button>
+                        </TableActionButton>
                       )}
                     </div>
                   </td>
@@ -196,6 +205,12 @@ export function ClientesList({
       <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Nuevo cliente">
         <NuevoClienteForm onSuccess={() => { setModalOpen(false); fetchClientes(1, search, sector) }} />
       </FormModal>
+
+      {editingCliente && (
+        <FormModal open={editModalOpen} onClose={() => { setEditModalOpen(false); setEditingCliente(null) }} title="Editar cliente">
+          <EditarClienteForm cliente={editingCliente} onSuccess={() => { setEditModalOpen(false); setEditingCliente(null); fetchClientes(pagination.page, search, sector) }} />
+        </FormModal>
+      )}
     </div>
   )
 }
