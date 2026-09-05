@@ -21,8 +21,11 @@ export const updateProyectoSchema = createProyectoSchema.partial().extend({
 })
 
 export const portalAccesoSchema = z.object({
-  proyectoId: z.string().min(1, "El ID del proyecto es requerido"),
+  proyectoId: z.string().min(1, "El ID del proyecto es requerido").optional(),
+  codigo: z.string().min(1, "El código del proyecto es requerido").optional(),
   clave: z.string().min(1, "La clave es requerida"),
+}).refine((data) => data.proyectoId || data.codigo, {
+  message: "Ingresá el código o ID del proyecto",
 })
 
 export const portalCambioClaveSchema = z.object({
