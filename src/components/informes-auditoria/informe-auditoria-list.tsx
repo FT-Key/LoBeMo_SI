@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import Link from "next/link"
 import { FormModal } from "@/components/ui/form-modal"
+import { TableActionLink } from "@/components/ui/table-actions"
 import { InformeAuditoriaForm } from "@/components/informes-auditoria/informe-auditoria-form"
 
 const ESTADOS = ["BORRADOR", "COMPLETADO"] as const
@@ -163,9 +163,9 @@ export function InformeAuditoriaList({
                     : new Date(inf.createdAt).toLocaleDateString("es-AR")}
                 </td>
                 <td className="p-3 text-sm">
-                  <Link href={`/informes-auditoria/${inf.id}`} className="text-primary hover:underline">
+                  <TableActionLink href={`/informes-auditoria/${inf.id}`}>
                     Ver detalle
-                  </Link>
+                  </TableActionLink>
                 </td>
               </tr>
             ))}

@@ -14,7 +14,7 @@ type EmpleadoData = {
   area: string
 }
 
-export function EditarEmpleadoForm({ empleado }: { empleado: EmpleadoData }) {
+export function EditarEmpleadoForm({ empleado, onSuccess }: { empleado: EmpleadoData; onSuccess?: () => void }) {
   const router = useRouter()
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<UpdateEmpleadoFormData>({
     resolver: zodResolver(updateEmpleadoSchema),
@@ -44,7 +44,11 @@ export function EditarEmpleadoForm({ empleado }: { empleado: EmpleadoData }) {
       return
     }
 
-    router.push("/empleados")
+    if (onSuccess) {
+      onSuccess()
+    } else {
+      router.push("/empleados")
+    }
   }
 
   return (

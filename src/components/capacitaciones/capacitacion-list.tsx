@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import Link from "next/link"
 import { FormModal } from "@/components/ui/form-modal"
+import { TableActionLink } from "@/components/ui/table-actions"
 import { CapacitacionForm } from "@/components/capacitaciones/capacitacion-form"
 
 const ESTADOS = ["PLANIFICADA", "EN_CURSO", "COMPLETADA", "CANCELADA"]
@@ -166,9 +166,9 @@ export function CapacitacionList({
                 <td className="p-3 text-sm">{c._count.asistentes}</td>
                 <td className="p-3 text-sm">{new Date(c.fechaInicio).toLocaleDateString("es-AR")}</td>
                 <td className="p-3 text-sm">
-                  <Link href={`/capacitaciones/${c.id}`} className="text-primary hover:underline">
+                  <TableActionLink href={`/capacitaciones/${c.id}`}>
                     Ver detalle
-                  </Link>
+                  </TableActionLink>
                 </td>
               </tr>
             ))}

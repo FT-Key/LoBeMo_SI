@@ -16,7 +16,7 @@ type ClienteData = {
   sector: string | null
 }
 
-export function EditarClienteForm({ cliente }: { cliente: ClienteData }) {
+export function EditarClienteForm({ cliente, onSuccess }: { cliente: ClienteData; onSuccess?: () => void }) {
   const router = useRouter()
   const [requireCuitConfirm, setRequireCuitConfirm] = useState(false)
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<UpdateClienteFormData>({
@@ -56,7 +56,11 @@ export function EditarClienteForm({ cliente }: { cliente: ClienteData }) {
       return
     }
 
-    router.push("/clientes")
+    if (onSuccess) {
+      onSuccess()
+    } else {
+      router.push("/clientes")
+    }
   }
 
   return (

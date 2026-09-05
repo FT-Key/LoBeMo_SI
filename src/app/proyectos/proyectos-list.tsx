@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import Link from "next/link"
 import { FormModal } from "@/components/ui/form-modal"
+import { TableActionLink } from "@/components/ui/table-actions"
 import { NuevoProyectoForm } from "@/app/proyectos/nuevo/nuevo-proyecto-form"
 
 const ESTADOS = [
@@ -177,9 +177,9 @@ export function ProyectosList({
                 <td className="p-3 text-sm">{new Date(p.fechaInicio).toLocaleDateString("es-AR")}</td>
                 <td className="p-3 text-sm">{p.fechaEntregaReal ? new Date(p.fechaEntregaReal).toLocaleDateString("es-AR") : "—"}</td>
                 <td className="p-3 text-sm">
-                  <Link href={`/proyectos/${p.id}`} className="text-primary hover:underline">
+                  <TableActionLink href={`/proyectos/${p.id}`}>
                     Ver detalle
-                  </Link>
+                  </TableActionLink>
                 </td>
               </tr>
             ))}
