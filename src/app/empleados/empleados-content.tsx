@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import Link from "next/link"
 import { FormModal } from "@/components/ui/form-modal"
+import { TableActionButton } from "@/components/ui/table-actions"
 import { NuevoEmpleadoForm } from "@/app/empleados/nuevo/form"
+import { EditarEmpleadoForm } from "@/app/empleados/[id]/editar/form"
 
 const ROLES: Record<string, string> = {
   GERENTE_GENERAL: "Gerente General",
@@ -66,6 +67,8 @@ export function EmpleadosContent({
   const [loading, setLoading] = useState(false)
   const [togglingId, setTogglingId] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [editingEmpleado, setEditingEmpleado] = useState<Empleado | null>(null)
 
   const fetchEmpleados = useCallback(
     async (p: number, s: string, r: string, a: string, act: string) => {
@@ -98,6 +101,15 @@ export function EmpleadosContent({
       )
     }
     setTogglingId(null)
+  }
+
+  async function openEditModal(emp: Empleado) {
+    const res = await fetch(`/api/empleados/${emp.id}`)
+    if (res.ok) {
+      const data = await res.json()
+      setEditingEmpleado(data)
+      setEditModalOpen(true)
+    }
   }
 
   return (
@@ -195,24 +207,17 @@ export function EmpleadosContent({
                   )}
                 </td>
                 <td className="p-3 text-sm text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <Link
-                      href={`/empleados/${emp.id}/editar`}
-                      className="inline-flex items-center gap-1 rounded-md border border-input px-2 py-1 text-xs font-medium hover:bg-muted transition-colors"
-                    >
+                  <div className="flex items-center justify-end gap-1">
+                    <TableActionButton onClick={() => openEditModal(emp)}>
                       Editar
-                    </Link>
-                    <button
+                    </TableActionButton>
+                    <TableActionButton
                       onClick={() => toggleActivo(emp.id)}
+                      variant={emp.activo ? "danger" : "success"}
                       disabled={togglingId === emp.id}
-                      className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-colors disabled:opacity-50 ${
-                        emp.activo
-                          ? "border-red-500/25 text-red-400 hover:bg-red-500/15"
-                          : "border-green-500/25 text-green-400 hover:bg-green-500/15"
-                      }`}
                     >
                       {togglingId === emp.id ? "..." : emp.activo ? "Desactivar" : "Activar"}
-                    </button>
+                    </TableActionButton>
                   </div>
                 </td>
               </tr>
@@ -255,6 +260,12 @@ export function EmpleadosContent({
       <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Nuevo empleado" maxWidth="max-w-xl">
         <NuevoEmpleadoForm onSuccess={() => { setModalOpen(false); fetchEmpleados(1, search, rol, area, activo) }} />
       </FormModal>
+
+      {editingEmpleado && (
+        <FormModal open={editModalOpen} onClose={() => { setEditModalOpen(false); setEditingEmpleado(null) }} title="Editar empleado" maxWidth="max-w-xl">
+          <EditarEmpleadoForm empleado={editingEmpleado} onSuccess={() => { setEditModalOpen(false); setEditingEmpleado(null); fetchEmpleados(pagination.page, search, rol, area, activo) }} />
+        </FormModal>
+      )}
     </div>
   )
 }

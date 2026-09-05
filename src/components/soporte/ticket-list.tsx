@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import Link from "next/link"
 import { FormModal } from "@/components/ui/form-modal"
+import { TableActionLink } from "@/components/ui/table-actions"
 import { TicketForm } from "@/components/soporte/ticket-form"
 
 const ESTADOS = ["ABIERTO", "EN_PROCESO", "RESUELTO", "CERRADO"]
@@ -204,9 +204,9 @@ export function TicketList({
                 </td>
                 <td className="p-3 text-sm hidden xl:table-cell">{new Date(t.createdAt).toLocaleDateString("es-AR")}</td>
                 <td className="p-3 text-sm">
-                  <Link href={`/soporte/${t.id}`} className="text-primary hover:underline">
+                  <TableActionLink href={`/soporte/${t.id}`}>
                     Ver detalle
-                  </Link>
+                  </TableActionLink>
                 </td>
               </tr>
             ))}
