@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { createEmpleadoSchema, ROLES, AREAS, type CreateEmpleadoFormData } from "@/shared/validation"
 
-export function NuevoEmpleadoForm() {
+export function NuevoEmpleadoForm({ onSuccess }: { onSuccess?: () => void }) {
   const router = useRouter()
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<CreateEmpleadoFormData>({
     resolver: zodResolver(createEmpleadoSchema),
@@ -25,7 +25,11 @@ export function NuevoEmpleadoForm() {
       return
     }
 
-    router.push("/empleados")
+    if (onSuccess) {
+      onSuccess()
+    } else {
+      router.push("/empleados")
+    }
   }
 
   return (

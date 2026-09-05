@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
+import { SignOutModal } from "@/components/modals/signout-modal"
 
 type NavbarProps = {
   name: string | null | undefined
@@ -28,6 +29,7 @@ const NAV_ITEMS: { href: string; label: string; roles: string[] | null }[] = [
 
 export function Navbar({ name, rol, currentPath }: NavbarProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [signOutOpen, setSignOutOpen] = useState(false)
   const items = NAV_ITEMS.filter(
     (item) => !item.roles || item.roles.includes(rol)
   )
@@ -75,12 +77,12 @@ export function Navbar({ name, rol, currentPath }: NavbarProps) {
             <span className="text-sm text-muted-foreground hidden sm:inline">
               {name}
             </span>
-            <Link
-              href="/api/auth/signout"
+            <button
+              onClick={() => setSignOutOpen(true)}
               className="text-sm text-muted-foreground hover:underline"
             >
               Cerrar sesión
-            </Link>
+            </button>
           </div>
         </div>
       </header>
@@ -142,6 +144,8 @@ export function Navbar({ name, rol, currentPath }: NavbarProps) {
           </div>
         </nav>
       </aside>
+
+      <SignOutModal open={signOutOpen} onClose={() => setSignOutOpen(false)} />
     </>
   )
 }

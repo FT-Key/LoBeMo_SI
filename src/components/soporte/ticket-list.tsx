@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
+import { FormModal } from "@/components/ui/form-modal"
+import { TicketForm } from "@/components/soporte/ticket-form"
 
 const ESTADOS = ["ABIERTO", "EN_PROCESO", "RESUELTO", "CERRADO"]
 
@@ -52,10 +54,12 @@ export function TicketList({
   initialData,
   initialTotal,
   proyectos,
+  empleados,
 }: {
   initialData: Ticket[]
   initialTotal: number
   proyectos: Proyecto[]
+  empleados: { id: string; nombre: string; apellido: string }[]
 }) {
   const [tickets, setTickets] = useState<Ticket[]>(initialData)
   const [pagination, setPagination] = useState<Pagination>({
@@ -69,6 +73,7 @@ export function TicketList({
   const [estado, setEstado] = useState("")
   const [prioridad, setPrioridad] = useState("")
   const [loading, setLoading] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const fetchTickets = useCallback(
     async (p: number, s: string, pid: string, e: string, pr: string) => {
@@ -150,6 +155,12 @@ export function TicketList({
           className="h-10 rounded-md bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90"
         >
           Buscar
+        </button>
+        <button
+          onClick={() => setModalOpen(true)}
+          className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
+        >
+          Nuevo ticket
         </button>
       </div>
 
@@ -233,6 +244,14 @@ export function TicketList({
           </div>
         </div>
       )}
+
+      <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Nuevo ticket de soporte" maxWidth="max-w-xl">
+        <TicketForm
+          empleados={empleados}
+          proyectos={proyectos}
+          onSuccess={() => { setModalOpen(false); fetchTickets(1, search, proyectoId, estado, prioridad) }}
+        />
+      </FormModal>
     </div>
   )
 }
