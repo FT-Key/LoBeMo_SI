@@ -7,6 +7,7 @@ import { PortalContent } from "./portal-content"
 
 type ProyectoData = {
   id: string
+  codigo: string
   nombre: string
   descripcion: string | null
   estado: string
@@ -25,7 +26,7 @@ type ProyectoData = {
 
 export default function SeguimientoProyectoPage() {
   const params = useParams()
-  const id = params.id as string
+  const codigo = params.codigo as string
   const [proyecto, setProyecto] = useState<ProyectoData | null>(null)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(true)
@@ -44,7 +45,7 @@ export default function SeguimientoProyectoPage() {
           return
         }
         const data = await res.json()
-        if (data.id !== id) {
+        if (data.codigo !== codigo) {
           setError("No tenés acceso a este proyecto")
           setLoading(false)
           return
@@ -56,7 +57,7 @@ export default function SeguimientoProyectoPage() {
       setLoading(false)
     }
     fetchProyecto()
-  }, [id])
+  }, [codigo])
 
   if (loading) {
     return (

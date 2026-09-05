@@ -11,9 +11,9 @@ async function verifyPortalToken(request: NextRequest) {
   if (!token) return null
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { proyectoId: string; tipo: string }
+    const decoded = jwt.verify(token, JWT_SECRET) as { proyectoId: string; codigo?: string; tipo: string }
     if (decoded.tipo !== "portal") return null
-    return decoded.proyectoId
+    return { proyectoId: decoded.proyectoId, codigo: decoded.codigo }
   } catch {
     return null
   }
@@ -21,8 +21,8 @@ async function verifyPortalToken(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const proyectoId = await verifyPortalToken(request)
-    if (!proyectoId) {
+    const auth = await verifyPortalToken(request)
+    if (!auth) {
       return NextResponse.json(
         { error: "Sesión no válida. Ingresá nuevamente." },
         { status: 401 }
@@ -43,7 +43,7 @@ export async function PUT(request: NextRequest) {
     const { claveActual, nuevaClave } = result.data
 
     const proyecto = await prisma.proyecto.findUnique({
-      where: { id: proyectoId },
+      where: { id: auth.proyectoId },
       select: { portalClave: true },
     })
 
@@ -64,7 +64,7 @@ export async function PUT(request: NextRequest) {
 
     const hashed = await bcrypt.hash(nuevaClave, 12)
     await prisma.proyecto.update({
-      where: { id: proyectoId },
+      where: { id: auth.proyectoId },
       data: { portalClave: hashed },
     })
 

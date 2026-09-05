@@ -10,7 +10,7 @@ type PortalLoginModalProps = {
 
 export function PortalLoginModal({ open, onClose }: PortalLoginModalProps) {
   const router = useRouter()
-  const [proyectoId, setProyectoId] = useState("")
+  const [codigo, setCodigo] = useState("")
   const [clave, setClave] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -24,7 +24,7 @@ export function PortalLoginModal({ open, onClose }: PortalLoginModalProps) {
       const res = await fetch("/api/portal/acceso", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ proyectoId: proyectoId.trim(), clave }),
+        body: JSON.stringify({ codigo: codigo.trim(), clave }),
       })
 
       const data = await res.json()
@@ -35,10 +35,10 @@ export function PortalLoginModal({ open, onClose }: PortalLoginModalProps) {
         return
       }
 
-      setProyectoId("")
+      setCodigo("")
       setClave("")
       onClose()
-      router.push(`/seguimiento/${data.proyectoId}`)
+      router.push(`/seguimiento/${data.codigo}`)
     } catch {
       setError("Error de conexión")
       setLoading(false)
@@ -47,7 +47,7 @@ export function PortalLoginModal({ open, onClose }: PortalLoginModalProps) {
 
   function handleClose() {
     if (!loading) {
-      setProyectoId("")
+      setCodigo("")
       setClave("")
       setError("")
       onClose()
@@ -90,13 +90,13 @@ export function PortalLoginModal({ open, onClose }: PortalLoginModalProps) {
           )}
 
           <div className="space-y-2">
-            <label htmlFor="modal-proyectoId" className="text-sm font-medium text-[#e2e8f0]">ID del Proyecto</label>
+            <label htmlFor="modal-codigo" className="text-sm font-medium text-[#e2e8f0]">Código del Proyecto</label>
             <input
-              id="modal-proyectoId"
+              id="modal-codigo"
               type="text"
-              value={proyectoId}
-              onChange={(e) => setProyectoId(e.target.value)}
-              placeholder="Ej: clxxx... (cuid)"
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value.toUpperCase())}
+              placeholder="Ej: LBM-CENT-A3K9"
               required
               disabled={loading}
               className="h-10 w-full rounded-lg border border-[#1e293b] bg-[#0f172a] px-3 text-sm text-white placeholder:text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#00d4ff]/50 focus:border-[#00d4ff] transition-all font-mono disabled:opacity-50"
@@ -127,7 +127,8 @@ export function PortalLoginModal({ open, onClose }: PortalLoginModalProps) {
         </form>
 
         <p className="text-center text-[#475569] text-[11px] mt-4">
-          Estos datos te fueron enviados por email al crear tu proyecto.
+          ¿Olvidaste tus credenciales?{" "}
+          <a href="/solicitar-acceso" className="text-[#00d4ff] hover:underline">Recuperá tu acceso</a>
         </p>
       </div>
     </div>
