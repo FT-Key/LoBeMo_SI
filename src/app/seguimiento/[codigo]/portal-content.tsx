@@ -5,6 +5,7 @@ import Link from "next/link"
 
 type ProyectoData = {
   id: string
+  codigo: string
   nombre: string
   descripcion: string | null
   estado: string

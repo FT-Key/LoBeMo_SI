@@ -19,12 +19,18 @@ export async function POST(request: Request) {
       )
     }
 
-    const { proyectoId, clave } = result.data
+    const { proyectoId, codigo, clave } = result.data
+
+    // Lookup by codigo or id (backward compatible)
+    const where = codigo
+      ? { codigo }
+      : { id: proyectoId! }
 
     const proyecto = await prisma.proyecto.findUnique({
-      where: { id: proyectoId },
+      where,
       select: {
         id: true,
+        codigo: true,
         nombre: true,
         portalClave: true,
         portalActivo: true,
@@ -62,7 +68,7 @@ export async function POST(request: Request) {
     }
 
     const token = jwt.sign(
-      { proyectoId: proyecto.id, tipo: "portal" },
+      { proyectoId: proyecto.id, codigo: proyecto.codigo, tipo: "portal" },
       JWT_SECRET,
       { expiresIn: "24h" }
     )
@@ -70,6 +76,7 @@ export async function POST(request: Request) {
     const response = NextResponse.json({
       ok: true,
       proyectoId: proyecto.id,
+      codigo: proyecto.codigo,
       nombre: proyecto.nombre,
       cliente: proyecto.cliente.razonSocial,
     })

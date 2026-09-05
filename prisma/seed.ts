@@ -4,6 +4,7 @@ import type { HTTPQueryOptions } from "@neondatabase/serverless";
 import { hash } from "bcryptjs";
 import { randomUUID } from "crypto";
 import { config } from "dotenv";
+import { generarCodigoProyecto } from "../src/lib/proyecto-codigo";
 
 config({ path: ".env.local" });
 
@@ -213,9 +214,11 @@ async function main() {
   // ── Proyecto ──
   console.log("\n📁 Creando proyecto...");
   const proyectoServicio = SERVICIOS[0]; // Auditoría ISO 27001 como servicio principal
+  const codigoProyecto = await generarCodigoProyecto("Centro Hogar - Seguridad Informática Integral");
   await prisma.proyecto.create({
     data: {
       id: PROYECTO_ID,
+      codigo: codigoProyecto,
       nombre: "Centro Hogar - Seguridad Informática Integral",
       descripcion: "Evaluación y hardening completo del sistema de gestión de ventas de Muebleria Centro Hogar. Incluye auditoría, pentesting, desarrollo seguro, hardening de redes, capacitación y consultoría estratégica.",
       estado: "CERRADO",
@@ -230,7 +233,7 @@ async function main() {
     },
   });
   log("Centro Hogar - Seguridad Informática Integral (CERRADO)");
-  log(`Portal: activo | Clave: centrohogar2026 | ID: ${PROYECTO_ID}`);
+  log(`Portal: activo | Clave: centrohogar2026 | Código: ${codigoProyecto}`);
 
   // ── Historial de estados ──
   console.log("\n📋 Creando historial de estados...");

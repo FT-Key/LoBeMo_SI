@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { createProyectoSchema } from "@/shared/validation"
+import { generarCodigoProyecto } from "@/lib/proyecto-codigo"
 
 const ROLES_PERMITIDOS_CREAR = ["GERENTE_GENERAL", "CISO"]
 
@@ -118,8 +119,11 @@ export async function POST(request: Request) {
       )
     }
 
+    const codigo = await generarCodigoProyecto(result.data.nombre)
+
     const proyecto = await prisma.proyecto.create({
       data: {
+        codigo,
         nombre: result.data.nombre,
         descripcion: result.data.descripcion || null,
         clienteId: result.data.clienteId,
@@ -147,7 +151,8 @@ export async function POST(request: Request) {
           } catch { /* logo not found */ }
 
           const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"
-          const portalUrl = `${baseUrl}/seguimiento/${proyecto.id}`
+          const portalUrl = `${baseUrl}/seguimiento/${proyecto.codigo}`
+          const solicitarAccesoUrl = `${baseUrl}/solicitar-acceso`
 
           await transport.sendMail({
             from: `"LoBeMo Seguridad" <${user}>`,
@@ -167,8 +172,8 @@ export async function POST(request: Request) {
                     <p style="color:#f1f5f9;font-size:16px;font-weight:600;margin:0 0 16px;">${proyecto.nombre}</p>
 
                     <div style="background:#1e293b;border-radius:8px;padding:12px;margin-bottom:12px;">
-                      <p style="color:#64748b;font-size:11px;margin:0 0 4px;text-transform:uppercase;">ID del Proyecto</p>
-                      <p style="color:#00d4ff;font-size:14px;font-weight:600;margin:0;font-family:monospace;">${proyecto.id}</p>
+                      <p style="color:#64748b;font-size:11px;margin:0 0 4px;text-transform:uppercase;">Código del Proyecto</p>
+                      <p style="color:#00d4ff;font-size:14px;font-weight:600;margin:0;font-family:monospace;">${proyecto.codigo}</p>
                     </div>
 
                     <div style="background:#1e293b;border-radius:8px;padding:12px;">
@@ -182,6 +187,7 @@ export async function POST(request: Request) {
                   <p style="color:#475569;font-size:12px;margin:24px 0 0;">Guardá estos datos. Los necesitás para acceder al seguimiento de tu proyecto.</p>
                   <p style="color:#475569;font-size:12px;margin:4px 0 0;">Si no podés hacer clic en el botón, copiá y pegá este enlace:</p>
                   <p style="color:#00d4ff;font-size:12px;margin:4px 0 0;word-break:break-all;">${portalUrl}</p>
+                  <p style="color:#475569;font-size:12px;margin:16px 0 0;">¿Olvidaste tus credenciales? <a href="${solicitarAccesoUrl}" style="color:#00d4ff;text-decoration:none;">Recuperá tu acceso acá</a></p>
 
                   <hr style="border:none;border-top:1px solid #1e293b;margin:32px 0;" />
                   <p style="color:#475569;font-size:11px;margin:0;">LoBeMo Seguridad Informática · Portal de Seguimiento</p>

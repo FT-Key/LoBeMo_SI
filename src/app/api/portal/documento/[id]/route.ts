@@ -9,9 +9,9 @@ async function verifyPortalToken(request: NextRequest) {
   if (!token) return null
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { proyectoId: string; tipo: string }
+    const decoded = jwt.verify(token, JWT_SECRET) as { proyectoId: string; codigo?: string; tipo: string }
     if (decoded.tipo !== "portal") return null
-    return decoded.proyectoId
+    return { proyectoId: decoded.proyectoId, codigo: decoded.codigo }
   } catch {
     return null
   }
@@ -22,8 +22,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const proyectoId = await verifyPortalToken(request)
-    if (!proyectoId) {
+    const auth = await verifyPortalToken(request)
+    if (!auth) {
       return NextResponse.json(
         { error: "Sesión no válida" },
         { status: 401 }
@@ -49,7 +49,7 @@ export async function GET(
       )
     }
 
-    if (documento.proyectoId !== proyectoId) {
+    if (documento.proyectoId !== auth.proyectoId) {
       return NextResponse.json(
         { error: "No tenés acceso a este documento" },
         { status: 403 }

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 
 export default function SeguimientoPage() {
   const router = useRouter()
-  const [proyectoId, setProyectoId] = useState("")
+  const [codigo, setCodigo] = useState("")
   const [clave, setClave] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -19,7 +19,7 @@ export default function SeguimientoPage() {
       const res = await fetch("/api/portal/acceso", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ proyectoId: proyectoId.trim(), clave }),
+        body: JSON.stringify({ codigo: codigo.trim(), clave }),
       })
 
       const data = await res.json()
@@ -30,7 +30,7 @@ export default function SeguimientoPage() {
         return
       }
 
-      router.push(`/seguimiento/${data.proyectoId}`)
+      router.push(`/seguimiento/${data.codigo}`)
     } catch {
       setError("Error de conexión")
       setLoading(false)
@@ -50,7 +50,7 @@ export default function SeguimientoPage() {
             <span className="text-xl font-bold text-white">LoBeMo</span>
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">Seguimiento de Proyecto</h1>
-          <p className="text-[#94a3b8] text-sm">Ingresá los datos de tu proyecto para ver su estado</p>
+          <p className="text-[#94a3b8] text-sm">Ingresá el código de tu proyecto para ver su estado</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-[#111827] border border-[#1e293b] rounded-2xl p-8 space-y-6">
@@ -61,15 +61,15 @@ export default function SeguimientoPage() {
           )}
 
           <div className="space-y-2">
-            <label htmlFor="proyectoId" className="text-sm font-medium text-[#e2e8f0]">
-              ID del Proyecto
+            <label htmlFor="codigo" className="text-sm font-medium text-[#e2e8f0]">
+              Código del Proyecto
             </label>
             <input
-              id="proyectoId"
+              id="codigo"
               type="text"
-              value={proyectoId}
-              onChange={(e) => setProyectoId(e.target.value)}
-              placeholder="Ej: clxxx... (cuid)"
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value.toUpperCase())}
+              placeholder="Ej: LBM-CENT-A3K9"
               required
               className="h-11 w-full rounded-lg border border-[#1e293b] bg-[#0f172a] px-4 text-sm text-white placeholder:text-[#475569] focus:outline-none focus:ring-2 focus:ring-[#00d4ff]/50 focus:border-[#00d4ff] transition-all font-mono"
             />
@@ -100,7 +100,8 @@ export default function SeguimientoPage() {
         </form>
 
         <p className="text-center text-[#475569] text-xs mt-6">
-          Estos datos te fueron enviados por email al crear tu proyecto.
+          ¿Olvidaste tus credenciales?{" "}
+          <a href="/solicitar-acceso" className="text-[#00d4ff] hover:underline">Recuperá tu acceso</a>
         </p>
       </div>
     </div>
