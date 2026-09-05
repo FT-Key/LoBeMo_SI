@@ -3,15 +3,15 @@
 import { useState } from "react"
 import { LoginModal } from "@/components/modals/login-modal"
 import { PortalLoginModal } from "@/components/modals/portal-login-modal"
-import { HeroSection } from "./hero-section"
+import { FooterSection } from "./footer-section"
 
-export function LandingPageWrapper() {
+export function FooterWrapper() {
   const [loginOpen, setLoginOpen] = useState(false)
   const [portalOpen, setPortalOpen] = useState(false)
 
   return (
     <>
-      <HeroSection
+      <FooterSection
         onOpenLogin={() => setLoginOpen(true)}
         onOpenPortal={() => setPortalOpen(true)}
       />

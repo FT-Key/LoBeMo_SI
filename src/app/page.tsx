@@ -5,6 +5,7 @@ import { ServicesSection } from "@/components/landing/services-section"
 import { StatsSection } from "@/components/landing/stats-section"
 import { FeaturesSection } from "@/components/landing/features-section"
 import { ContactSection } from "@/components/landing/contact-section"
+import { FooterWrapper } from "@/components/landing/footer-wrapper"
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <StatsSection />
       <FeaturesSection />
       <ContactSection />
+      <FooterWrapper />
     </div>
   )
 }
