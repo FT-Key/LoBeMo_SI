@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { updateProyectoSchema } from "@/shared/validation"
+import { resolverDestinatario } from "@/lib/email"
 
 export async function GET(
   _request: NextRequest,
@@ -148,7 +149,7 @@ export async function PATCH(
 
           await transport.sendMail({
             from: `"LoBeMo Seguridad" <${user}>`,
-            to: cliente.emailContacto,
+            to: resolverDestinatario(cliente.emailContacto),
             subject: asunto,
             html: `
               <!DOCTYPE html>

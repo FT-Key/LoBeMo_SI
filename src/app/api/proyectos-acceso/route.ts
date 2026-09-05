@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { readFile } from "fs/promises"
 import { join } from "path"
 import nodemailer from "nodemailer"
+import { resolverDestinatario } from "@/lib/email"
 
 const emailSchema = z.object({
   email: z.string().email("Ingresá un email válido"),
@@ -104,7 +105,7 @@ export async function POST(request: NextRequest) {
 
           await transport.sendMail({
             from: `"LoBeMo Seguridad" <${user}>`,
-            to: email,
+            to: resolverDestinatario(email),
             subject: `Tus credenciales de acceso - ${p.nombre}`,
             html: `
               <!DOCTYPE html>
