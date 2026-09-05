@@ -1,7 +1,6 @@
 import { requireAuth } from "@/lib/auth-helpers"
 import { prisma } from "@/lib/prisma"
 import { ProyectosList } from "./proyectos-list"
-import Link from "next/link"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 
 const ESTADO_LABELS: Record<string, string> = {
@@ -40,19 +39,9 @@ export default async function ProyectosPage() {
 
   return (
     <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/proyectos">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Proyectos</h1>
-          <p className="text-sm text-muted-foreground mt-1">Gestión de proyectos de la empresa</p>
-        </div>
-        {puedeCrear && (
-          <Link
-            href="/proyectos/nuevo"
-            className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
-          >
-            Nuevo proyecto
-          </Link>
-        )}
+      <div className="mb-6">
+        <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Proyectos</h1>
+        <p className="text-sm text-muted-foreground mt-1">Gestión de proyectos de la empresa</p>
       </div>
 
       <ProyectosList
@@ -61,6 +50,7 @@ export default async function ProyectosPage() {
         clientes={JSON.parse(JSON.stringify(clientes))}
         servicios={JSON.parse(JSON.stringify(servicios))}
         estadoLabels={ESTADO_LABELS}
+        puedeCrear={puedeCrear}
       />
     </AdminSidebar>
   )

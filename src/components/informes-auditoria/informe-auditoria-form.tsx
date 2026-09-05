@@ -7,7 +7,7 @@ import { createInformeSchema, type CreateInformeFormData } from "@/shared/valida
 
 type Proyecto = { id: string; nombre: string }
 
-export function InformeAuditoriaForm({ proyectos }: { proyectos: Proyecto[] }) {
+export function InformeAuditoriaForm({ proyectos, onSuccess }: { proyectos: Proyecto[]; onSuccess?: () => void }) {
   const router = useRouter()
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<CreateInformeFormData>({
     resolver: zodResolver(createInformeSchema),
@@ -28,8 +28,12 @@ export function InformeAuditoriaForm({ proyectos }: { proyectos: Proyecto[] }) {
         return
       }
 
-      const informe = await res.json()
-      router.push(`/informes-auditoria/${informe.id}`)
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        const informe = await res.json()
+        router.push(`/informes-auditoria/${informe.id}`)
+      }
     } catch {
       setError("root", { message: "Error de conexión" })
     }

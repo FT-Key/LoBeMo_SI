@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
+import { FormModal } from "@/components/ui/form-modal"
+import { CapacitacionForm } from "@/components/capacitaciones/capacitacion-form"
 
 const ESTADOS = ["PLANIFICADA", "EN_CURSO", "COMPLETADA", "CANCELADA"]
 
@@ -46,9 +48,13 @@ type Pagination = {
 export function CapacitacionList({
   initialData,
   initialTotal,
+  proyectos,
+  puedeCrear,
 }: {
   initialData: Capacitacion[]
   initialTotal: number
+  proyectos: { id: string; nombre: string }[]
+  puedeCrear?: boolean
 }) {
   const [capacitaciones, setCapacitaciones] = useState<Capacitacion[]>(initialData)
   const [pagination, setPagination] = useState<Pagination>({
@@ -60,6 +66,7 @@ export function CapacitacionList({
   const [search, setSearch] = useState("")
   const [estado, setEstado] = useState("")
   const [loading, setLoading] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const fetchCapacitaciones = useCallback(async (p: number, s: string, e: string) => {
     setLoading(true)
@@ -114,6 +121,14 @@ export function CapacitacionList({
             <option key={e} value={e}>{ESTADO_LABELS[e]}</option>
           ))}
         </select>
+        {puedeCrear && (
+          <button
+            onClick={() => setModalOpen(true)}
+            className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
+          >
+            Nueva capacitación
+          </button>
+        )}
       </div>
 
       <div className="rounded-md border">
@@ -191,6 +206,13 @@ export function CapacitacionList({
           </div>
         </div>
       )}
+
+      <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Nueva capacitación" maxWidth="max-w-xl">
+        <CapacitacionForm
+          proyectos={proyectos}
+          onSuccess={() => { setModalOpen(false); fetchCapacitaciones(1, search, estado) }}
+        />
+      </FormModal>
     </div>
   )
 }

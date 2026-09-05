@@ -2,11 +2,9 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
-
-const SECTORES = [
-  "SALUD", "CONTABLE_JURIDICO", "COMERCIAL", "LOGISTICA",
-  "AGROINDUSTRIA", "GOBIERNO", "OTRO",
-] as const
+import { SECTORES, SECTORES_LABELS } from "@/shared/validation"
+import { FormModal } from "@/components/ui/form-modal"
+import { NuevoClienteForm } from "@/app/clientes/nuevo/form"
 
 type Cliente = {
   id: string
@@ -47,6 +45,7 @@ export function ClientesList({
   const [search, setSearch] = useState("")
   const [sector, setSector] = useState("")
   const [loading, setLoading] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const fetchClientes = useCallback(async (p: number, s: string, sec: string) => {
     setLoading(true)
@@ -78,7 +77,7 @@ export function ClientesList({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <input
           type="text"
           placeholder="Buscar por razón social, CUIT o email..."
@@ -93,9 +92,17 @@ export function ClientesList({
         >
           <option value="">Todos los sectores</option>
           {SECTORES.map((s) => (
-            <option key={s} value={s}>{s.replace(/_/g, " ")}</option>
+            <option key={s} value={s}>{SECTORES_LABELS[s] || s}</option>
           ))}
         </select>
+        {puedeEditar && (
+          <button
+            onClick={() => setModalOpen(true)}
+            className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
+          >
+            Nuevo cliente
+          </button>
+        )}
       </div>
 
       <div className="rounded-md border">
@@ -120,7 +127,7 @@ export function ClientesList({
                   {c.emailContacto && <div>{c.emailContacto}</div>}
                   {c.telefono && <div className="text-muted-foreground">{c.telefono}</div>}
                 </td>
-                <td className="p-3 text-sm">{c.sector?.replace(/_/g, " ") ?? "—"}</td>
+                <td className="p-3 text-sm">{c.sector ? (SECTORES_LABELS[c.sector] || c.sector) : "—"}</td>
                 <td className="p-3 text-sm">{c._count.proyectos}</td>
                 <td className="p-3 text-sm">
                   {c.activo ? (
@@ -185,6 +192,10 @@ export function ClientesList({
           </div>
         </div>
       )}
+
+      <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Nuevo cliente">
+        <NuevoClienteForm onSuccess={() => { setModalOpen(false); fetchClientes(1, search, sector) }} />
+      </FormModal>
     </div>
   )
 }
