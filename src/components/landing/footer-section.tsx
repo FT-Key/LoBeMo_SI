@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 
-export function FooterSection() {
+export function FooterSection({ onOpenLogin, onOpenPortal }: { onOpenLogin: () => void; onOpenPortal: () => void }) {
   return (
     <footer className="relative overflow-hidden border-t border-border/30">
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-surface/50 to-background" />
@@ -18,6 +17,7 @@ export function FooterSection() {
                 width={140}
                 height={36}
                 className="h-9 w-auto"
+                style={{ width: "auto", height: "auto" }}
               />
             </div>
             <p className="text-sm leading-relaxed text-muted-foreground">
@@ -49,12 +49,20 @@ export function FooterSection() {
             </h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link
-                  href="/login"
+                <button
+                  onClick={onOpenPortal}
+                  className="font-medium text-muted-foreground transition-colors hover:text-primary"
+                >
+                  Clientes (Seguimiento)
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={onOpenLogin}
                   className="font-medium text-muted-foreground transition-colors hover:text-primary"
                 >
                   Empleados
-                </Link>
+                </button>
               </li>
             </ul>
           </div>

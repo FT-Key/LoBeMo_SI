@@ -48,12 +48,15 @@
 ✅ Typecheck: disponible y pasa sin errores.
 
 ## Último Cambio
-**Rediseño completo del admin con AdminSidebar unificado** — Branch `feat/admin-design-redesign`
-- **AdminSidebar**: Sidebar colapsable con iconos Lucide, gradientes enterprise, navegación agrupada por secciones
-- **AdminHeader**: Breadcrumb, notificaciones, menú de usuario
-- **Migración completa**: 33 archivos migrados de Navbar a AdminSidebar
-- **Páginas afectadas**: admin, dashboard, proyectos, clientes, servicios, empleados, pentesting, soporte, capacitaciones, propuestas, informes-auditoria, auditoría, calendario
-- **PR #55**: https://github.com/FT-Key/LoBeMo_SI/pull/55
+**Portal del Cliente + Landing Page Marketing** — Branch `feat/admin-design-redesign`
+- **Landing page**: Hero rediseñado, sección contacto con formulario + Leaflet Map + email Nodemailer
+- **Portal del Cliente**: Login JWT (`/seguimiento`), dashboard con tabs (Resumen, Timeline, Hitos, Documentos, Auditoría, Pentesting)
+- **APIs Portal**: `/api/portal/acceso` (login), `/api/portal/proyecto` (datos), `/api/portal/clave` (cambio contraseña), `/api/portal/documento/[id]` (descarga)
+- **Email automático**: Al activar portal (credenciales) + al transicionar estado (si portal activo)
+- **Admin Portal Section**: Toggle activo + cambio de contraseña en detalle de proyecto
+- **Schema**: `portalClave` (bcrypt), `portalActivo` (boolean) en Proyecto + modelo `SesionPortal`
+- **Middleware**: `/seguimiento/*` y `/api/portal/*` rutas públicas
+- **PR #57**: https://github.com/FT-Key/LoBeMo_SI/pull/57
 
 ## Lint Results
 

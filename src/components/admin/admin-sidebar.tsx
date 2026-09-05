@@ -90,7 +90,7 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
       >
         <div className={`flex items-center border-b border-border ${collapsed ? "justify-center px-2 py-4" : "justify-between px-4 py-4"}`}>
           {!collapsed && (
-            <Image src="/lobemo-mini.png" alt="LoBeMo" width={100} height={28} className="h-7 w-auto" />
+            <Image src="/lobemo-mini.png" alt="LoBeMo" width={100} height={28} className="h-7 w-auto" style={{ width: "auto", height: "auto" }} />
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
@@ -164,7 +164,7 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
         } w-72`}
       >
         <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-          <Image src="/lobemo-mini.png" alt="LoBeMo" width={100} height={28} className="h-7 w-auto" />
+          <Image src="/lobemo-mini.png" alt="LoBeMo" width={100} height={28} className="h-7 w-auto" style={{ width: "auto", height: "auto" }} />
           <button
             onClick={() => setSidebarOpen(false)}
             className="p-1.5 text-muted-foreground hover:text-foreground transition-colors"

@@ -25,6 +25,7 @@ type Proyecto = {
   estado: string
   fechaInicio: string
   fechaEstimadaFin: string | null
+  fechaEntregaReal: string | null
   montoAcordado: string | null
   cliente: { id: string; razonSocial: string }
   servicio: { id: string; nombre: string }
@@ -144,6 +145,7 @@ export function ProyectosList({
               <th className="text-left p-3 text-sm font-medium">Estado</th>
               <th className="text-left p-3 text-sm font-medium">Tareas</th>
               <th className="text-left p-3 text-sm font-medium">Inicio</th>
+              <th className="text-left p-3 text-sm font-medium">Fin</th>
               <th className="text-left p-3 text-sm font-medium">Acciones</th>
             </tr>
           </thead>
@@ -160,6 +162,7 @@ export function ProyectosList({
                 </td>
                 <td className="p-3 text-sm">{p._count.tareas}</td>
                 <td className="p-3 text-sm">{new Date(p.fechaInicio).toLocaleDateString("es-AR")}</td>
+                <td className="p-3 text-sm">{p.fechaEntregaReal ? new Date(p.fechaEntregaReal).toLocaleDateString("es-AR") : "—"}</td>
                 <td className="p-3 text-sm">
                   <Link href={`/proyectos/${p.id}`} className="text-primary hover:underline">
                     Ver detalle
@@ -169,7 +172,7 @@ export function ProyectosList({
             ))}
             {!loading && proyectos.length === 0 && (
               <tr>
-                <td colSpan={7} className="p-6 text-center text-sm text-muted-foreground">
+                <td colSpan={8} className="p-6 text-center text-sm text-muted-foreground">
                   No se encontraron proyectos
                 </td>
               </tr>
