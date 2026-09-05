@@ -136,8 +136,10 @@ async function main() {
   console.log("🗑️  Limpiando base de datos...");
 
   const PASSWORD_HASH = await hash("password123", 12);
+  const PORTAL_CLAVE_HASH = await hash("centrohogar2026", 12);
 
   // Delete in reverse FK order
+  await prisma.sesionPortal.deleteMany();
   await prisma.auditLog.deleteMany();
   await prisma.configuracion.deleteMany();
   await prisma.ticketSoporte.deleteMany();
@@ -223,9 +225,12 @@ async function main() {
       montoAcordado: 4400000,
       clienteId: CLIENTE_ID,
       servicioId: proyectoServicio.id,
+      portalActivo: true,
+      portalClave: PORTAL_CLAVE_HASH,
     },
   });
   log("Centro Hogar - Seguridad Informática Integral (CERRADO)");
+  log(`Portal: activo | Clave: centrohogar2026 | ID: ${PROYECTO_ID}`);
 
   // ── Historial de estados ──
   console.log("\n📋 Creando historial de estados...");
