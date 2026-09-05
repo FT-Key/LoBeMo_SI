@@ -1,16 +1,85 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useRef, useCallback } from "react";
 
 export function HeroSection({ onOpenLogin, onOpenPortal }: { onOpenLogin: () => void; onOpenPortal: () => void }) {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const decorRef = useRef<HTMLDivElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number>(0);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      const hero = heroRef.current;
+      if (!hero) return;
+
+      const rect = hero.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+      // Background: subtle shift (slow layer)
+      if (bgRef.current) {
+        bgRef.current.style.transform = `translate(${x * -12}px, ${y * -12}px) scale(1.05)`;
+      }
+
+      // Content: slight opposite shift (fast layer)
+      if (contentRef.current) {
+        contentRef.current.style.transform = `translate(${x * 8}px, ${y * 6}px)`;
+      }
+
+      // Decorative elements: medium speed
+      if (decorRef.current) {
+        decorRef.current.style.transform = `translate(${x * -20}px, ${y * -16}px)`;
+      }
+
+      // Scroll indicator: subtle shift
+      if (scrollIndicatorRef.current) {
+        scrollIndicatorRef.current.style.transform = `translate(calc(-50% + ${x * 10}px), ${y * 8}px)`;
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [handleMouseMove]);
+
   return (
-    <header className="relative flex min-h-screen flex-col overflow-x-hidden">
-      {/* Hero background */}
-      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/hero-bg.png')" }} />
-      {/* Overlays on top of hero-bg, behind content */}
+    <header ref={heroRef} className="relative flex min-h-screen flex-col overflow-hidden">
+      {/* Hero background — parallax layer (slow) */}
+      <div
+        ref={bgRef}
+        className="absolute inset-0 will-change-transform"
+        style={{
+          backgroundImage: "url('/hero-bg.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          transition: "transform 0.15s ease-out",
+        }}
+      />
+
+      {/* Overlays */}
       <div className="absolute inset-0 bg-gradient-to-r from-background via-background/10 to-background/100 pointer-events-none" style={{ zIndex: 1 }} />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/20 pointer-events-none" style={{ zIndex: 1 }} />
-      <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-primary/5 to-transparent pointer-events-none" style={{ zIndex: 1 }} />
+
+      {/* Decorative parallax layer (medium) */}
+      <div
+        ref={decorRef}
+        className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-primary/5 to-transparent pointer-events-none will-change-transform"
+        style={{ zIndex: 1, transition: "transform 0.12s ease-out" }}
+      />
 
       {/* Nav */}
       <nav className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4">
@@ -42,8 +111,12 @@ export function HeroSection({ onOpenLogin, onOpenPortal }: { onOpenLogin: () => 
         </div>
       </nav>
 
-      {/* Hero content — left aligned */}
-      <div className="relative z-10 flex flex-1 items-center px-4 pt-24 sm:px-8 md:px-12 lg:px-20">
+      {/* Hero content — parallax layer (fast) */}
+      <div
+        ref={contentRef}
+        className="relative z-10 flex flex-1 items-center px-4 pt-24 sm:px-8 md:px-12 lg:px-20 will-change-transform"
+        style={{ transition: "transform 0.1s ease-out" }}
+      >
         <div className="w-full max-w-xl md:ml-[8%] lg:ml-[12%]">
           {/* Decorative accent line */}
           <div className="mb-6 flex items-center gap-4 sm:mb-8">
@@ -93,8 +166,8 @@ export function HeroSection({ onOpenLogin, onOpenPortal }: { onOpenLogin: () => 
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2">
+      {/* Scroll indicator — parallax layer (subtle) */}
+      <div ref={scrollIndicatorRef} className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 will-change-transform" style={{ transition: "transform 0.15s ease-out" }}>
         <div className="flex flex-col items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Scroll</span>
           <div className="flex h-8 w-5 items-center justify-center rounded-full border-2 border-primary/40 p-1.5">
