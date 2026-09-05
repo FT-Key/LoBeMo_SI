@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 
-export function HeroSection() {
+export function HeroSection({ onOpenLogin, onOpenPortal }: { onOpenLogin: () => void; onOpenPortal: () => void }) {
   return (
     <header className="relative flex min-h-screen flex-col overflow-x-hidden">
       {/* Hero background */}
@@ -27,18 +26,18 @@ export function HeroSection() {
             />
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <Link
-              href="/seguimiento"
+            <button
+              onClick={onOpenPortal}
               className="inline-flex h-8 sm:h-9 items-center justify-center rounded-full px-3 sm:px-4 text-xs sm:text-sm font-semibold text-muted-foreground transition-all hover:text-foreground"
             >
               Seguimiento
-            </Link>
-            <Link
-              href="/login"
+            </button>
+            <button
+              onClick={onOpenLogin}
               className="inline-flex h-8 sm:h-9 items-center justify-center rounded-full px-3 sm:px-4 text-xs sm:text-sm font-semibold text-muted-foreground transition-all hover:text-foreground"
             >
               Acceso empleados
-            </Link>
+            </button>
           </div>
         </div>
       </nav>

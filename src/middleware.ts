@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   if (/\.(?:png|jpg|jpeg|gif|webp|svg|ico|avif|css|js|woff2?|json)$/.test(request.nextUrl.pathname)) {
     return NextResponse.next()
   }
-  const isAuthPage = request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/register")
+  const isAuthPage = request.nextUrl.pathname.startsWith("/login")
   const isApiAuth = request.nextUrl.pathname.startsWith("/api/auth")
   const isPortalPublic = request.nextUrl.pathname.startsWith("/seguimiento")
   const isPortalApi = request.nextUrl.pathname.startsWith("/api/portal")
