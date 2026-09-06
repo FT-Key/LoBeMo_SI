@@ -1,17 +1,9 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES, Rol } from "@/lib/api-auth"
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const session = await auth()
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-  }
-
-  const { id } = await params
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx) => {
+  const { id } = await ctx.params
   const servicio = await prisma.servicio.findUnique({
     where: { id },
     include: { _count: { select: { proyectos: true } } },
@@ -22,26 +14,11 @@ export async function GET(
   }
 
   return NextResponse.json(servicio)
-}
+})
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const PATCH = withRole([Rol.GERENTE_GENERAL] as Rol[], async (request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    if (session.user.rol !== "GERENTE_GENERAL") {
-      return NextResponse.json(
-        { error: "Solo el Gerente General puede modificar servicios" },
-        { status: 403 }
-      )
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const body = await request.json()
     const { descripcion, precioBase } = body
 
@@ -87,26 +64,11 @@ export async function PATCH(
       { status: 500 }
     )
   }
-}
+})
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = withRole([Rol.GERENTE_GENERAL] as Rol[], async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    if (session.user.rol !== "GERENTE_GENERAL") {
-      return NextResponse.json(
-        { error: "Solo el Gerente General puede eliminar servicios" },
-        { status: 403 }
-      )
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const servicio = await prisma.servicio.findUnique({
       where: { id },
       include: { _count: { select: { proyectos: true } } },
@@ -145,4 +107,4 @@ export async function DELETE(
       { status: 500 }
     )
   }
-}
+})

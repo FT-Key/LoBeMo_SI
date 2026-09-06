@@ -1,20 +1,15 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { createEmpleadoSchema } from "@/shared/validation"
+import { withRole, ROLES } from "@/lib/api-auth"
 
-export async function POST(request: Request) {
+export const POST = withRole(ROLES.MANAGE_EMPLEADOS, async (request) => {
   try {
     const body = await request.json()
     const result = validateBody(createEmpleadoSchema, body)
     if (!result.success) return result.error
-
-    const session = await auth()
-    if (!session?.user || session.user.rol !== "GERENTE_GENERAL") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
 
     const existing = await prisma.empleado.findUnique({ where: { email: result.data.email } })
     if (existing) {
@@ -57,14 +52,9 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   }
-}
+})
 
-export async function GET(request: Request) {
-  const session = await auth()
-  if (!session?.user || session.user.rol !== "GERENTE_GENERAL") {
-    return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-  }
-
+export const GET = withRole(ROLES.MANAGE_EMPLEADOS, async (request) => {
   const { searchParams } = new URL(request.url)
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
   const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
@@ -110,4 +100,4 @@ export async function GET(request: Request) {
     data: empleados,
     pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
   })
-}
+})

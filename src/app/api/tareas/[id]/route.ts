@@ -1,22 +1,14 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { updateTareaSchema } from "@/shared/validation"
+import { withRole, ROLES, Rol } from "@/lib/api-auth"
 
 const ESTADOS_VALIDOS = ["PENDIENTE", "EN_PROGRESO", "COMPLETADA", "CANCELADA"]
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const tarea = await prisma.tarea.findUnique({
       where: { id },
@@ -34,7 +26,7 @@ export async function GET(
       return NextResponse.json({ error: "Tarea no encontrada" }, { status: 404 })
     }
 
-    const esCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
+    const esCisoOGerente = ROLES.MANAGE_PROYECTOS.includes(session.user.rol as Rol)
     if (!esCisoOGerente) {
       if (!tarea.proyectoId) {
         return NextResponse.json(
@@ -63,19 +55,11 @@ export async function GET(
     console.error("Error getting tarea:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const body = await request.json()
     const result = validateBody(updateTareaSchema, body)
     if (!result.success) return result.error
@@ -96,7 +80,7 @@ export async function PATCH(
       )
     }
 
-    const esCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
+    const esCisoOGerente = ROLES.MANAGE_PROYECTOS.includes(session.user.rol as Rol)
 
     if (!esCisoOGerente) {
       if (!tareaExistente.proyectoId) {
@@ -193,27 +177,11 @@ export async function PATCH(
     console.error("Error updating tarea:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const soloCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
-    if (!soloCisoOGerente) {
-      return NextResponse.json(
-        { error: "Solo el CISO o Gerente General pueden eliminar tareas" },
-        { status: 403 }
-      )
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const tarea = await prisma.tarea.findUnique({
       where: { id },
@@ -248,4 +216,4 @@ export async function DELETE(
     console.error("Error deleting tarea:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

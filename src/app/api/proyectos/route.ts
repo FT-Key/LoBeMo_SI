@@ -1,24 +1,17 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import nodemailer from "nodemailer"
 import { readFile } from "fs/promises"
 import { join } from "path"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { createProyectoSchema } from "@/shared/validation"
 import { generarCodigoProyecto } from "@/lib/proyecto-codigo"
 import { resolverDestinatario } from "@/lib/email"
+import { withRole, ROLES } from "@/lib/api-auth"
 
-const ROLES_PERMITIDOS_CREAR = ["GERENTE_GENERAL", "CISO"]
-
-export async function GET(request: NextRequest) {
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const { searchParams } = new URL(request.url)
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
@@ -84,22 +77,10 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})
 
-export async function POST(request: Request) {
+export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    if (!ROLES_PERMITIDOS_CREAR.includes(session.user.rol)) {
-      return NextResponse.json(
-        { error: "Solo el Gerente General o el CISO pueden crear proyectos" },
-        { status: 403 }
-      )
-    }
-
     const body = await request.json()
     const result = validateBody(createProyectoSchema, body)
     if (!result.success) return result.error
@@ -173,25 +154,25 @@ export async function POST(request: Request) {
                     <p style="color:#f1f5f9;font-size:16px;font-weight:600;margin:0 0 16px;">${proyecto.nombre}</p>
 
                     <div style="background:#1e293b;border-radius:8px;padding:12px;margin-bottom:12px;">
-                      <p style="color:#64748b;font-size:11px;margin:0 0 4px;text-transform:uppercase;">Código del Proyecto</p>
+                      <p style="color:#64748b;font-size:11px;margin:0 0 4px;text-transform:uppercase;">CÃ³digo del Proyecto</p>
                       <p style="color:#00d4ff;font-size:14px;font-weight:600;margin:0;font-family:monospace;">${proyecto.codigo}</p>
                     </div>
 
                     <div style="background:#1e293b;border-radius:8px;padding:12px;">
-                      <p style="color:#64748b;font-size:11px;margin:0 0 4px;text-transform:uppercase;">Tu contraseña</p>
+                      <p style="color:#64748b;font-size:11px;margin:0 0 4px;text-transform:uppercase;">Tu contraseÃ±a</p>
                       <p style="color:#f1f5f9;font-size:14px;font-weight:600;margin:0;font-family:monospace;">${result.data.portalClave}</p>
                     </div>
                   </div>
 
                   <a href="${portalUrl}" style="display:inline-block;background:#00d4ff;color:#0a0a1a;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">Ingresar al portal</a>
 
-                  <p style="color:#475569;font-size:12px;margin:24px 0 0;">Guardá estos datos. Los necesitás para acceder al seguimiento de tu proyecto.</p>
-                  <p style="color:#475569;font-size:12px;margin:4px 0 0;">Si no podés hacer clic en el botón, copiá y pegá este enlace:</p>
+                  <p style="color:#475569;font-size:12px;margin:24px 0 0;">GuardÃ¡ estos datos. Los necesitÃ¡s para acceder al seguimiento de tu proyecto.</p>
+                  <p style="color:#475569;font-size:12px;margin:4px 0 0;">Si no podÃ©s hacer clic en el botÃ³n, copiÃ¡ y pegÃ¡ este enlace:</p>
                   <p style="color:#00d4ff;font-size:12px;margin:4px 0 0;word-break:break-all;">${portalUrl}</p>
-                  <p style="color:#475569;font-size:12px;margin:16px 0 0;">¿Olvidaste tus credenciales? <a href="${solicitarAccesoUrl}" style="color:#00d4ff;text-decoration:none;">Recuperá tu acceso acá</a></p>
+                  <p style="color:#475569;font-size:12px;margin:16px 0 0;">Â¿Olvidaste tus credenciales? <a href="${solicitarAccesoUrl}" style="color:#00d4ff;text-decoration:none;">RecuperÃ¡ tu acceso acÃ¡</a></p>
 
                   <hr style="border:none;border-top:1px solid #1e293b;margin:32px 0;" />
-                  <p style="color:#475569;font-size:11px;margin:0;">LoBeMo Seguridad Informática · Portal de Seguimiento</p>
+                  <p style="color:#475569;font-size:11px;margin:0;">LoBeMo Seguridad InformÃ¡tica Â· Portal de Seguimiento</p>
                 </div>
               </body></html>
             `,
@@ -230,4 +211,4 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   }
-}
+})

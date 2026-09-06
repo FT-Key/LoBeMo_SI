@@ -1,25 +1,17 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import nodemailer from "nodemailer"
 import { readFile } from "fs/promises"
 import { join } from "path"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES, Rol } from "@/lib/api-auth"
 import { validateBody } from "@/lib/api-validate"
 import { updateProyectoSchema } from "@/shared/validation"
 import { resolverDestinatario } from "@/lib/email"
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const proyecto = await prisma.proyecto.findUnique({
       where: { id },
       include: {
@@ -63,27 +55,11 @@ export async function GET(
       { status: 500 }
     )
   }
-}
+})
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const puedeEditar = session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
-    if (!puedeEditar) {
-      return NextResponse.json(
-        { error: "No tienes permisos para editar proyectos" },
-        { status: 403 }
-      )
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const body = await request.json()
     const result = validateBody(updateProyectoSchema, body)
     if (!result.success) return result.error
@@ -214,26 +190,11 @@ export async function PATCH(
       { status: 500 }
     )
   }
-}
+})
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = withRole([Rol.GERENTE_GENERAL] as Rol[], async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    if (session.user.rol !== "GERENTE_GENERAL") {
-      return NextResponse.json(
-        { error: "Solo el Gerente General puede eliminar proyectos" },
-        { status: 403 }
-      )
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const proyecto = await prisma.proyecto.findUnique({
       where: { id },
       include: { _count: { select: { tareas: true, propuestas: true, asignaciones: true } } },
@@ -271,4 +232,4 @@ export async function DELETE(
       { status: 500 }
     )
   }
-}
+})

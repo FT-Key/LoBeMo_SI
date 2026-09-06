@@ -1,23 +1,10 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES } from "@/lib/api-auth"
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = withRole(ROLES.VIEW_METRICAS, async (_request, ctx) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const puedeVer = ["CISO", "GERENTE_GENERAL"].includes(session.user.rol)
-    if (!puedeVer) {
-      return NextResponse.json({ error: "Solo el CISO o Gerente General pueden ver métricas" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const proyecto = await prisma.proyecto.findUnique({
       where: { id },
@@ -88,4 +75,4 @@ export async function GET(
     console.error("Error getting metricas:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

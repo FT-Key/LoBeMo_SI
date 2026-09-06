@@ -3,11 +3,11 @@ import nodemailer from "nodemailer"
 import { readFile } from "fs/promises"
 import { join } from "path"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { Rol } from "@/generated/prisma/enums"
 import { validateBody } from "@/lib/api-validate"
 import { transicionEstadoSchema } from "@/shared/validation"
 import { resolverDestinatario } from "@/lib/email"
+import { withRole, ROLES } from "@/lib/api-auth"
 
 interface TransicionValida {
   desde: string[]
@@ -93,21 +93,13 @@ const TRANSICIONES: Record<string, TransicionValida> = {
   },
 }
 
-const ROLES_CREAR = ["GERENTE_GENERAL", "CISO"]
-const ROLES_REVISION = ["GERENTE_GENERAL", "CISO", "AUDITOR"]
+const ROLES_CREAR = ROLES.MANAGE_PROYECTOS
+const ROLES_REVISION = [...ROLES.MANAGE_PROYECTOS, Rol.PENTESTER]
 const ROLES_TECNICOS = ["CISO", "ANALISTA_SEGURIDAD", "DESARROLLADOR", "ESPECIALISTA_REDES", "PENTESTER", "SOPORTE_TECNICO", "AUDITOR", "CAPACITADOR"]
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const body = await request.json()
     const result = validateBody(transicionEstadoSchema, body)
     if (!result.success) return result.error
@@ -315,4 +307,4 @@ export async function POST(
       { status: 500 }
     )
   }
-}
+})

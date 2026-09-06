@@ -1,22 +1,12 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { updatePropuestaSchema } from "@/shared/validation"
+import { withRole, ROLES, Rol } from "@/lib/api-auth"
 
-const ESTADOS_PROCESO = ["ENVIADA", "ACEPTADA", "RECHAZADA", "RECOTIZADA", "VENCIDA"] as const
-
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = withRole(ROLES.CREATE_PROPUESTAS, async (_request, ctx) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const propuesta = await prisma.propuesta.findUnique({
       where: { id },
@@ -55,19 +45,11 @@ export async function GET(
     console.error("Error getting propuesta:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const PATCH = withRole(ROLES.CREATE_PROPUESTAS, async (request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const body = await request.json()
     const result = validateBody(updatePropuestaSchema, body)
     if (!result.success) return result.error
@@ -95,7 +77,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Propuesta no encontrada" }, { status: 404 })
     }
 
-    const puedeAceptar = ["GERENTE_GENERAL", "CISO"].includes(session.user.rol)
+    const puedeAceptar = ROLES.MANAGE_PROYECTOS.includes(session.user.rol as Rol)
 
     if (nuevoEstado === "ACEPTADA" && !puedeAceptar) {
       return NextResponse.json(
@@ -156,4 +138,4 @@ export async function PATCH(
     console.error("Error updating propuesta:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

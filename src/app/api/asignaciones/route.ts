@@ -1,16 +1,11 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { createAsignacionSchema } from "@/shared/validation"
+import { withRole, ROLES, Rol } from "@/lib/api-auth"
 
-export async function GET(request: NextRequest) {
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const { searchParams } = new URL(request.url)
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
@@ -43,23 +38,10 @@ export async function GET(request: NextRequest) {
     console.error("Error listing asignaciones:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function POST(request: Request) {
+export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const puedeAsignar = session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
-    if (!puedeAsignar) {
-      return NextResponse.json(
-        { error: "Solo el CISO o Gerente General pueden asignar empleados" },
-        { status: 403 }
-      )
-    }
-
     const body = await request.json()
     const result = validateBody(createAsignacionSchema, body)
     if (!result.success) return result.error
@@ -80,14 +62,14 @@ export async function POST(request: Request) {
       )
     }
 
-    if (session.user.rol === "CISO") {
+    if (session.user.rol === Rol.CISO) {
       const esAuditoriaOCapacitacion =
         proyecto.servicio.nombre === "AUDITORIA_ISO27001" ||
         proyecto.servicio.nombre === "CAPACITACION"
 
       if (esAuditoriaOCapacitacion) {
         return NextResponse.json(
-          { error: "Los proyectos de Auditoría y Capacitación deben ser asignados por Gerente General (RN-14)" },
+          { error: "Los proyectos de AuditorÃ­a y CapacitaciÃ³n deben ser asignados por Gerente General (RN-14)" },
           { status: 403 }
         )
       }
@@ -107,7 +89,7 @@ export async function POST(request: Request) {
 
     if (asignacionExistente) {
       return NextResponse.json(
-        { error: "El empleado ya está asignado a este proyecto" },
+        { error: "El empleado ya estÃ¡ asignado a este proyecto" },
         { status: 400 }
       )
     }
@@ -128,7 +110,7 @@ export async function POST(request: Request) {
 
     if (proyectosActivos >= maxActivos) {
       return NextResponse.json(
-        { error: `El empleado ya tiene ${maxActivos} proyectos activos. No puede asignarse a más (RN-08)` },
+        { error: `El empleado ya tiene ${maxActivos} proyectos activos. No puede asignarse a mÃ¡s (RN-08)` },
         { status: 400 }
       )
     }
@@ -148,7 +130,7 @@ export async function POST(request: Request) {
     await prisma.notificacion.create({
       data: {
         empleadoId: result.data.empleadoId,
-        titulo: "Nueva asignación a proyecto",
+        titulo: "Nueva asignaciÃ³n a proyecto",
         mensaje: `Has sido asignado al proyecto "${proyecto.nombre}" con el rol de ${result.data.rolEnProyecto}.`,
         tipo: "ASIGNACION_PROYECTO",
         link: `/proyectos/${result.data.proyectoId}`,
@@ -170,4 +152,4 @@ export async function POST(request: Request) {
     console.error("Error creating asignacion:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

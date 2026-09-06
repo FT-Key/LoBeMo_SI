@@ -1,17 +1,12 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES, Rol } from "@/lib/api-auth"
 
-export async function GET() {
+export const GET = withRole([...ROLES.VIEW_DASHBOARD, Rol.VENTAS, Rol.SOPORTE_TECNICO, Rol.CAPACITADOR, Rol.PENTESTER], async (_request, _ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const empleadoId = session.user.id
-    const rol = session.user.rol
-    const esGlobal = ["GERENTE_GENERAL", "CISO", "ADMINISTRACION"].includes(rol)
+    const rol = session.user.rol as Rol
+    const esGlobal = ROLES.VIEW_DASHBOARD.includes(rol)
 
     let proyectoIds: string[]
     if (esGlobal) {
@@ -75,4 +70,4 @@ export async function GET() {
     console.error("Error getting calendario:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

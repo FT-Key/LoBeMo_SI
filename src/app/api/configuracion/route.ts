@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
+import { withRole, ROLES } from "@/lib/api-auth"
 
 const configItemSchema = z.object({
   clave: z.string().min(1, "La clave es obligatoria"),
@@ -10,28 +10,18 @@ const configItemSchema = z.object({
 })
 
 const updateConfigSchema = z.object({
-  configuraciones: z.array(configItemSchema).min(1, "Se requiere al menos una configuración"),
+  configuraciones: z.array(configItemSchema).min(1, "Se requiere al menos una configuraciÃ³n"),
 })
 
-export async function GET() {
-  const session = await auth()
-  if (!session?.user || session.user.rol !== "GERENTE_GENERAL") {
-    return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-  }
-
+export const GET = withRole(ROLES.MANAGE_CONFIG, async () => {
   const configs = await prisma.configuracion.findMany({
     orderBy: { clave: "asc" },
   })
 
   return NextResponse.json({ data: configs })
-}
+})
 
-export async function PATCH(request: NextRequest) {
-  const session = await auth()
-  if (!session?.user || session.user.rol !== "GERENTE_GENERAL") {
-    return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-  }
-
+export const PATCH = withRole(ROLES.MANAGE_CONFIG, async (request, _ctx, session) => {
   const body = await request.json()
   const result = validateBody(updateConfigSchema, body)
   if (!result.success) return result.error
@@ -44,12 +34,12 @@ export async function PATCH(request: NextRequest) {
 
   for (const c of result.data.configuraciones) {
     if (!CLAVES_VALIDAS.includes(c.clave)) {
-      return NextResponse.json({ error: `Clave inválida: ${c.clave}` }, { status: 400 })
+      return NextResponse.json({ error: `Clave invÃ¡lida: ${c.clave}` }, { status: 400 })
     }
     const num = Number(c.valor)
     if (isNaN(num) || num < 1 || num > 100) {
       return NextResponse.json(
-        { error: `"${c.clave}" debe ser un número entre 1 y 100` },
+        { error: `"${c.clave}" debe ser un nÃºmero entre 1 y 100` },
         { status: 400 }
       )
     }
@@ -76,4 +66,4 @@ export async function PATCH(request: NextRequest) {
   })
 
   return NextResponse.json({ data: results })
-}
+})
