@@ -1,22 +1,14 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { updateInformeSchema } from "@/shared/validation"
+import { withRole, ROLES, Rol } from "@/lib/api-auth"
 
 const ESTADOS_VALIDOS = ["BORRADOR", "COMPLETADO"]
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const informe = await prisma.informeAuditoria.findUnique({
       where: { id },
@@ -38,7 +30,7 @@ export async function GET(
     }
 
     const esCreador = informe.creadorId === session.user.id
-    const esGerenteOCiso = session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
+    const esGerenteOCiso = ROLES.MANAGE_PROYECTOS.includes(session.user.rol as Rol)
     if (!esCreador && !esGerenteOCiso) {
       return NextResponse.json(
         { error: "No autorizado para ver este informe" },
@@ -51,19 +43,11 @@ export async function GET(
     console.error("Error getting informe de auditoría:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const body = await request.json()
     const result = validateBody(updateInformeSchema, body)
     if (!result.success) return result.error
@@ -78,7 +62,7 @@ export async function PATCH(
     }
 
     const esCreador = informeExistente.creadorId === session.user.id
-    const esGerenteOCiso = session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
+    const esGerenteOCiso = ROLES.MANAGE_PROYECTOS.includes(session.user.rol as Rol)
 
     if (!esCreador && !esGerenteOCiso) {
       return NextResponse.json(
@@ -87,7 +71,7 @@ export async function PATCH(
       )
     }
 
-    if (informeExistente.estado === "COMPLETADO" && session.user.rol !== "GERENTE_GENERAL" && session.user.rol !== "CISO") {
+    if (informeExistente.estado === "COMPLETADO" && !esGerenteOCiso) {
       return NextResponse.json(
         { error: "No se puede modificar un informe completado" },
         { status: 400 }
@@ -161,19 +145,11 @@ export async function PATCH(
     console.error("Error updating informe de auditoría:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const informe = await prisma.informeAuditoria.findUnique({ where: { id } })
     if (!informe) {
@@ -181,7 +157,7 @@ export async function DELETE(
     }
 
     const esCreador = informe.creadorId === session.user.id
-    const esGerenteOCiso = session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
+    const esGerenteOCiso = ROLES.MANAGE_PROYECTOS.includes(session.user.rol as Rol)
 
     if (!esCreador && !esGerenteOCiso) {
       return NextResponse.json(
@@ -214,4 +190,4 @@ export async function DELETE(
     console.error("Error deleting informe de auditoría:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

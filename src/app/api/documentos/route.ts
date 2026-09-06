@@ -1,18 +1,8 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { createDocumentoSchema } from "@/shared/validation"
-
-const TIPOS_DOCUMENTO = [
-  "INFORME_AUDITORIA",
-  "REPORTE_PENTESTING",
-  "CODIGO_FUENTE",
-  "CONFIG_RED",
-  "MATERIAL_CAPACITACION",
-  "CONTRATO",
-  "OTRO",
-] as const
+import { withRole, ROLES, Rol } from "@/lib/api-auth"
 
 const MIMES_PERMITIDOS = [
   "application/pdf",
@@ -35,21 +25,16 @@ function validarMimeDataUrl(url: string): boolean {
   return MIMES_PERMITIDOS.includes(mime)
 }
 
-async function puedeVerODocumentos(usuarioId: string, proyectoId: string, rol: string) {
-  if (rol === "GERENTE_GENERAL" || rol === "CISO") return true
+async function puedeVerODocumentos(usuarioId: string, proyectoId: string, rol: Rol) {
+  if (ROLES.MANAGE_PROYECTOS.includes(rol)) return true
   const asignacion = await prisma.asignacion.findFirst({
     where: { proyectoId, empleadoId: usuarioId },
   })
   return !!asignacion
 }
 
-export async function GET(request: NextRequest) {
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const { searchParams } = new URL(request.url)
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "20")))
@@ -60,7 +45,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "proyectoId es obligatorio" }, { status: 400 })
     }
 
-    const puedeVer = await puedeVerODocumentos(session.user.id, proyectoId, session.user.rol)
+    const puedeVer = await puedeVerODocumentos(session.user.id, proyectoId, session.user.rol as Rol)
     if (!puedeVer) {
       return NextResponse.json({ error: "No tienes permiso para ver estos documentos" }, { status: 403 })
     }
@@ -86,15 +71,10 @@ export async function GET(request: NextRequest) {
     console.error("Error listing documentos:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function POST(request: Request) {
+export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const body = await request.json()
     const result = validateBody(createDocumentoSchema, body)
     if (!result.success) return result.error
@@ -121,7 +101,7 @@ export async function POST(request: Request) {
     const estaAsignado = await prisma.asignacion.findFirst({
       where: { proyectoId: result.data.proyectoId, empleadoId: session.user.id },
     })
-    const esCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
+    const esCisoOGerente = ROLES.MANAGE_PROYECTOS.includes(session.user.rol as Rol)
 
     if (!esCisoOGerente && !estaAsignado) {
       return NextResponse.json(
@@ -162,4 +142,4 @@ export async function POST(request: Request) {
     console.error("Error creating documento:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

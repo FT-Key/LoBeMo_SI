@@ -1,26 +1,18 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES, Rol } from "@/lib/api-auth"
 
-async function puedeAccederDocumento(usuarioId: string, proyectoId: string, rol: string) {
-  if (rol === "GERENTE_GENERAL" || rol === "CISO") return true
+async function puedeAccederDocumento(usuarioId: string, proyectoId: string, rol: Rol) {
+  if (ROLES.MANAGE_PROYECTOS.includes(rol)) return true
   const asignacion = await prisma.asignacion.findFirst({
     where: { proyectoId, empleadoId: usuarioId },
   })
   return !!asignacion
 }
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const documento = await prisma.documento.findUnique({
       where: { id },
@@ -33,7 +25,7 @@ export async function GET(
     const puedeVer = await puedeAccederDocumento(
       session.user.id,
       documento.proyectoId ?? "",
-      session.user.rol
+      session.user.rol as Rol
     )
     if (!puedeVer) {
       return NextResponse.json({ error: "No tienes permiso para ver este documento" }, { status: 403 })
@@ -44,19 +36,11 @@ export async function GET(
     console.error("Error getting documento:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const documento = await prisma.documento.findUnique({
       where: { id },
@@ -66,7 +50,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Documento no encontrado" }, { status: 404 })
     }
 
-    const esCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
+    const esCisoOGerente = ROLES.MANAGE_PROYECTOS.includes(session.user.rol as Rol)
     const esAsignado = documento.proyectoId ? await prisma.asignacion.findFirst({
       where: { proyectoId: documento.proyectoId, empleadoId: session.user.id },
     }) : null
@@ -95,4 +79,4 @@ export async function DELETE(
     console.error("Error deleting documento:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

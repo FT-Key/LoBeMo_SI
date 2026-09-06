@@ -1,19 +1,11 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES } from "@/lib/api-auth"
 import { validateBody } from "@/lib/api-validate"
 import { updateClienteSchema } from "@/shared/validation"
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const session = await auth()
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-  }
-
-  const { id } = await params
+export const GET = withRole(ROLES.MANAGE_CLIENTES, async (_request, ctx) => {
+  const { id } = await ctx.params
   const cliente = await prisma.cliente.findUnique({
     where: { id },
     include: { _count: { select: { proyectos: true } } },
@@ -24,19 +16,11 @@ export async function GET(
   }
 
   return NextResponse.json(cliente)
-}
+})
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const PATCH = withRole(ROLES.MANAGE_CLIENTES, async (request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const body = await request.json()
     const result = validateBody(updateClienteSchema, body)
     if (!result.success) return result.error
@@ -95,19 +79,11 @@ export async function PATCH(
       { status: 500 }
     )
   }
-}
+})
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = withRole(ROLES.MANAGE_CLIENTES, async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const cliente = await prisma.cliente.findUnique({
       where: { id },
       include: {
@@ -151,4 +127,4 @@ export async function DELETE(
       { status: 500 }
     )
   }
-}
+})

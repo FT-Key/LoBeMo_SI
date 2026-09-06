@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { ROLES, Rol } from "@/lib/api-auth"
 
 export async function GET(
   _request: Request,
@@ -31,7 +32,7 @@ export async function GET(
   }
 
   const esCreador = informe.creadorId === session.user.id
-  const esGerenteOCiso = ["GERENTE_GENERAL", "CISO"].includes(session.user.rol)
+  const esGerenteOCiso = ROLES.MANAGE_PROYECTOS.includes(session.user.rol as Rol)
   if (!esCreador && !esGerenteOCiso) {
     return new Response("No autorizado", { status: 403 })
   }

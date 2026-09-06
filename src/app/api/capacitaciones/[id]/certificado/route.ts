@@ -1,25 +1,10 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES } from "@/lib/api-auth"
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const POST = withRole(ROLES.MANAGE_CAPACITACIONES, async (request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    if (session.user.rol !== "CAPACITADOR" && session.user.rol !== "GERENTE_GENERAL") {
-      return NextResponse.json(
-        { error: "Solo el Capacitador o Gerente General pueden generar certificados" },
-        { status: 403 }
-      )
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const body = await request.json()
     const { asistenteId } = body
 
@@ -77,4 +62,4 @@ export async function POST(
     console.error("Error generating certificado:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

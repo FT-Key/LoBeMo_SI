@@ -1,13 +1,8 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES } from "@/lib/api-auth"
 
-export async function GET(request: NextRequest) {
-  const session = await auth()
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-  }
-
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
   const { searchParams } = new URL(request.url)
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
   const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
@@ -42,4 +37,4 @@ export async function GET(request: NextRequest) {
       totalPages: Math.ceil(total / limit),
     },
   })
-}
+})

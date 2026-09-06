@@ -1,16 +1,11 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { createHitoSchema } from "@/shared/validation"
+import { withRole, ROLES } from "@/lib/api-auth"
 
-export async function GET(request: NextRequest) {
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const { searchParams } = new URL(request.url)
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
@@ -40,23 +35,10 @@ export async function GET(request: NextRequest) {
     console.error("Error listing hitos:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function POST(request: Request) {
+export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const soloCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
-    if (!soloCisoOGerente) {
-      return NextResponse.json(
-        { error: "Solo el CISO o Gerente General pueden crear hitos (RF-36)" },
-        { status: 403 }
-      )
-    }
-
     const body = await request.json()
     const result = validateBody(createHitoSchema, body)
     if (!result.success) return result.error
@@ -90,4 +72,4 @@ export async function POST(request: Request) {
     console.error("Error creating hito:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

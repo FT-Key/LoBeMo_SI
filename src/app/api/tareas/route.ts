@@ -1,16 +1,11 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { createTareaSchema } from "@/shared/validation"
+import { withRole, ROLES, Rol } from "@/lib/api-auth"
 
-export async function GET(request: NextRequest) {
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const { searchParams } = new URL(request.url)
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
@@ -51,15 +46,10 @@ export async function GET(request: NextRequest) {
     console.error("Error listing tareas:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function POST(request: Request) {
+export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const body = await request.json()
     const result = validateBody(createTareaSchema, body)
     if (!result.success) return result.error
@@ -69,7 +59,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Proyecto no encontrado" }, { status: 404 })
     }
 
-    const esCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
+    const esCisoOGerente = ROLES.MANAGE_PROYECTOS.includes(session.user.rol as Rol)
 
     if (!esCisoOGerente) {
       const asignacion = await prisma.asignacion.findFirst({
@@ -149,4 +139,4 @@ export async function POST(request: Request) {
     console.error("Error creating tarea:", error)
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

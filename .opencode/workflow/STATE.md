@@ -34,29 +34,47 @@
 | US-029 | ✅ Done | feat/US-029-v2 | Merge directo → dev, Merge directo → main | .opencode/workflow/history/US-029.md |
 | US-030 | ✅ Done | feat/US-030-form-validations | Merge directo → dev, Merge directo → main | .opencode/workflow/history/US-030.md |
 | US-031 | ✅ Done | feat/US-031-login-secure-cookie + fix/US-031-salt-router | PR #31 → dev, PR #33 → dev, PR #32 → main, PR #34 → main | .opencode/workflow/history/US-031.md |
+| US-033 | 🔄 In Progress | feat/US-033-rbac-centralizado | — | .opencode/workflow/history/US-033.md |
 
 ## Backlog
 | US | Status | Detail |
 |----|--------|--------|
 | US-032 | 📋 Backlog | Upload de Documentos PDF con Cloudflare R2 — .opencode/workflow/history/US-032.md |
+| US-034 | 📋 Backlog | Refactor de Templates de Email — .opencode/workflow/history/US-034.md |
+| US-035 | 📋 Backlog | Notificaciones por Email a Empleados — .opencode/workflow/history/US-035.md |
+| US-036 | 📋 Backlog | Envío de Propuestas por Email — .opencode/workflow/history/US-036.md |
+| US-037 | 📋 Backlog | Subida de Archivos con Cloudflare R2 — .opencode/workflow/history/US-037.md |
+| US-038 | 📋 Backlog | Exportar Dashboard a Excel/CSV — .opencode/workflow/history/US-038.md |
+| US-039 | 📋 Backlog | Búsqueda Global — .opencode/workflow/history/US-039.md |
+| US-040 | 📋 Backlog | Filtros Guardados / Vistas Guardadas — .opencode/workflow/history/US-040.md |
+| US-041 | 📋 Backlog | Comentarios en Tareas/Proyectos — .opencode/workflow/history/US-041.md |
+| US-042 | 📋 Backlog | Dashboard del Empleado — .opencode/workflow/history/US-042.md |
+| US-043 | 📋 Backlog | Kanban para Tareas — .opencode/workflow/history/US-043.md |
+| US-044 | 📋 Backlog | Timer de Horas Trabajadas — .opencode/workflow/history/US-044.md |
+| US-045 | 📋 Backlog | Gantt Simplificado — .opencode/workflow/history/US-045.md |
+| US-046 | 📋 Backlog | Evidencia en Pentesting — .opencode/workflow/history/US-046.md |
+| US-047 | 📋 Backlog | Modo Oscuro/Claro — .opencode/workflow/history/US-047.md |
+| US-048 | 📋 Backlog | Animaciones de Transición — .opencode/workflow/history/US-048.md |
+| US-049 | 📋 Backlog | Historial Actividad en Dashboard — .opencode/workflow/history/US-049.md |
+| US-050 | 📋 Backlog | Tests Automatizados — .opencode/workflow/history/US-050.md |
+| US-051 | 📋 Backlog | Logging Estructurado (Pino) — .opencode/workflow/history/US-051.md |
+| US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Project Status
-✅ 30 US completadas (US-001 a US-031). Todas completadas.
-📋 1 US en Backlog (US-032).
+✅ 31 US completadas (US-001 a US-033). Todas completadas.
+📋 20 US en Backlog (US-032, US-034 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores, 0 warnings.
 ✅ Typecheck: disponible y pasa sin errores.
 
 ## Último Cambio
-**Portal del Cliente + Landing Page Marketing** — Branch `feat/admin-design-redesign`
-- **Landing page**: Hero rediseñado, sección contacto con formulario + Leaflet Map + email Nodemailer
-- **Portal del Cliente**: Login JWT (`/seguimiento`), dashboard con tabs (Resumen, Timeline, Hitos, Documentos, Auditoría, Pentesting)
-- **APIs Portal**: `/api/portal/acceso` (login), `/api/portal/proyecto` (datos), `/api/portal/clave` (cambio contraseña), `/api/portal/documento/[id]` (descarga)
-- **Email automático**: Al activar portal (credenciales) + al transicionar estado (si portal activo)
-- **Admin Portal Section**: Toggle activo + cambio de contraseña en detalle de proyecto
-- **Schema**: `portalClave` (bcrypt), `portalActivo` (boolean) en Proyecto + modelo `SesionPortal`
-- **Middleware**: `/seguimiento/*` y `/api/portal/*` rutas públicas
-- **PR #57**: https://github.com/FT-Key/LoBeMo_SI/pull/57
+**US-033: RBAC Centralizado** — Migración completa de verificación de roles
+- **`src/lib/api-auth.ts`**: Módulo central de RBAC con `ROLES` constantes (13 grupos de permisos) + `withRole` HOF
+- **`src/types/next-auth.d.ts`**: Rol tipado correctamente como `Rol` de Prisma
+- **6 APIs abiertas arregladas**: `clientes`, `proyectos`, `propuestas`, `servicios` — todas ahora usan `withRole`
+- **~25+ archivos migrados**: Todas las rutas API existentes migradas de `auth()` manual a `withRole` HOF
+- **TypeScript**: `npx tsc --noEmit` → 0 errores
+- **Build**: `npm run build` → ✅ exitoso
 
 ## Plan: US-033 — Campo `codigo` para Proyecto (Portal-Friendly ID)
 
@@ -211,5 +229,3 @@ No se agregan dependencias nuevas. Se usa `crypto` (built-in) para generación a
 3. Copiar URL con código → navegar directamente
 4. Email enviado muestra código en vez de ID
 5. Admin panel muestra código en lista de proyectos
-
-
