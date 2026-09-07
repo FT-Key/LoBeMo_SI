@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react"
 import { FormModal } from "@/components/ui/form-modal"
 import { TableActionLink } from "@/components/ui/table-actions"
+import { SavedFilters } from "@/components/ui/saved-filters"
 import { TicketForm } from "@/components/soporte/ticket-form"
 
 const ESTADOS = ["ABIERTO", "EN_PROCESO", "RESUELTO", "CERRADO"]
@@ -156,6 +157,17 @@ export function TicketList({
         >
           Buscar
         </button>
+        <SavedFilters
+          modulo="soporte"
+          currentFilters={{ search, proyectoId, estado, prioridad }}
+          onApplyFilter={(filters) => {
+            setSearch(filters.search ?? "")
+            setProyectoId(filters.proyectoId ?? "")
+            setEstado(filters.estado ?? "")
+            setPrioridad(filters.prioridad ?? "")
+            fetchTickets(1, filters.search ?? "", filters.proyectoId ?? "", filters.estado ?? "", filters.prioridad ?? "")
+          }}
+        />
         <button
           onClick={() => setModalOpen(true)}
           className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"

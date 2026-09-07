@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react"
 import { FormModal } from "@/components/ui/form-modal"
 import { TableActionLink } from "@/components/ui/table-actions"
+import { SavedFilters } from "@/components/ui/saved-filters"
 import { NuevoProyectoForm } from "@/app/proyectos/nuevo/nuevo-proyecto-form"
 
 const ESTADOS = [
@@ -138,6 +139,19 @@ export function ProyectosList({
             <option key={s.id} value={s.id}>{s.nombre.replace(/_/g, " ")}</option>
           ))}
         </select>
+        {puedeCrear && (
+          <SavedFilters
+            modulo="proyectos"
+            currentFilters={{ search, estado, clienteId, servicioId }}
+            onApplyFilter={(filters) => {
+              setSearch(filters.search ?? "")
+              setEstado(filters.estado ?? "")
+              setClienteId(filters.clienteId ?? "")
+              setServicioId(filters.servicioId ?? "")
+              fetchProyectos(1, filters.search ?? "", filters.estado ?? "", filters.clienteId ?? "", filters.servicioId ?? "")
+            }}
+          />
+        )}
         {puedeCrear && (
           <button
             onClick={() => setModalOpen(true)}
