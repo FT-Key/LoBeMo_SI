@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import { QueryProvider } from "@/lib/query-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -37,10 +38,13 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`dark ${display.variable} ${body.variable} ${mono.variable}`}
+      suppressHydrationWarning
+      className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body className="min-h-screen bg-background font-body text-foreground antialiased">
-        <QueryProvider>{children}</QueryProvider>
+        <ThemeProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
