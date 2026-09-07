@@ -344,8 +344,23 @@ model HallazgoPentesting {
 
   proyecto Proyecto @relation(fields: [proyectoId], references: [id])
   creador  Empleado @relation(fields: [creadorId], references: [id])
+  evidencias EvidenciaPentest[]
 
   @@map("hallazgos_pentesting")
+}
+
+model EvidenciaPentest {
+  id            String   @id @default(cuid())
+  hallazgoId    String   @map("hallazgo_id")
+  nombreArchivo String   @map("nombre_archivo")
+  mimeType      String?  @map("mime_type")
+  tamanio       Int?
+  storageKey    String   @unique @map("storage_key")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  hallazgo HallazgoPentesting @relation(fields: [hallazgoId], references: [id], onDelete: Cascade)
+
+  @@map("evidencias_pentest")
 }
 
 model TicketSoporte {

@@ -47,7 +47,8 @@
 | US-042 | ✅ Done | feat/US-042-mi-dashboard | PR #79 → dev | .opencode/workflow/history/US-042.md |
 | US-043 | ✅ Done | feat/US-043-kanban-tareas | PR #80 → dev | .opencode/workflow/history/US-043.md |
 | US-044 | ✅ Done | feat/US-044-timer-horas | PR #81 → dev (merged) | .opencode/workflow/history/US-044.md |
-| US-045 | ✅ Done | feat/US-045-gantt | PR #82 → dev | .opencode/workflow/history/US-045.md |
+| US-045 | ✅ Done | feat/US-045-gantt | PR #82 → dev (merged) | .opencode/workflow/history/US-045.md |
+| US-046 | ✅ Done | feat/US-046-evidencia-pentesting | PR #83 → dev | .opencode/workflow/history/US-046.md |
 
 ## Backlog
 | US | Status | Detail |
@@ -65,20 +66,20 @@
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
-US-046 — Evidencia en Pentesting
+US-047 — Modo Oscuro/Claro
 
 ## Project Status
-✅ 45 US completadas (US-001 a US-045, US-037 duplicada).
-📋 7 US en Backlog (US-046 a US-052).
+✅ 46 US completadas (US-001 a US-046, US-037 duplicada).
+📋 6 US en Backlog (US-047 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-045: Gantt Simplificado** — Completado, en PR (PR #82 → dev)
-- Componentes GanttChart + GanttRow sin librería externa (timeline con % left/width)
-- GET /api/calendario extendido con eventos tipo "tarea"
-- Página dedicada /proyectos/[id]/gantt + vista gantt en detalle de proyecto
+**US-046: Evidencia en Pentesting** — Completado, en PR (PR #83 → dev)
+- Modelo EvidenciaPentest (FK con cascade) + migración
+- Endpoints GET/POST evidencias y GET (presigned)/DELETE por evidencia
+- UI drag & drop con preview de imágenes en detalle del hallazgo
 - Quality gates: ✅ TypeScript, ✅ Build, ✅ Lint (0 errores nuevos)
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
