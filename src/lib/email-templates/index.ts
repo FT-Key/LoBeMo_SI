@@ -6,6 +6,7 @@ export { contactoConfirmacion } from "./contacto-confirmacion"
 export { credenciales } from "./credenciales"
 export { asignacionProyecto } from "./asignacion-proyecto"
 export { tareaAsignada } from "./tarea-asignada"
+export { propuestaEmail } from "./propuesta-email"
 export {
   resolverDestinatario,
   sanitize,
