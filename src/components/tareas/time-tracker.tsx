@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Play, Square, Clock, Trash2 } from "lucide-react"
+import { Play, Square } from "lucide-react"
 
 type RegistroHoras = {
   id: string
