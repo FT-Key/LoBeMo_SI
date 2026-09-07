@@ -4,6 +4,8 @@ export { cambioEstado } from "./cambio-estado"
 export { contactoNotificacion } from "./contacto-notificacion"
 export { contactoConfirmacion } from "./contacto-confirmacion"
 export { credenciales } from "./credenciales"
+export { asignacionProyecto } from "./asignacion-proyecto"
+export { tareaAsignada } from "./tarea-asignada"
 export {
   resolverDestinatario,
   sanitize,

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { createAsignacionSchema } from "@/shared/validation"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
+import { createTransporter, getLogoAttachment, asignacionProyecto } from "@/lib/email-templates"
 
 export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
   try {
@@ -130,12 +131,39 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
     await prisma.notificacion.create({
       data: {
         empleadoId: result.data.empleadoId,
-        titulo: "Nueva asignaciÃ³n a proyecto",
+        titulo: "Nueva asignación a proyecto",
         mensaje: `Has sido asignado al proyecto "${proyecto.nombre}" con el rol de ${result.data.rolEnProyecto}.`,
         tipo: "ASIGNACION_PROYECTO",
         link: `/proyectos/${result.data.proyectoId}`,
       },
     })
+
+    try {
+      const transport = createTransporter()
+      if (transport && empleado.email) {
+        const logoAttachment = await getLogoAttachment()
+        const logoCid = logoAttachment.length > 0 ? logoAttachment[0].cid : ""
+        const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"
+        const portalUrl = `${baseUrl}/proyectos/${result.data.proyectoId}`
+
+        await transport.sendMail({
+          from: `"LoBeMo Seguridad" <${process.env.SMTP_USER}>`,
+          to: empleado.email,
+          subject: `Nueva asignación a proyecto - ${proyecto.nombre}`,
+          html: asignacionProyecto({
+            nombreEmpleado: `${empleado.nombre} ${empleado.apellido}`,
+            nombreProyecto: proyecto.nombre,
+            rolEnProyecto: result.data.rolEnProyecto,
+            estadoProyecto: proyecto.estado,
+            portalUrl,
+            logoCid,
+          }),
+          attachments: logoAttachment,
+        })
+      }
+    } catch (emailError) {
+      console.error("Error sending assignment email:", emailError)
+    }
 
     await prisma.auditLog.create({
       data: {
