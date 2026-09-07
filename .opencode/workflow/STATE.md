@@ -61,11 +61,11 @@
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
- US-032 — Upload de Documentos PDF con Cloudflare R2 (implementación completada, PR abierto)
+ US-032 — Upload de Documentos PDF con Cloudflare R2 (PR #71 → dev)
 
 ## Project Status
 ✅ 32 US completadas (US-001 a US-033). Todas completadas.
-🔄 US-032 en PR (feat/US-032-upload-documentos-r2 → dev)
+🔄 US-032 en PR (PR #71 → dev)
 📋 19 US en Backlog (US-034 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores, 0 warnings.
