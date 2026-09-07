@@ -20,6 +20,7 @@ import {
   Settings,
   ChevronLeft,
   LogOut,
+  User,
 } from "lucide-react"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 import { SearchGlobal } from "@/components/search/search-global"
@@ -40,6 +41,7 @@ const NAV_ITEMS: {
   section?: string
 }[] = [
   { href: "/dashboard", label: "Dashboard", roles: ["GERENTE_GENERAL", "CISO", "ADMINISTRACION"], icon: <LayoutDashboard className="size-4" />, section: "Principal" },
+  { href: "/mi-dashboard", label: "Mi Dashboard", roles: null, icon: <User className="size-4" />, section: "Principal" },
   { href: "/proyectos", label: "Proyectos", roles: null, icon: <FolderOpen className="size-4" />, section: "Gestión" },
   { href: "/clientes", label: "Clientes", roles: null, icon: <Users className="size-4" />, section: "Gestión" },
   { href: "/empleados", label: "Empleados", roles: ["GERENTE_GENERAL"], icon: <UserCog className="size-4" />, section: "Gestión" },
