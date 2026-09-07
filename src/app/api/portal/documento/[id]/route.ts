@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server"
 import jwt from "jsonwebtoken"
 import { prisma } from "@/lib/prisma"
+import { getPresignedUrl, isR2Configured } from "@/lib/r2"
 
 const JWT_SECRET = process.env.PORTAL_JWT_SECRET || process.env.AUTH_SECRET || "portal-secret-fallback"
 
@@ -38,6 +39,7 @@ export async function GET(
         nombreArchivo: true,
         tipo: true,
         url: true,
+        storageKey: true,
         proyectoId: true,
       },
     })
@@ -56,7 +58,19 @@ export async function GET(
       )
     }
 
-    return NextResponse.redirect(documento.url)
+    if (documento.storageKey && isR2Configured()) {
+      const presignedUrl = await getPresignedUrl(documento.storageKey, 3600)
+      return NextResponse.redirect(presignedUrl)
+    }
+
+    if (documento.url) {
+      return NextResponse.redirect(documento.url)
+    }
+
+    return NextResponse.json(
+      { error: "Documento no disponible" },
+      { status: 404 }
+    )
   } catch (error) {
     console.error("Portal document access error:", error)
     return NextResponse.json(

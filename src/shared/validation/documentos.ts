@@ -9,7 +9,17 @@ export const createDocumentoSchema = z.object({
   proyectoId: z.string().min(1, "Debe seleccionar un proyecto"),
   nombreArchivo: z.string().min(1, "El nombre del archivo es obligatorio").max(255, "El nombre no puede exceder 255 caracteres"),
   tipo: z.enum(TIPOS_DOCUMENTO),
-  url: z.string().url("URL inválida").max(500, "La URL no puede exceder 500 caracteres"),
+  storageKey: z.string().min(1, "El archivo debe ser subido primero"),
+  mimeType: z.string().optional(),
+  tamanio: z.number().optional(),
+  tareaId: z.string().optional().or(z.literal("")),
+})
+
+export const createDocumentoBase64Schema = z.object({
+  proyectoId: z.string().min(1, "Debe seleccionar un proyecto"),
+  nombreArchivo: z.string().min(1, "El nombre del archivo es obligatorio").max(255, "El nombre no puede exceder 255 caracteres"),
+  tipo: z.enum(TIPOS_DOCUMENTO),
+  url: z.string().min(1, "URL es obligatoria"),
   tareaId: z.string().optional().or(z.literal("")),
 })
 
