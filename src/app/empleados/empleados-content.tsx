@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react"
 import { FormModal } from "@/components/ui/form-modal"
 import { TableActionButton } from "@/components/ui/table-actions"
+import { SavedFilters } from "@/components/ui/saved-filters"
 import { NuevoEmpleadoForm } from "@/app/empleados/nuevo/form"
 import { EditarEmpleadoForm } from "@/app/empleados/[id]/editar/form"
 
@@ -169,6 +170,17 @@ export function EmpleadosContent({
         >
           Buscar
         </button>
+        <SavedFilters
+          modulo="empleados"
+          currentFilters={{ search, rol, area, activo }}
+          onApplyFilter={(filters) => {
+            setSearch(filters.search ?? "")
+            setRol(filters.rol ?? "")
+            setArea(filters.area ?? "")
+            setActivo(filters.activo ?? "")
+            fetchEmpleados(1, filters.search ?? "", filters.rol ?? "", filters.area ?? "", filters.activo ?? "")
+          }}
+        />
         <button
           onClick={() => setModalOpen(true)}
           className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"

@@ -144,6 +144,7 @@ model Empleado {
   hallazgosPentesting HallazgoPentesting[]
   ticketsCreados TicketSoporte[] @relation("CreadorTicket")
   ticketsAsignados TicketSoporte[] @relation("AsignadoTicket")
+  savedFilters SavedFilter[]
 
   @@map("empleados")
 }
@@ -366,6 +367,21 @@ model AuditLog {
   empleado Empleado? @relation(fields: [empleadoId], references: [id])
 
   @@map("audit_logs")
+}
+
+model SavedFilter {
+  id         String   @id @default(cuid())
+  nombre     String
+  modulo     String
+  filtros    Json
+  empleadoId String   @map("empleado_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  empleado Empleado @relation(fields: [empleadoId], references: [id])
+
+  @@unique([empleadoId, modulo, nombre])
+  @@map("saved_filters")
 }
 
 model SesionPortal {

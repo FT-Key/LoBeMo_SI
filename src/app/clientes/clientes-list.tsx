@@ -4,6 +4,7 @@ import { useState, useCallback } from "react"
 import { SECTORES, SECTORES_LABELS } from "@/shared/validation"
 import { FormModal } from "@/components/ui/form-modal"
 import { TableActionButton } from "@/components/ui/table-actions"
+import { SavedFilters } from "@/components/ui/saved-filters"
 import { NuevoClienteForm } from "@/app/clientes/nuevo/form"
 import { EditarClienteForm } from "@/app/clientes/[id]/editar/form"
 
@@ -107,6 +108,17 @@ export function ClientesList({
             <option key={s} value={s}>{SECTORES_LABELS[s] || s}</option>
           ))}
         </select>
+        {puedeEditar && (
+          <SavedFilters
+            modulo="clientes"
+            currentFilters={{ search, sector }}
+            onApplyFilter={(filters) => {
+              setSearch(filters.search ?? "")
+              setSector(filters.sector ?? "")
+              fetchClientes(1, filters.search ?? "", filters.sector ?? "")
+            }}
+          />
+        )}
         {puedeEditar && (
           <button
             onClick={() => setModalOpen(true)}
