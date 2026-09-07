@@ -37,11 +37,11 @@
 | US-033 | ✅ Done | feat/US-033-rbac-centralizado | PR #70 → dev | .opencode/workflow/history/US-033.md |
 | US-032 | ✅ Done | feat/US-032-upload-r2 | PR #71 → dev | .opencode/workflow/history/US-032.md |
 | US-034 | ✅ Done | feat/US-034-email-templates-refactor | PR #72 → dev | .opencode/workflow/history/US-034.md |
+| US-035 | ✅ Done | feat/US-035-email-notif-empleados | PR #73 → dev | .opencode/workflow/history/US-035.md |
 
 ## Backlog
 | US | Status | Detail |
 |----|--------|--------|
-| US-035 | 📋 Backlog | Notificaciones por Email a Empleados — .opencode/workflow/history/US-035.md |
 | US-036 | 📋 Backlog | Envío de Propuestas por Email — .opencode/workflow/history/US-036.md |
 | US-037 | 📋 Backlog | Subida de Archivos con Cloudflare R2 — .opencode/workflow/history/US-037.md |
 | US-038 | 📋 Backlog | Exportar Dashboard a Excel/CSV — .opencode/workflow/history/US-038.md |
@@ -61,21 +61,21 @@
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
-US-034 — Refactor de Templates de Email (PR #72 → dev)
+US-035 — Notificaciones por Email a Empleados (PR #73 → dev)
 
 ## Project Status
-✅ 34 US completadas (US-001 a US-034, US-032 incluido).
-🔄 US-034 en PR (PR #72 → dev)
-📋 17 US en Backlog (US-035 a US-052).
+✅ 35 US completadas (US-001 a US-035).
+🔄 US-035 en PR (PR #73 → dev)
+📋 16 US en Backlog (US-036 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-034: Refactor de Templates de Email** — Completado y en PR (PR #72 → dev)
-- Sistema centralizado en `src/lib/email-templates/` (9 archivos)
-- 6 templates reutilizables: portal-bienvenida, portal-activacion, cambio-estado, contacto-notificacion, contacto-confirmacion, credenciales
-- Refactorizado 5 route files, eliminando ~350 líneas de HTML duplicado
+**US-035: Notificaciones por Email a Empleados** — Completado y en PR (PR #73 → dev)
+- 2 templates nuevos: `asignacion-proyecto.ts`, `tarea-asignada.ts`
+- Envío de email en: asignación a proyecto, tarea asignada, tarea crítica completada
+- 3 route files modificados: `asignaciones/route.ts`, `tareas/route.ts`, `tareas/[id]/route.ts`
 - Quality gates: ✅ TypeScript, ✅ Lint, ✅ Build
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2

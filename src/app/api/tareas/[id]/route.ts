@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { updateTareaSchema } from "@/shared/validation"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
+import { createTransporter, getLogoAttachment, tareaAsignada } from "@/lib/email-templates"
 
 const ESTADOS_VALIDOS = ["PENDIENTE", "EN_PROGRESO", "COMPLETADA", "CANCELADA"]
 
@@ -155,6 +156,33 @@ export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, sessi
             link: proyecto?.id ? `/proyectos/${proyecto.id}` : null,
           },
         })
+
+        try {
+          const transport = createTransporter()
+          if (transport && ciso.email) {
+            const logoAttachment = await getLogoAttachment()
+            const logoCid = logoAttachment.length > 0 ? logoAttachment[0].cid : ""
+            const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"
+            const portalUrl = proyecto?.id ? `${baseUrl}/proyectos/${proyecto.id}` : ""
+
+            await transport.sendMail({
+              from: `"LoBeMo Seguridad" <${process.env.SMTP_USER}>`,
+              to: ciso.email,
+              subject: `Tarea crítica completada - ${proyectoNombre}`,
+              html: tareaAsignada({
+                nombreEmpleado: `${ciso.nombre} ${ciso.apellido}`,
+                tituloTarea: tareaExistente.titulo,
+                nombreProyecto: proyectoNombre,
+                prioridad: "CRITICA",
+                portalUrl,
+                logoCid,
+              }),
+              attachments: logoAttachment,
+            })
+          }
+        } catch (emailError) {
+          console.error("Error sending critical task email:", emailError)
+        }
       }
     }
 

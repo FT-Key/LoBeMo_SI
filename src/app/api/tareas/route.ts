@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { createTareaSchema } from "@/shared/validation"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
+import { createTransporter, getLogoAttachment, tareaAsignada } from "@/lib/email-templates"
 
 export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
   try {
@@ -123,6 +124,38 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
         },
       },
     })
+
+    if (result.data.asignacionId) {
+      try {
+        const asignacion = await prisma.asignacion.findUnique({
+          where: { id: result.data.asignacionId },
+          include: { empleado: { select: { nombre: true, apellido: true, email: true } } },
+        })
+        const transport = createTransporter()
+        if (transport && asignacion?.empleado.email) {
+          const logoAttachment = await getLogoAttachment()
+          const logoCid = logoAttachment.length > 0 ? logoAttachment[0].cid : ""
+          const proyecto = await prisma.proyecto.findUnique({ where: { id: result.data.proyectoId }, select: { nombre: true } })
+
+          await transport.sendMail({
+            from: `"LoBeMo Seguridad" <${process.env.SMTP_USER}>`,
+            to: asignacion.empleado.email,
+            subject: `Nueva tarea asignada - ${proyecto?.nombre || "Proyecto"}`,
+            html: tareaAsignada({
+              nombreEmpleado: `${asignacion.empleado.nombre} ${asignacion.empleado.apellido}`,
+              tituloTarea: tarea.titulo,
+              nombreProyecto: proyecto?.nombre || "Proyecto",
+              prioridad: result.data.prioridad,
+              fechaLimite: result.data.fechaLimite || undefined,
+              logoCid,
+            }),
+            attachments: logoAttachment,
+          })
+        }
+      } catch (emailError) {
+        console.error("Error sending task assignment email:", emailError)
+      }
+    }
 
     await prisma.auditLog.create({
       data: {
