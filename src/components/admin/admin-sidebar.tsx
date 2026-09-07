@@ -22,6 +22,7 @@ import {
   LogOut,
 } from "lucide-react"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
+import { SearchGlobal } from "@/components/search/search-global"
 import { SignOutModal } from "@/components/modals/signout-modal"
 
 type AdminSidebarProps = {
@@ -235,6 +236,7 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <SearchGlobal />
               <NotificacionDropdown />
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/30">
                 <div className="size-2 rounded-full bg-success animate-pulse" />

@@ -41,11 +41,11 @@
 | US-036 | ✅ Done | feat/US-036-envio-propuestas-email | PR #74 → dev | .opencode/workflow/history/US-036.md |
 | US-037 | ❌ Duplicada | Duplicado de US-032 | — | .opencode/workflow/history/US-037.md |
 | US-038 | ✅ Done | feat/US-038-export-dashboard | PR #75 → dev | .opencode/workflow/history/US-038.md |
+| US-039 | ✅ Done | feat/US-039-busqueda-global | PR #76 → dev | .opencode/workflow/history/US-039.md |
 
 ## Backlog
 | US | Status | Detail |
 |----|--------|--------|
-| US-039 | 📋 Backlog | Búsqueda Global — .opencode/workflow/history/US-039.md |
 | US-040 | 📋 Backlog | Filtros Guardados / Vistas Guardadas — .opencode/workflow/history/US-040.md |
 | US-041 | 📋 Backlog | Comentarios en Tareas/Proyectos — .opencode/workflow/history/US-041.md |
 | US-042 | 📋 Backlog | Dashboard del Empleado — .opencode/workflow/history/US-042.md |
@@ -61,21 +61,22 @@
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
-US-038 — Exportar Dashboard a Excel/CSV (PR #75 → dev)
+US-039 — Búsqueda Global (PR #76 → dev)
 
 ## Project Status
-✅ 37 US completadas (US-001 a US-038, US-037 duplicada).
-🔄 US-038 en PR (PR #75 → dev)
-📋 14 US en Backlog (US-039 a US-052).
+✅ 39 US completadas (US-001 a US-039, US-037 duplicada).
+🔄 US-039 en PR (PR #76 → dev)
+📋 13 US en Backlog (US-040 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-038: Exportar Dashboard a Excel/CSV** — Completado y en PR (PR #75 → dev)
-- Endpoint `GET /api/exportar/dashboard` con soporte XLSX y CSV
-- Dropdown "Exportar" en dashboard con opciones XLSX / CSV
-- Mismas queries del dashboard: proyectos por estado, empleados, ingresos, clientes nuevos
+**US-039: Búsqueda Global** — Completado y en PR (PR #76 → dev)
+- Endpoint `GET /api/search` — búsqueda en proyectos, clientes, empleados, tareas
+- Componente `SearchGlobal` con debounce (300ms) y dropdown agrupado por tipo
+- Atajos de teclado: `Ctrl+K` o `/`
+- Integrado en el header del admin sidebar
 - Quality gates: ✅ TypeScript, ✅ Lint, ✅ Build
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
