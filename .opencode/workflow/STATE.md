@@ -50,6 +50,7 @@
 | US-045 | ✅ Done | feat/US-045-gantt | PR #82 → dev (merged) | .opencode/workflow/history/US-045.md |
 | US-046 | ✅ Done | feat/US-046-evidencia-pentesting | PR #83 → dev (merged) | .opencode/workflow/history/US-046.md |
 | US-047 | ✅ Done | feat/US-047-theme | PR #84 → dev | .opencode/workflow/history/US-047.md |
+| US-048 | ✅ Done | feat/US-048-transiciones | PR → dev | .opencode/workflow/history/US-048.md |
 
 ## Backlog
 | US | Status | Detail |
@@ -67,21 +68,20 @@
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
-US-048 — Animaciones de Transición
+US-049 — Historial Actividad en Dashboard
 
 ## Project Status
-✅ 47 US completadas (US-001 a US-047, US-037 duplicada).
-📋 5 US en Backlog (US-048 a US-052).
+✅ 48 US completadas (US-001 a US-048, US-037 duplicada).
+📋 4 US en Backlog (US-049 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-047: Modo Oscuro/Claro** — Completado, en PR (PR #84 → dev)
-- next-themes + ThemeProvider (dark por defecto, respeta sistema)
-- Paleta clara en :root, oscura intacta en .dark
-- Toggle Sol/Luna en sidebar (footer, drawer móvil, header)
-- Quality gates: ✅ TypeScript, ✅ Build, ✅ Lint (0 errores nuevos)
+**US-048: Animaciones de Transición** — Completado, en PR (→ dev)
+- PageTransition (framer-motion fade+slide, key por pathname, respeta reduced-motion)
+- Integrado en AdminSidebar (envuelve children del main)
+- Quality gates: ✅ TypeScript, ✅ Build, ✅ Lint (archivos tocados limpios)
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
 

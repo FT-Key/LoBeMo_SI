@@ -26,6 +26,7 @@ import { NotificacionDropdown } from "@/components/notificaciones/notificacion-d
 import { SearchGlobal } from "@/components/search/search-global"
 import { SignOutModal } from "@/components/modals/signout-modal"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { PageTransition } from "@/components/page-transition"
 
 type AdminSidebarProps = {
   name: string | null | undefined
@@ -257,7 +258,7 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto bg-background">
           <div className="container mx-auto px-4 lg:px-6 py-6 lg:py-8">
-            {children}
+            <PageTransition>{children}</PageTransition>
           </div>
         </main>
       </div>
