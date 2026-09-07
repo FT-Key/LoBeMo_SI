@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation"
 import { PortalSection } from "./portal-section"
 import { FileUpload, formatBytes } from "@/components/ui/file-upload"
 import { CommentSection, type Comentario } from "@/components/comentarios/comment-section"
+import { KanbanBoard } from "@/components/tareas/kanban-board"
+import { LayoutList, Columns3 } from "lucide-react"
 
 const ESTADO_BADGES: Record<string, string> = {
   RELEVAMIENTO: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
@@ -93,6 +95,7 @@ type TareaItem = {
   descripcion: string | null
   estado: string
   prioridad: string
+  orden: number
   fechaLimite: string | null
   createdAt: string
   asignacion: TareaAsignacion | null
@@ -113,6 +116,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
   const [transitioning, setTransitioning] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [vistaTareas, setVistaTareas] = useState<"lista" | "kanban">("lista")
 
   const p = proyecto as {
     id: string
@@ -400,6 +404,18 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
     }
   }
 
+  async function handleMoveTarea(tareaId: string, nuevoEstado: string, nuevoOrden: number) {
+    try {
+      await fetch(`/api/tareas/${tareaId}/orden`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ estado: nuevoEstado, orden: nuevoOrden }),
+      })
+    } catch {
+      setError("Error al mover tarea")
+    }
+  }
+
   async function handleCrearHito(e: React.FormEvent) {
     e.preventDefault()
     setHitoError("")
@@ -681,7 +697,27 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
         </div>
 
         <div className="rounded-lg border bg-surface-elevated/80 p-6">
-          <h3 className="text-lg font-semibold mb-3">Tareas ({p._count.tareas})</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-semibold">Tareas ({p._count.tareas})</h3>
+            {p.tareas.length > 0 && (
+              <div className="flex items-center gap-1 rounded-md border border-border/50 p-0.5">
+                <button
+                  onClick={() => setVistaTareas("lista")}
+                  className={`p-1.5 rounded ${vistaTareas === "lista" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Vista lista"
+                >
+                  <LayoutList className="size-4" />
+                </button>
+                <button
+                  onClick={() => setVistaTareas("kanban")}
+                  className={`p-1.5 rounded ${vistaTareas === "kanban" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Vista Kanban"
+                >
+                  <Columns3 className="size-4" />
+                </button>
+              </div>
+            )}
+          </div>
 
           {tareaError && (
             <div className="rounded-md bg-red-500/15 border border-red-500/25 p-2 mb-3 text-xs text-red-400">{tareaError}</div>
@@ -737,6 +773,17 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
 
           {p.tareas.length === 0 ? (
             <p className="text-sm text-muted-foreground">Sin tareas registradas</p>
+          ) : vistaTareas === "kanban" ? (
+            <KanbanBoard
+              tareas={p.tareas.map((t) => ({
+                ...t,
+                orden: t.orden ?? 0,
+                fechaLimite: t.fechaLimite ?? null,
+              }))}
+              onMoveTarea={handleMoveTarea}
+              onEditTarea={(t) => iniciarEdicion(t as TareaItem)}
+              readonly={!puedeGestionarTareas || esCerrado}
+            />
           ) : (
             <div className="space-y-3 max-h-[500px] overflow-y-auto">
               {p.tareas.map((t) => (
