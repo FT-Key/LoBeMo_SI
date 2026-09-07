@@ -45,6 +45,16 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
               empleado: { select: { id: true, nombre: true, apellido: true, rol: true } },
             },
           },
+          registrosHoras: {
+            select: {
+              id: true,
+              inicio: true,
+              fin: true,
+              duracionMin: true,
+              descripcion: true,
+              empleadoId: true,
+            },
+          },
         },
       },
       hitos: { orderBy: { fechaPrevista: "asc" } },

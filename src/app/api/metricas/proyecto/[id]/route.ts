@@ -15,7 +15,7 @@ export const GET = withRole(ROLES.VIEW_METRICAS, async (_request, ctx) => {
       return NextResponse.json({ error: "Proyecto no encontrado" }, { status: 404 })
     }
 
-    const [tareas, hitos, asignaciones] = await Promise.all([
+    const [tareas, hitos, asignaciones, registrosHoras] = await Promise.all([
       prisma.tarea.findMany({
         where: { proyectoId: id },
         select: { estado: true, prioridad: true },
@@ -29,6 +29,17 @@ export const GET = withRole(ROLES.VIEW_METRICAS, async (_request, ctx) => {
         include: {
           empleado: { select: { id: true, nombre: true, apellido: true, rol: true } },
           _count: { select: { tareas: true } },
+        },
+      }),
+      prisma.registroHoras.findMany({
+        where: {
+          tarea: { proyectoId: id },
+          fin: { not: null },
+        },
+        select: {
+          duracionMin: true,
+          empleadoId: true,
+          empleado: { select: { nombre: true, apellido: true } },
         },
       }),
     ])
@@ -48,6 +59,15 @@ export const GET = withRole(ROLES.VIEW_METRICAS, async (_request, ctx) => {
     const totalHitos = hitos.length
     const porcentajeHitos = totalHitos > 0 ? Math.round((hitosCompletados / totalHitos) * 100) : 0
 
+    const totalMinutos = registrosHoras.reduce((sum, r) => sum + r.duracionMin, 0)
+    const horasPorEmpleado: Record<string, { nombre: string; apellido: string; minutos: number }> = {}
+    for (const r of registrosHoras) {
+      if (!horasPorEmpleado[r.empleadoId]) {
+        horasPorEmpleado[r.empleadoId] = { nombre: r.empleado.nombre, apellido: r.empleado.apellido, minutos: 0 }
+      }
+      horasPorEmpleado[r.empleadoId].minutos += r.duracionMin
+    }
+
     return NextResponse.json({
       proyecto,
       tareas: {
@@ -63,6 +83,11 @@ export const GET = withRole(ROLES.VIEW_METRICAS, async (_request, ctx) => {
         completados: hitosCompletados,
         pendientes: totalHitos - hitosCompletados,
         porcentaje: porcentajeHitos,
+      },
+      horas: {
+        totalMinutos,
+        registros: registrosHoras.length,
+        porEmpleado: Object.values(horasPorEmpleado),
       },
       asignaciones: asignaciones.map((a) => ({
         id: a.id,

@@ -147,6 +147,7 @@ model Empleado {
   ticketsAsignados TicketSoporte[] @relation("AsignadoTicket")
   savedFilters SavedFilter[]
   comentarios Comentario[]
+  registrosHoras RegistroHoras[]
 
   @@map("empleados")
 }
@@ -182,11 +183,29 @@ model Tarea {
   updatedAt   DateTime     @updatedAt @map("updated_at")
   documentos  Documento[]
   comentarios Comentario[]
+  registrosHoras RegistroHoras[]
 
   proyecto   Proyecto?   @relation(fields: [proyectoId], references: [id])
   asignacion Asignacion? @relation(fields: [asignacionId], references: [id])
 
   @@map("tareas")
+}
+
+model RegistroHoras {
+  id           String    @id @default(cuid())
+  inicio       DateTime  @default(now())
+  fin          DateTime?
+  duracionMin  Int       @default(0)
+  descripcion  String?
+  tareaId      String    @map("tarea_id")
+  empleadoId   String    @map("empleado_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  tarea    Tarea    @relation(fields: [tareaId], references: [id])
+  empleado Empleado @relation(fields: [empleadoId], references: [id])
+
+  @@map("registros_horas")
 }
 
 model Hito {
