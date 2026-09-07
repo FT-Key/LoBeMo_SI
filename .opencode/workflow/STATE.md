@@ -34,7 +34,7 @@
 | US-029 | ✅ Done | feat/US-029-v2 | Merge directo → dev, Merge directo → main | .opencode/workflow/history/US-029.md |
 | US-030 | ✅ Done | feat/US-030-form-validations | Merge directo → dev, Merge directo → main | .opencode/workflow/history/US-030.md |
 | US-031 | ✅ Done | feat/US-031-login-secure-cookie + fix/US-031-salt-router | PR #31 → dev, PR #33 → dev, PR #32 → main, PR #34 → main | .opencode/workflow/history/US-031.md |
-| US-033 | 🔄 In Progress | feat/US-033-rbac-centralizado | — | .opencode/workflow/history/US-033.md |
+| US-033 | ✅ Done | feat/US-033-rbac-centralizado | PR #70 → dev | .opencode/workflow/history/US-033.md |
 
 ## Backlog
 | US | Status | Detail |
@@ -60,172 +60,51 @@
 | US-051 | 📋 Backlog | Logging Estructurado (Pino) — .opencode/workflow/history/US-051.md |
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
+## Current
+ US-032 — Upload de Documentos PDF con Cloudflare R2 (implementación completada, PR abierto)
+
 ## Project Status
-✅ 31 US completadas (US-001 a US-033). Todas completadas.
-📋 20 US en Backlog (US-032, US-034 a US-052).
+✅ 32 US completadas (US-001 a US-033). Todas completadas.
+🔄 US-032 en PR (feat/US-032-upload-documentos-r2 → dev)
+📋 19 US en Backlog (US-034 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores, 0 warnings.
 ✅ Typecheck: disponible y pasa sin errores.
 
 ## Último Cambio
-**US-033: RBAC Centralizado** — Migración completa de verificación de roles
-- **`src/lib/api-auth.ts`**: Módulo central de RBAC con `ROLES` constantes (13 grupos de permisos) + `withRole` HOF
-- **`src/types/next-auth.d.ts`**: Rol tipado correctamente como `Rol` de Prisma
-- **6 APIs abiertas arregladas**: `clientes`, `proyectos`, `propuestas`, `servicios` — todas ahora usan `withRole`
-- **~25+ archivos migrados**: Todas las rutas API existentes migradas de `auth()` manual a `withRole` HOF
-- **TypeScript**: `npx tsc --noEmit` → 0 errores
-- **Build**: `npm run build` → ✅ exitoso
+**US-033: RBAC Centralizado + Campo `codigo`** — Completado y mergado (PR #70 → dev)
+- RBAC: `withRole()` HOF + 13 grupos de permisos + ~30 archivos migrados
+- Portal: campo `codigo` (LBM-XXXX-YYYY) en Proyecto, APIs portal, seguimiento por código
+- Quality gates: ✅ TypeScript, ✅ Lint, ✅ Build
 
-## Plan: US-033 — Campo `codigo` para Proyecto (Portal-Friendly ID)
+## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
 
 ### Objetivo
-Agregar un campo `codigo` único y legible al modelo `Proyecto` (formato `LBM-XXXX-YYYY`) para reemplazar los CUIDs expuestos a clientes en URLs, emails y formularios del portal. El `id` (CUID) se mantiene como PK/FK interno.
+Reemplazar el guardado de documentos como data URLs base64 en PostgreSQL por Cloudflare R2 (almacenamiento S3-compatible en la nube).
+
+### Stack
+- Cloudflare R2 (almacenamiento)
+- @aws-sdk/client-s3 + @aws-sdk/s3-request-presigner
+- Prisma (migración de modelo)
+- Next.js API Routes (multipart/form-data)
 
 ### Archivos a crear
-- `src/lib/proyecto-codigo.ts` — Función `generarCodigoProyecto(nombre: string): Promise<string>`
-- `prisma/migrations/YYYYMMDDHHMMSS_add_proyecto_codigo/migration.sql` — Generado por `prisma migrate dev`
+- `src/lib/r2.ts` — Cliente R2 (S3-compatible)
+- `src/app/api/upload/route.ts` — Endpoint upload multipart
+- `src/app/api/upload/[key]/route.ts` — Endpoint delete
+- `src/components/ui/file-upload.tsx` — Componente UI drag & drop
 
 ### Archivos a modificar
 | # | Archivo | Cambio |
 |---|---------|--------|
-| 1 | `prisma/schema.prisma` | Agregar `codigo String @unique` a Proyecto |
-| 2 | `src/shared/validation/proyectos.ts` | Actualizar `portalAccesoSchema`: campo `codigo` en vez de `proyectoId` |
-| 3 | `src/app/api/proyectos/route.ts` | Generar `codigo` en POST, incluir en response, usar en email |
-| 4 | `src/app/api/proyectos/[id]/route.ts` | Incluir `codigo` en GET response, usar en email de activación portal |
-| 5 | `src/app/api/portal/acceso/route.ts` | Lookup por `codigo` en vez de `id` |
-| 6 | `src/app/api/portal/proyecto/route.ts` | JWT firma con `codigo` + `id`, retorno incluye `codigo` |
-| 7 | `src/app/api/portal/documento/[id]/route.ts` | JWT decode usa `id` interno (sin cambio funcional) |
-| 8 | `src/app/api/portal/clave/route.ts` | JWT decode usa `id` interno (sin cambio funcional) |
-| 9 | `src/app/seguimiento/page.tsx` | Input acepta `codigo` (placeholder `LBM-XXXX-YYYY`) |
-| 10 | `src/app/seguimiento/[id]/page.tsx` | Renombrar a `[codigo]/page.tsx`, lookup por `codigo` |
-| 11 | `src/app/seguimiento/[id]/portal-content.tsx` | Renombrar a `[codigo]/portal-content.tsx`, agregar `codigo` al type |
-| 12 | `src/components/modals/portal-login-modal.tsx` | Input acepta `codigo` |
-| 13 | `prisma/seed.ts` | Generar `codigo` para el proyecto demo |
+| 1 | `prisma/schema.prisma` | Campos: mimeType, tamaño, storageKey, subidoPor en Documento |
+| 2 | `src/app/api/documentos/route.ts` | Adaptar para R2 |
+| 3 | `src/shared/validation/documentos.ts` | Actualizar validación |
+| 4 | `.env.example` | Variables R2 |
 
-### Componentes
-No se crean componentes nuevos. Se modifican componentes existentes.
-
-### API Routes
-
-#### POST `/api/portal/acceso` (modificada)
-```typescript
-// ANTES
-{ proyectoId: string, clave: string }
-
-// DESPUÉS
-{ codigo: string, clave: string }
-```
-- Lookup: `prisma.proyecto.findUnique({ where: { codigo } })`
-- JWT payload: `{ proyectoId: proyecto.id, codigo: proyecto.codigo, tipo: "portal" }`
-- Response: `{ ok: true, codigo, nombre, cliente }`
-
-#### GET `/api/portal/proyecto` (modificada)
-- JWT decode extrae `proyectoId` (interno) para lookup
-- Response incluye `codigo` en el select
-
-#### GET `/api/portal/documento/[id]` (sin cambio funcional)
-- JWT decode extrae `proyectoId` para authorization check
-- El `[id]` del route sigue siendo el ID del documento, no del proyecto
-
-### Tipos e interfaces
-```typescript
-// src/lib/proyecto-codigo.ts
-export async function generarCodigoProyecto(nombre: string): Promise<string>
-export async function existeCodigo(codigo: string): Promise<boolean>
-
-// Type actualizado en portal-content.tsx y page.tsx
-type ProyectoData = {
-  id: string
-  codigo: string  // ← NUEVO
-  nombre: string
-  // ... resto igual
-}
-```
-
-### Dependencias
-No se agregan dependencias nuevas. Se usa `crypto` (built-in) para generación aleatoria.
-
-### Algoritmo de generación de código
-```
-1. Slugificar nombre: "Centro Hogar - Seguridad" → "centro-hogar-seguridad"
-2. Tomar primeros 4 chars del slug: "cent"
-3. Generar 4 chars alfanuméricos aleatorios: "A3K9"
-4. Combinar: "LBM-CENT-A3K9"
-5. Verificar uniqueness en DB; si existe, regenerar los 4 chars aleatorios
-6. Máximo 10 intentos; si falla, lanzar error
-```
-
-### Consideraciones
-
-#### Backward Compatibility (CRÍTICO)
-- **URLs viejas `/seguimiento/{id}`**: Crear redirect o aceptar ambos formatos
-  - Opción A (recomendada): El page `[codigo]/page.tsx` acepta tanto `codigo` como `id`
-  - Si el param empieza con `cl` (CUID pattern), buscar por `id`; si no, buscar por `codigo`
-  - Esto mantiene compatibilidad con emails viejos y bookmarks
-- **JWT viejos**: El JWT existente solo tiene `proyectoId`. El middleware debe manejar ambos formatos
-- **API `/api/portal/acceso`**: Aceptar `codigo` OR `proyectoId` en el body (transición gradual)
-
-#### Seguridad
-- `codigo` no es secreto — es un identificador público, no una contraseña
-- La autenticación sigue siendo por `portalClave` (bcrypt)
-- JWT firma incluye `id` interno para queries seguras
-- Rate limiting en `/api/portal/acceso` (ya debería existir)
-
-#### Performance
-- Índice único en `codigo` ya cubierto por `@unique`
-- Lookup por `codigo` es O(1) con índice
-- No hay cambio en número de queries
-
-### Orden de implementación
-
-#### Fase 1: Schema + Migration + Utility
-1. Modificar `prisma/schema.prisma` — agregar `codigo String @unique`
-2. Ejecutar `npx prisma migrate dev --name add_proyecto_codigo`
-3. Crear `src/lib/proyecto-codigo.ts` con la función de generación
-4. Crear test unitario básico para la función
-
-#### Fase 2: API Routes — Backend
-5. Modificar `src/shared/validation/proyectos.ts` — actualizar schemas
-6. Modificar `src/app/api/proyectos/route.ts` — generar código en POST
-7. Modificar `src/app/api/proyectos/[id]/route.ts` — incluir código en response
-8. Modificar `src/app/api/portal/acceso/route.ts` — lookup por código
-9. Modificar `src/app/api/portal/proyecto/route.ts` — JWT con código
-10. Verificar `src/app/api/portal/documento/[id]/route.ts` y `clave/route.ts`
-
-#### Fase 3: Frontend — Portal
-11. Modificar `src/app/seguimiento/page.tsx` — input de código
-12. Renombrar `src/app/seguimiento/[id]/` → `src/app/seguimiento/[codigo]/`
-13. Modificar `page.tsx` — dual lookup (codigo o id para compat)
-14. Modificar `portal-content.tsx` — agregar `codigo` al type
-15. Modificar `src/components/modals/portal-login-modal.tsx`
-
-#### Fase 4: Seed + Email Templates
-16. Modificar `prisma/seed.ts` — generar código para proyecto demo
-17. Verificar emails en `proyectos/route.ts` y `proyectos/[id]/route.ts`
-
-#### Fase 5: Quality Gates
-18. Build: `npm run build`
-19. Lint: `npm run lint`
-20. Typecheck: `npx tsc --noEmit`
-21. Test manual: crear proyecto, verificar código generado, login portal
-
-### Testing Strategy
-
-#### Unit Tests
-- `generarCodigoProyecto()` genera formato correcto `LBM-XXXX-YYYY`
-- Caracteres alfanuméricos válidos (A-Z, 0-9)
-- Uniqueness check funciona
-- Maneja nombres cortos / caracteres especiales
-
-#### Integration Tests
-- POST `/api/proyectos` genera código automáticamente
-- POST `/api/portal/acceso` acepta `codigo` y retorna JWT
-- GET `/api/portal/proyecto` retorna `codigo` en response
-- URLs viejas con `id` siguen funcionando (backward compat)
-
-#### Manual Testing
-1. Crear proyecto nuevo → verificar código en DB
-2. Login portal con código → acceder exitosamente
-3. Copiar URL con código → navegar directamente
-4. Email enviado muestra código en vez de ID
-5. Admin panel muestra código en lista de proyectos
+### Acceptance Criteria
+- [ ] API upload funcionando con multipart/form-data
+- [ ] Validación MIME types y tamaño (25MB max)
+- [ ] Frontend: Componente FileUpload con drag & drop
+- [ ] Audit log para uploads
+- [ ] Build + Lint + Typecheck pasan
