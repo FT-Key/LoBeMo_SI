@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { CommentSection, type Comentario } from "@/components/comentarios/comment-section"
 
 const ESTADO_BADGES: Record<string, string> = {
   ABIERTO: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
@@ -42,9 +43,13 @@ type Ticket = {
 export function TicketDetalle({
   ticket: initialData,
   sessionRol,
+  sessionUserId,
+  initialComments = [],
 }: {
   ticket: Ticket
   sessionRol: string
+  sessionUserId: string
+  initialComments?: Comentario[]
 }) {
   const router = useRouter()
   const [ticket, setTicket] = useState<Ticket>(initialData)
@@ -305,6 +310,10 @@ export function TicketDetalle({
           Eliminar ticket
         </button>
       )}
+
+      <section className="rounded-lg border bg-surface-elevated/80 p-6">
+        <CommentSection ticketId={ticket.id} sessionUserId={sessionUserId} initialData={initialComments} />
+      </section>
 
       <Link href="/soporte" className="inline-block text-sm text-primary hover:underline">
         ← Volver a tickets

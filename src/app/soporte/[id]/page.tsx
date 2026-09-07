@@ -32,13 +32,26 @@ export default async function TicketDetallePage({
     },
   })
 
+  const comentarios = await prisma.comentario.findMany({
+    where: { ticketId: id },
+    orderBy: { createdAt: "asc" },
+    select: {
+      id: true,
+      contenido: true,
+      createdAt: true,
+      autor: {
+        select: { id: true, nombre: true, apellido: true, rol: true },
+      },
+    },
+  })
+
   if (!ticket) {
     notFound()
   }
 
   return (
     <AdminSidebar name={session.user.name} rol={session.user.rol} currentPath="/soporte">
-      <TicketDetalle ticket={JSON.parse(JSON.stringify(ticket))} sessionRol={session.user.rol} />
+      <TicketDetalle ticket={JSON.parse(JSON.stringify(ticket))} sessionRol={session.user.rol} sessionUserId={session.user.id} initialComments={JSON.parse(JSON.stringify(comentarios))} />
     </AdminSidebar>
   )
 }

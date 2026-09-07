@@ -59,6 +59,19 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
     },
   })
 
+  const comentarios = await prisma.comentario.findMany({
+    where: { proyectoId: id },
+    orderBy: { createdAt: "asc" },
+    select: {
+      id: true,
+      contenido: true,
+      createdAt: true,
+      autor: {
+        select: { id: true, nombre: true, apellido: true, rol: true },
+      },
+    },
+  })
+
   if (!proyecto) {
     notFound()
   }
@@ -81,6 +94,7 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
           sessionUserId={session.user.id}
           estadoLabels={ESTADO_LABELS}
           empleados={JSON.parse(JSON.stringify(empleados))}
+          initialComments={JSON.parse(JSON.stringify(comentarios))}
         />
       </div>
     </AdminSidebar>

@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { PortalSection } from "./portal-section"
 import { FileUpload, formatBytes } from "@/components/ui/file-upload"
+import { CommentSection, type Comentario } from "@/components/comentarios/comment-section"
 
 const ESTADO_BADGES: Record<string, string> = {
   RELEVAMIENTO: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
@@ -104,9 +105,10 @@ type ProyectoDetalleProps = {
   sessionUserId: string
   estadoLabels: Record<string, string>
   empleados: EmpleadoBrief[]
+  initialComments?: Comentario[]
 }
 
-export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLabels, empleados }: ProyectoDetalleProps) {
+export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLabels, empleados, initialComments }: ProyectoDetalleProps) {
   const router = useRouter()
   const [transitioning, setTransitioning] = useState(false)
   const [error, setError] = useState("")
@@ -1162,6 +1164,10 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
             ))}
           </div>
         )}
+      </div>
+
+      <div className="rounded-lg border bg-surface-elevated/80 p-6">
+        <CommentSection proyectoId={p.id} sessionUserId={sessionUserId} initialData={initialComments} />
       </div>
 
       <div className="text-xs text-muted-foreground">
