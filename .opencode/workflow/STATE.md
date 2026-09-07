@@ -48,7 +48,8 @@
 | US-043 | ✅ Done | feat/US-043-kanban-tareas | PR #80 → dev | .opencode/workflow/history/US-043.md |
 | US-044 | ✅ Done | feat/US-044-timer-horas | PR #81 → dev (merged) | .opencode/workflow/history/US-044.md |
 | US-045 | ✅ Done | feat/US-045-gantt | PR #82 → dev (merged) | .opencode/workflow/history/US-045.md |
-| US-046 | ✅ Done | feat/US-046-evidencia-pentesting | PR #83 → dev | .opencode/workflow/history/US-046.md |
+| US-046 | ✅ Done | feat/US-046-evidencia-pentesting | PR #83 → dev (merged) | .opencode/workflow/history/US-046.md |
+| US-047 | ✅ Done | feat/US-047-theme | PR #84 → dev | .opencode/workflow/history/US-047.md |
 
 ## Backlog
 | US | Status | Detail |
@@ -66,20 +67,20 @@
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
-US-047 — Modo Oscuro/Claro
+US-048 — Animaciones de Transición
 
 ## Project Status
-✅ 46 US completadas (US-001 a US-046, US-037 duplicada).
-📋 6 US en Backlog (US-047 a US-052).
+✅ 47 US completadas (US-001 a US-047, US-037 duplicada).
+📋 5 US en Backlog (US-048 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-046: Evidencia en Pentesting** — Completado, en PR (PR #83 → dev)
-- Modelo EvidenciaPentest (FK con cascade) + migración
-- Endpoints GET/POST evidencias y GET (presigned)/DELETE por evidencia
-- UI drag & drop con preview de imágenes en detalle del hallazgo
+**US-047: Modo Oscuro/Claro** — Completado, en PR (PR #84 → dev)
+- next-themes + ThemeProvider (dark por defecto, respeta sistema)
+- Paleta clara en :root, oscura intacta en .dark
+- Toggle Sol/Luna en sidebar (footer, drawer móvil, header)
 - Quality gates: ✅ TypeScript, ✅ Build, ✅ Lint (0 errores nuevos)
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2

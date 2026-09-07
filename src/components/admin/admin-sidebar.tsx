@@ -25,6 +25,7 @@ import {
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 import { SearchGlobal } from "@/components/search/search-global"
 import { SignOutModal } from "@/components/modals/signout-modal"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 type AdminSidebarProps = {
   name: string | null | undefined
@@ -140,7 +141,8 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
           ))}
         </nav>
 
-        <div className={`border-t border-border p-3 ${collapsed ? "flex justify-center" : ""}`}>
+        <div className={`border-t border-border p-3 space-y-1 ${collapsed ? "flex flex-col items-center" : ""}`}>
+          <ThemeToggle collapsed={collapsed} />
           <button
             onClick={() => setSignOutOpen(true)}
             className={`flex items-center gap-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors w-full ${
@@ -207,7 +209,8 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
               })}
             </div>
           ))}
-          <div className="mt-auto border-t border-border pt-3">
+          <div className="mt-auto border-t border-border pt-3 space-y-1">
+            <ThemeToggle />
             <button
               onClick={() => { setSidebarOpen(false); setSignOutOpen(true) }}
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors w-full"
@@ -240,6 +243,9 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
             <div className="flex items-center gap-2">
               <SearchGlobal />
               <NotificacionDropdown />
+              <div className="hidden sm:block w-9">
+                <ThemeToggle collapsed />
+              </div>
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/30">
                 <div className="size-2 rounded-full bg-success animate-pulse" />
                 <span className="text-xs font-medium text-muted-foreground">{rol.replace(/_/g, " ")}</span>
