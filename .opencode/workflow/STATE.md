@@ -42,12 +42,15 @@
 | US-037 | ❌ Duplicada | Duplicado de US-032 | — | .opencode/workflow/history/US-037.md |
 | US-038 | ✅ Done | feat/US-038-export-dashboard | PR #75 → dev | .opencode/workflow/history/US-038.md |
 | US-039 | ✅ Done | feat/US-039-busqueda-global | PR #76 → dev | .opencode/workflow/history/US-039.md |
+| US-040 | ✅ Done | feat/US-040-saved-filters | PR #77 → dev | .opencode/workflow/history/US-040.md |
+| US-041 | ✅ Done | feat/US-041-comentarios | PR #78 → dev | .opencode/workflow/history/US-041.md |
+| US-042 | ✅ Done | feat/US-042-mi-dashboard | PR #79 → dev | .opencode/workflow/history/US-042.md |
+| US-043 | ✅ Done | feat/US-043-kanban-tareas | PR #80 → dev | .opencode/workflow/history/US-043.md |
+| US-044 | ✅ Done | feat/US-044-timer-horas | PR #81 → dev | .opencode/workflow/history/US-044.md |
 
 ## Backlog
 | US | Status | Detail |
 |----|--------|--------|
-| US-040 | 📋 Backlog | Filtros Guardados / Vistas Guardadas — .opencode/workflow/history/US-040.md |
-| US-041 | 📋 Backlog | Comentarios en Tareas/Proyectos — .opencode/workflow/history/US-041.md |
 | US-042 | 📋 Backlog | Dashboard del Empleado — .opencode/workflow/history/US-042.md |
 | US-043 | 📋 Backlog | Kanban para Tareas — .opencode/workflow/history/US-043.md |
 | US-044 | 📋 Backlog | Timer de Horas Trabajadas — .opencode/workflow/history/US-044.md |
@@ -61,23 +64,23 @@
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
-US-039 — Búsqueda Global (PR #76 → dev)
+US-044 — Timer de Horas Trabajadas
 
 ## Project Status
-✅ 39 US completadas (US-001 a US-039, US-037 duplicada).
-🔄 US-039 en PR (PR #76 → dev)
-📋 13 US en Backlog (US-040 a US-052).
+✅ 43 US completadas (US-001 a US-043, US-037 duplicada).
+📋 8 US en Backlog (US-044 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-039: Búsqueda Global** — Completado y en PR (PR #76 → dev)
-- Endpoint `GET /api/search` — búsqueda en proyectos, clientes, empleados, tareas
-- Componente `SearchGlobal` con debounce (300ms) y dropdown agrupado por tipo
-- Atajos de teclado: `Ctrl+K` o `/`
-- Integrado en el header del admin sidebar
-- Quality gates: ✅ TypeScript, ✅ Lint, ✅ Build
+**US-044: Timer de Horas Trabajadas** — Completado y en PR (PR #81 → dev)
+- Modelo RegistroHoras con relaciones a Tarea y Empleado
+- CRUD completo: GET, POST, PATCH, DELETE
+- Componente TimeTracker con cronómetro en vivo
+- Integración en lista y kanban de tareas
+- Sección de horas en métricas del proyecto
+- Quality gates: ✅ TypeScript, ✅ Build
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
 
