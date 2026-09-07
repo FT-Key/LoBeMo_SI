@@ -35,12 +35,12 @@
 | US-030 | ✅ Done | feat/US-030-form-validations | Merge directo → dev, Merge directo → main | .opencode/workflow/history/US-030.md |
 | US-031 | ✅ Done | feat/US-031-login-secure-cookie + fix/US-031-salt-router | PR #31 → dev, PR #33 → dev, PR #32 → main, PR #34 → main | .opencode/workflow/history/US-031.md |
 | US-033 | ✅ Done | feat/US-033-rbac-centralizado | PR #70 → dev | .opencode/workflow/history/US-033.md |
+| US-032 | ✅ Done | feat/US-032-upload-r2 | PR #71 → dev | .opencode/workflow/history/US-032.md |
+| US-034 | ✅ Done | feat/US-034-email-templates-refactor | PR #72 → dev | .opencode/workflow/history/US-034.md |
 
 ## Backlog
 | US | Status | Detail |
 |----|--------|--------|
-| US-032 | 📋 Backlog | Upload de Documentos PDF con Cloudflare R2 — .opencode/workflow/history/US-032.md |
-| US-034 | 📋 Backlog | Refactor de Templates de Email — .opencode/workflow/history/US-034.md |
 | US-035 | 📋 Backlog | Notificaciones por Email a Empleados — .opencode/workflow/history/US-035.md |
 | US-036 | 📋 Backlog | Envío de Propuestas por Email — .opencode/workflow/history/US-036.md |
 | US-037 | 📋 Backlog | Subida de Archivos con Cloudflare R2 — .opencode/workflow/history/US-037.md |
@@ -61,20 +61,21 @@
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
- US-032 — Upload de Documentos PDF con Cloudflare R2 (PR #71 → dev)
+US-034 — Refactor de Templates de Email (PR #72 → dev)
 
 ## Project Status
-✅ 32 US completadas (US-001 a US-033). Todas completadas.
-🔄 US-032 en PR (PR #71 → dev)
-📋 19 US en Backlog (US-034 a US-052).
+✅ 34 US completadas (US-001 a US-034, US-032 incluido).
+🔄 US-034 en PR (PR #72 → dev)
+📋 17 US en Backlog (US-035 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
-✅ Lint: 0 errores, 0 warnings.
-✅ Typecheck: disponible y pasa sin errores.
+✅ Lint: 0 errores nuevos.
+✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-033: RBAC Centralizado + Campo `codigo`** — Completado y mergado (PR #70 → dev)
-- RBAC: `withRole()` HOF + 13 grupos de permisos + ~30 archivos migrados
-- Portal: campo `codigo` (LBM-XXXX-YYYY) en Proyecto, APIs portal, seguimiento por código
+**US-034: Refactor de Templates de Email** — Completado y en PR (PR #72 → dev)
+- Sistema centralizado en `src/lib/email-templates/` (9 archivos)
+- 6 templates reutilizables: portal-bienvenida, portal-activacion, cambio-estado, contacto-notificacion, contacto-confirmacion, credenciales
+- Refactorizado 5 route files, eliminando ~350 líneas de HTML duplicado
 - Quality gates: ✅ TypeScript, ✅ Lint, ✅ Build
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
