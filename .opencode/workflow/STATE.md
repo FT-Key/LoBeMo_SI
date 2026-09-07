@@ -39,12 +39,12 @@
 | US-034 | ✅ Done | feat/US-034-email-templates-refactor | PR #72 → dev | .opencode/workflow/history/US-034.md |
 | US-035 | ✅ Done | feat/US-035-email-notif-empleados | PR #73 → dev | .opencode/workflow/history/US-035.md |
 | US-036 | ✅ Done | feat/US-036-envio-propuestas-email | PR #74 → dev | .opencode/workflow/history/US-036.md |
+| US-037 | ❌ Duplicada | Duplicado de US-032 | — | .opencode/workflow/history/US-037.md |
+| US-038 | ✅ Done | feat/US-038-export-dashboard | PR #75 → dev | .opencode/workflow/history/US-038.md |
 
 ## Backlog
 | US | Status | Detail |
 |----|--------|--------|
-| US-037 | 📋 Backlog | Subida de Archivos con Cloudflare R2 — .opencode/workflow/history/US-037.md |
-| US-038 | 📋 Backlog | Exportar Dashboard a Excel/CSV — .opencode/workflow/history/US-038.md |
 | US-039 | 📋 Backlog | Búsqueda Global — .opencode/workflow/history/US-039.md |
 | US-040 | 📋 Backlog | Filtros Guardados / Vistas Guardadas — .opencode/workflow/history/US-040.md |
 | US-041 | 📋 Backlog | Comentarios en Tareas/Proyectos — .opencode/workflow/history/US-041.md |
@@ -61,21 +61,21 @@
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
-US-036 — Envío de Propuestas por Email (PR #74 → dev)
+US-038 — Exportar Dashboard a Excel/CSV (PR #75 → dev)
 
 ## Project Status
-✅ 36 US completadas (US-001 a US-036).
-🔄 US-036 en PR (PR #74 → dev)
-📋 15 US en Backlog (US-037 a US-052).
+✅ 37 US completadas (US-001 a US-038, US-037 duplicada).
+🔄 US-038 en PR (PR #75 → dev)
+📋 14 US en Backlog (US-039 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-036: Envío de Propuestas por Email** — Completado y en PR (PR #74 → dev)
-- Template `propuesta-email.ts` con detalle de servicios y monto total
-- Endpoint `POST /api/propuestas/[id]/enviar` — envía email y registra audit log
-- Botón "Enviar por email" visible para ADMINISTRACION, VENTAS, GERENTE_GENERAL
+**US-038: Exportar Dashboard a Excel/CSV** — Completado y en PR (PR #75 → dev)
+- Endpoint `GET /api/exportar/dashboard` con soporte XLSX y CSV
+- Dropdown "Exportar" en dashboard con opciones XLSX / CSV
+- Mismas queries del dashboard: proyectos por estado, empleados, ingresos, clientes nuevos
 - Quality gates: ✅ TypeScript, ✅ Lint, ✅ Build
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
