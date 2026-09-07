@@ -94,6 +94,8 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
             <Link href="/proyectos" className="text-sm text-muted-foreground hover:text-foreground transition-colors">&larr; Volver a proyectos</Link>
             <span className="text-muted-foreground mx-1">|</span>
             <Link href={`/proyectos/${id}/metricas`} className="text-sm text-primary hover:underline">Métricas</Link>
+            <span className="text-muted-foreground mx-1">|</span>
+            <Link href={`/proyectos/${id}/gantt`} className="text-sm text-primary hover:underline">Gantt</Link>
           </div>
           <ExportarPDFButton url={`/api/exportar/proyecto/${id}`} label="Exportar PDF" />
         </div>

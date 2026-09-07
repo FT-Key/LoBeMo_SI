@@ -46,7 +46,8 @@
 | US-041 | ✅ Done | feat/US-041-comentarios | PR #78 → dev | .opencode/workflow/history/US-041.md |
 | US-042 | ✅ Done | feat/US-042-mi-dashboard | PR #79 → dev | .opencode/workflow/history/US-042.md |
 | US-043 | ✅ Done | feat/US-043-kanban-tareas | PR #80 → dev | .opencode/workflow/history/US-043.md |
-| US-044 | ✅ Done | feat/US-044-timer-horas | PR #81 → dev | .opencode/workflow/history/US-044.md |
+| US-044 | ✅ Done | feat/US-044-timer-horas | PR #81 → dev (merged) | .opencode/workflow/history/US-044.md |
+| US-045 | ✅ Done | feat/US-045-gantt | PR #82 → dev | .opencode/workflow/history/US-045.md |
 
 ## Backlog
 | US | Status | Detail |
@@ -64,23 +65,21 @@
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
-US-044 — Timer de Horas Trabajadas
+US-046 — Evidencia en Pentesting
 
 ## Project Status
-✅ 43 US completadas (US-001 a US-043, US-037 duplicada).
-📋 8 US en Backlog (US-044 a US-052).
+✅ 45 US completadas (US-001 a US-045, US-037 duplicada).
+📋 7 US en Backlog (US-046 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-044: Timer de Horas Trabajadas** — Completado y en PR (PR #81 → dev)
-- Modelo RegistroHoras con relaciones a Tarea y Empleado
-- CRUD completo: GET, POST, PATCH, DELETE
-- Componente TimeTracker con cronómetro en vivo
-- Integración en lista y kanban de tareas
-- Sección de horas en métricas del proyecto
-- Quality gates: ✅ TypeScript, ✅ Build
+**US-045: Gantt Simplificado** — Completado, en PR (PR #82 → dev)
+- Componentes GanttChart + GanttRow sin librería externa (timeline con % left/width)
+- GET /api/calendario extendido con eventos tipo "tarea"
+- Página dedicada /proyectos/[id]/gantt + vista gantt en detalle de proyecto
+- Quality gates: ✅ TypeScript, ✅ Build, ✅ Lint (0 errores nuevos)
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
 

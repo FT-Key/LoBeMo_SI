@@ -7,7 +7,8 @@ import { PortalSection } from "./portal-section"
 import { FileUpload, formatBytes } from "@/components/ui/file-upload"
 import { CommentSection, type Comentario } from "@/components/comentarios/comment-section"
 import { KanbanBoard } from "@/components/tareas/kanban-board"
-import { LayoutList, Columns3 } from "lucide-react"
+import { GanttChart } from "@/components/gantt/gantt-chart"
+import { LayoutList, Columns3, ChartGantt } from "lucide-react"
 
 const ESTADO_BADGES: Record<string, string> = {
   RELEVAMIENTO: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
@@ -116,7 +117,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
   const [transitioning, setTransitioning] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
-  const [vistaTareas, setVistaTareas] = useState<"lista" | "kanban">("lista")
+  const [vistaTareas, setVistaTareas] = useState<"lista" | "kanban" | "gantt">("lista")
 
   const p = proyecto as {
     id: string
@@ -715,6 +716,13 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                 >
                   <Columns3 className="size-4" />
                 </button>
+                <button
+                  onClick={() => setVistaTareas("gantt")}
+                  className={`p-1.5 rounded ${vistaTareas === "gantt" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Vista Gantt"
+                >
+                  <ChartGantt className="size-4" />
+                </button>
               </div>
             )}
           </div>
@@ -783,6 +791,25 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
               onMoveTarea={handleMoveTarea}
               onEditTarea={(t) => iniciarEdicion(t as TareaItem)}
               readonly={!puedeGestionarTareas || esCerrado}
+            />
+          ) : vistaTareas === "gantt" ? (
+            <GanttChart
+              tareas={p.tareas.map((t) => ({
+                id: t.id,
+                titulo: t.titulo,
+                estado: t.estado,
+                prioridad: t.prioridad,
+                createdAt: t.createdAt,
+                fechaLimite: t.fechaLimite ?? null,
+              }))}
+              hitos={(p.hitos as { id: string; nombre: string; fechaPrevista: string; completado: boolean }[]).map((h) => ({
+                id: h.id,
+                nombre: h.nombre,
+                fechaPrevista: h.fechaPrevista,
+                completado: h.completado,
+              }))}
+              fechaInicioProyecto={(p.fechaInicio as string) ?? (p.tareas[0]?.createdAt as string)}
+              fechaEstimadaFin={(p.fechaEstimadaFin as string | null) ?? null}
             />
           ) : (
             <div className="space-y-3 max-h-[500px] overflow-y-auto">
