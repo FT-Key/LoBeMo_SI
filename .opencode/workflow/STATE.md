@@ -38,11 +38,11 @@
 | US-032 | ✅ Done | feat/US-032-upload-r2 | PR #71 → dev | .opencode/workflow/history/US-032.md |
 | US-034 | ✅ Done | feat/US-034-email-templates-refactor | PR #72 → dev | .opencode/workflow/history/US-034.md |
 | US-035 | ✅ Done | feat/US-035-email-notif-empleados | PR #73 → dev | .opencode/workflow/history/US-035.md |
+| US-036 | ✅ Done | feat/US-036-envio-propuestas-email | PR #74 → dev | .opencode/workflow/history/US-036.md |
 
 ## Backlog
 | US | Status | Detail |
 |----|--------|--------|
-| US-036 | 📋 Backlog | Envío de Propuestas por Email — .opencode/workflow/history/US-036.md |
 | US-037 | 📋 Backlog | Subida de Archivos con Cloudflare R2 — .opencode/workflow/history/US-037.md |
 | US-038 | 📋 Backlog | Exportar Dashboard a Excel/CSV — .opencode/workflow/history/US-038.md |
 | US-039 | 📋 Backlog | Búsqueda Global — .opencode/workflow/history/US-039.md |
@@ -61,21 +61,21 @@
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
-US-035 — Notificaciones por Email a Empleados (PR #73 → dev)
+US-036 — Envío de Propuestas por Email (PR #74 → dev)
 
 ## Project Status
-✅ 35 US completadas (US-001 a US-035).
-🔄 US-035 en PR (PR #73 → dev)
-📋 16 US en Backlog (US-036 a US-052).
+✅ 36 US completadas (US-001 a US-036).
+🔄 US-036 en PR (PR #74 → dev)
+📋 15 US en Backlog (US-037 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-035: Notificaciones por Email a Empleados** — Completado y en PR (PR #73 → dev)
-- 2 templates nuevos: `asignacion-proyecto.ts`, `tarea-asignada.ts`
-- Envío de email en: asignación a proyecto, tarea asignada, tarea crítica completada
-- 3 route files modificados: `asignaciones/route.ts`, `tareas/route.ts`, `tareas/[id]/route.ts`
+**US-036: Envío de Propuestas por Email** — Completado y en PR (PR #74 → dev)
+- Template `propuesta-email.ts` con detalle de servicios y monto total
+- Endpoint `POST /api/propuestas/[id]/enviar` — envía email y registra audit log
+- Botón "Enviar por email" visible para ADMINISTRACION, VENTAS, GERENTE_GENERAL
 - Quality gates: ✅ TypeScript, ✅ Lint, ✅ Build
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
