@@ -49,6 +49,7 @@ const EMPLEADOS = [
   { id: id(), nombre: "Diego", apellido: "Ramirez", email: "diego.ramirez@lobemo.com", rol: "ESPECIALISTA_REDES", area: "SISTEMAS" },
   { id: id(), nombre: "Laura", apellido: "Mendez", email: "laura.mendez@lobemo.com", rol: "SOPORTE_TECNICO", area: "SISTEMAS" },
   { id: id(), nombre: "Carlos", apellido: "Peralta", email: "carlos.peralta@lobemo.com", rol: "ADMINISTRACION", area: "ADMINISTRACION" },
+  { id: id(), nombre: "Lucía", apellido: "Fernández", email: "lucia.fernandez@lobemo.com", rol: "VENTAS", area: "COMERCIAL" },
 ];
 
 const SERVICIOS = [
@@ -129,6 +130,29 @@ const ASISTENTES = [
   { nombre: "Maria Villarreal", email: "villarreal.centrohogar@gmail.com", evaluacion: 10, completado: true },
 ];
 
+// ── Segundo cliente + proyecto activo (para US-054) ──
+
+const CLIENTE_2_ID = id();
+
+const PROYECTO_ACTIVO_ID = id();
+
+const ASIGNACIONES_ACTIVAS = [
+  { id: id(), empleadoIdx: 10, rol: "Ejecutivo de Ventas" },  // Lucía Fernández (VENTAS)
+  { id: id(), empleadoIdx: 2, rol: "Líder Técnico" },         // Mario Villarreal (CISO)
+];
+
+const TAREAS_ACTIVAS = [
+  { id: id(), titulo: "Relevamiento inicial de requerimientos", estado: "COMPLETADA", prioridad: "ALTA" },
+  { id: id(), titulo: "Diseño de propuesta técnica", estado: "EN_PROGRESO", prioridad: "ALTA" },
+  { id: id(), titulo: "Presentación de propuesta al cliente", estado: "PENDIENTE", prioridad: "MEDIA" },
+];
+
+const COMENTARIOS_SEED = [
+  { contenido: "El relevamiento se completó exitosamente. El cliente necesita soporte 24/7.", tareaIdx: 0, autorIdx: 10 },
+  { contenido: "Estoy diseñando la propuesta técnica. Revisaré los requisitos de SLA con el equipo.", tareaIdx: 1, autorIdx: 2 },
+  { contenido: "Agendar reunión con el cliente para el viernes para presentar la propuesta.", tareaIdx: 2, autorIdx: 10 },
+];
+
 // ============================================================
 // Main
 // ============================================================
@@ -152,6 +176,7 @@ async function main() {
   await prisma.informeAuditoria.deleteMany();
   await prisma.documento.deleteMany();
   await prisma.hito.deleteMany();
+  await prisma.comentario.deleteMany();
   await prisma.tarea.deleteMany();
   await prisma.asignacion.deleteMany();
   await prisma.propuesta.deleteMany();
@@ -561,12 +586,93 @@ async function main() {
     log(`${c.clave} = ${c.valor}`);
   }
 
+  // ── Segundo cliente (para proyecto activo) ──
+  console.log("\n🏢 Creando segundo cliente...");
+  await prisma.cliente.create({
+    data: {
+      id: CLIENTE_2_ID,
+      razonSocial: "TechStore S.R.L.",
+      cuit: "30-98765432-1",
+      emailContacto: "contacto@techstore.com",
+      telefono: "+54 11 5555-1234",
+      direccion: "Av. Corrientes 4567, Buenos Aires",
+      sector: "Comercio / Retail",
+      activo: true,
+    },
+  });
+  log("TechStore S.R.L.");
+
+  // ── Proyecto activo (EN_EJECUCION) ──
+  console.log("\n📁 Creando proyecto activo...");
+  const proyectoActivoServicio = SERVICIOS[5]; // Soporte Técnico
+  const codigoActivo = await generarCodigoProyecto("TechStore - Soporte Técnico Premium");
+  await prisma.proyecto.create({
+    data: {
+      id: PROYECTO_ACTIVO_ID,
+      codigo: codigoActivo,
+      nombre: "TechStore - Soporte Técnico Premium",
+      descripcion: "Servicio de soporte técnico premium para TechStore S.R.L. Incluye monitoreo 24/7, respuesta ante incidentes y mantenimiento preventivo.",
+      estado: "EN_EJECUCION",
+      fechaInicio: date(-10),
+      fechaEstimadaFin: date(80),
+      montoAcordado: 1800000,
+      clienteId: CLIENTE_2_ID,
+      servicioId: proyectoActivoServicio.id,
+    },
+  });
+  log("TechStore - Soporte Técnico Premium (EN_EJECUCION)");
+
+  // ── Asignaciones del proyecto activo ──
+  console.log("\n👥 Creando asignaciones del proyecto activo...");
+  for (const asig of ASIGNACIONES_ACTIVAS) {
+    await prisma.asignacion.create({
+      data: {
+        id: asig.id,
+        rolEnProyecto: asig.rol,
+        proyectoId: PROYECTO_ACTIVO_ID,
+        empleadoId: EMPLEADOS[asig.empleadoIdx].id,
+      },
+    });
+    log(`${EMPLEADOS[asig.empleadoIdx].nombre} ${EMPLEADOS[asig.empleadoIdx].apellido} — ${asig.rol}`);
+  }
+
+  // ── Tareas del proyecto activo ──
+  console.log("\n✅ Creando tareas del proyecto activo...");
+  for (const tarea of TAREAS_ACTIVAS) {
+    await prisma.tarea.create({
+      data: {
+        id: tarea.id,
+        titulo: tarea.titulo,
+        estado: tarea.estado,
+        prioridad: tarea.prioridad,
+        proyectoId: PROYECTO_ACTIVO_ID,
+        asignacionId: ASIGNACIONES_ACTIVAS[0].id,
+      },
+    });
+    log(`${tarea.titulo} (${tarea.estado})`);
+  }
+
+  // ── Comentarios de ejemplo (US-054) ──
+  console.log("\n💬 Creando comentarios de ejemplo...");
+  for (const c of COMENTARIOS_SEED) {
+    await prisma.comentario.create({
+      data: {
+        id: id(),
+        contenido: c.contenido,
+        tareaId: TAREAS_ACTIVAS[c.tareaIdx].id,
+        autorId: EMPLEADOS[c.autorIdx].id,
+      },
+    });
+    log(`${EMPLEADOS[c.autorIdx].nombre}: "${c.contenido.slice(0, 50)}..."`);
+  }
+
   console.log("\n🎉 Seed completado exitosamente!");
-  console.log(`   ${EMPLEADOS.length} empleados | ${SERVICIOS.length} servicios | 1 cliente | 1 proyecto`);
-  console.log(`   ${TAREAS.length} tareas | ${HALLAZGOS.length} hallazgos | ${hitos.length} hitos`);
+  console.log(`   ${EMPLEADOS.length} empleados | ${SERVICIOS.length} servicios | 2 clientes | 2 proyectos`);
+  console.log(`   ${TAREAS.length + TAREAS_ACTIVAS.length} tareas | ${HALLAZGOS.length} hallazgos | ${hitos.length} hitos`);
   console.log(`   ${CAPACITACIONES.length} capacitaciones | ${ASISTENTES.length} asistentes`);
   console.log(`   ${tickets.length} tickets | ${notificaciones.length} notificaciones`);
   console.log(`   ${auditActions.length} audit logs | ${configs.length} configuraciones`);
+  console.log(`   ${COMENTARIOS_SEED.length} comentarios de ejemplo`);
 }
 
 main()
