@@ -53,7 +53,7 @@
 | US-048 | ✅ Done | feat/US-048-transiciones | PR #85 → dev (merged) | .opencode/workflow/history/US-048.md |
 | US-049 | ✅ Done | feat/US-049-actividad-dashboard | PR #86 → dev (merged) | .opencode/workflow/history/US-049.md |
 | US-050 | ✅ Done | feat/US-050-tests | PR #87 → dev | .opencode/workflow/history/US-050.md |
-| US-051 | ✅ Done | feat/US-051-logging-estructurado | PR → dev | .opencode/workflow/history/US-051.md |
+| US-051 | ✅ Done | feat/US-051-logging-estructurado | PR #88 → dev | .opencode/workflow/history/US-051.md |
 
 ## Backlog
 | US | Status | Detail |
