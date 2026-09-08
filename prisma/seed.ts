@@ -77,33 +77,33 @@ const ASIGNACIONES = [
 ];
 
 const TAREAS = [
-  // Fase 1: Auditoría
-  { id: id(), titulo: "Revisar arquitectura y controles de acceso", estado: "COMPLETADA", prioridad: "ALTA", fase: "auditoria" },
-  { id: id(), titulo: "Evaluar políticas de contraseñas y autenticación", estado: "COMPLETADA", prioridad: "ALTA", fase: "auditoria" },
-  { id: id(), titulo: "Analizar configuración JWT", estado: "COMPLETADA", prioridad: "MEDIA", fase: "auditoria" },
-  { id: id(), titulo: "Revisar sistema de logs y auditoría", estado: "COMPLETADA", prioridad: "ALTA", fase: "auditoria" },
-  { id: id(), titulo: "Generar informe de auditoría", estado: "COMPLETADA", prioridad: "CRITICA", fase: "auditoria" },
-  // Fase 2: Pentesting
-  { id: id(), titulo: "Identificar vectores OWASP Top 10", estado: "COMPLETADA", prioridad: "ALTA", fase: "pentesting" },
-  { id: id(), titulo: "Evaluar endpoints de autenticación", estado: "COMPLETADA", prioridad: "ALTA", fase: "pentesting" },
-  { id: id(), titulo: "Probar inyección SQL y XSS", estado: "COMPLETADA", prioridad: "CRITICA", fase: "pentesting" },
-  { id: id(), titulo: "Generar reporte de hallazgos", estado: "COMPLETADA", prioridad: "ALTA", fase: "pentesting" },
-  // Fase 3: Desarrollo Seguro
-  { id: id(), titulo: "Revisar código fuente del backend", estado: "COMPLETADA", prioridad: "ALTA", fase: "desarrollo" },
-  { id: id(), titulo: "Evaluar validación de inputs (Zod)", estado: "COMPLETADA", prioridad: "MEDIA", fase: "desarrollo" },
-  { id: id(), titulo: "Documentar vulnerabilidades de código", estado: "COMPLETADA", prioridad: "ALTA", fase: "desarrollo" },
-  // Fase 4: Hardening Redes
-  { id: id(), titulo: "Evaluar configuración vs CIS Benchmarks", estado: "COMPLETADA", prioridad: "ALTA", fase: "hardening" },
-  { id: id(), titulo: "Revisar configuración de MySQL", estado: "COMPLETADA", prioridad: "MEDIA", fase: "hardening" },
-  { id: id(), titulo: "Documentar recomendaciones de hardening", estado: "COMPLETADA", prioridad: "MEDIA", fase: "hardening" },
-  // Fase 5: Capacitación
-  { id: id(), titulo: "Diseñar temario de capacitación", estado: "COMPLETADA", prioridad: "MEDIA", fase: "capacitacion" },
-  { id: id(), titulo: "Capacitar equipo de Centro Hogar", estado: "COMPLETADA", prioridad: "ALTA", fase: "capacitacion" },
-  { id: id(), titulo: "Evaluar resultados y generar certificados", estado: "COMPLETADA", prioridad: "MEDIA", fase: "capacitacion" },
-  // Fase 6: Consultoría
-  { id: id(), titulo: "Analizar cumplimiento Ley 25.326", estado: "COMPLETADA", prioridad: "ALTA", fase: "consultoria" },
-  { id: id(), titulo: "Definir roadmap de compliance", estado: "COMPLETADA", prioridad: "MEDIA", fase: "consultoria" },
-  { id: id(), titulo: "Generar informe final con recomendaciones", estado: "COMPLETADA", prioridad: "CRITICA", fase: "consultoria" },
+  // Fase 1: Auditoría (días 0-20)
+  { id: id(), titulo: "Revisar arquitectura y controles de acceso", estado: "COMPLETADA", prioridad: "ALTA", fase: "auditoria", createdAt: date(-2), fechaLimite: date(5) },
+  { id: id(), titulo: "Evaluar políticas de contraseñas y autenticación", estado: "COMPLETADA", prioridad: "ALTA", fase: "auditoria", createdAt: date(-1), fechaLimite: date(8) },
+  { id: id(), titulo: "Analizar configuración JWT", estado: "COMPLETADA", prioridad: "MEDIA", fase: "auditoria", createdAt: date(1), fechaLimite: date(12) },
+  { id: id(), titulo: "Revisar sistema de logs y auditoría", estado: "COMPLETADA", prioridad: "ALTA", fase: "auditoria", createdAt: date(2), fechaLimite: date(15) },
+  { id: id(), titulo: "Generar informe de auditoría", estado: "COMPLETADA", prioridad: "CRITICA", fase: "auditoria", createdAt: date(10), fechaLimite: date(20) },
+  // Fase 2: Pentesting (días 15-40)
+  { id: id(), titulo: "Identificar vectores OWASP Top 10", estado: "COMPLETADA", prioridad: "ALTA", fase: "pentesting", createdAt: date(15), fechaLimite: date(22) },
+  { id: id(), titulo: "Evaluar endpoints de autenticación", estado: "COMPLETADA", prioridad: "ALTA", fase: "pentesting", createdAt: date(18), fechaLimite: date(28) },
+  { id: id(), titulo: "Probar inyección SQL y XSS", estado: "COMPLETADA", prioridad: "CRITICA", fase: "pentesting", createdAt: date(22), fechaLimite: date(35) },
+  { id: id(), titulo: "Generar reporte de hallazgos", estado: "COMPLETADA", prioridad: "ALTA", fase: "pentesting", createdAt: date(30), fechaLimite: date(40) },
+  // Fase 3: Desarrollo Seguro (días 35-55)
+  { id: id(), titulo: "Revisar código fuente del backend", estado: "COMPLETADA", prioridad: "ALTA", fase: "desarrollo", createdAt: date(35), fechaLimite: date(42) },
+  { id: id(), titulo: "Evaluar validación de inputs (Zod)", estado: "COMPLETADA", prioridad: "MEDIA", fase: "desarrollo", createdAt: date(38), fechaLimite: date(48) },
+  { id: id(), titulo: "Documentar vulnerabilidades de código", estado: "COMPLETADA", prioridad: "ALTA", fase: "desarrollo", createdAt: date(42), fechaLimite: date(55) },
+  // Fase 4: Hardening Redes (días 50-70)
+  { id: id(), titulo: "Evaluar configuración vs CIS Benchmarks", estado: "COMPLETADA", prioridad: "ALTA", fase: "hardening", createdAt: date(50), fechaLimite: date(58) },
+  { id: id(), titulo: "Revisar configuración de MySQL", estado: "COMPLETADA", prioridad: "MEDIA", fase: "hardening", createdAt: date(53), fechaLimite: date(62) },
+  { id: id(), titulo: "Documentar recomendaciones de hardening", estado: "COMPLETADA", prioridad: "MEDIA", fase: "hardening", createdAt: date(58), fechaLimite: date(70) },
+  // Fase 5: Capacitación (días 65-82)
+  { id: id(), titulo: "Diseñar temario de capacitación", estado: "COMPLETADA", prioridad: "MEDIA", fase: "capacitacion", createdAt: date(65), fechaLimite: date(72) },
+  { id: id(), titulo: "Capacitar equipo de Centro Hogar", estado: "COMPLETADA", prioridad: "ALTA", fase: "capacitacion", createdAt: date(70), fechaLimite: date(78) },
+  { id: id(), titulo: "Evaluar resultados y generar certificados", estado: "COMPLETADA", prioridad: "MEDIA", fase: "capacitacion", createdAt: date(75), fechaLimite: date(82) },
+  // Fase 6: Consultoría (días 78-92)
+  { id: id(), titulo: "Analizar cumplimiento Ley 25.326", estado: "COMPLETADA", prioridad: "ALTA", fase: "consultoria", createdAt: date(78), fechaLimite: date(84) },
+  { id: id(), titulo: "Definir roadmap de compliance", estado: "COMPLETADA", prioridad: "MEDIA", fase: "consultoria", createdAt: date(82), fechaLimite: date(88) },
+  { id: id(), titulo: "Generar informe final con recomendaciones", estado: "COMPLETADA", prioridad: "CRITICA", fase: "consultoria", createdAt: date(86), fechaLimite: date(92) },
 ];
 
 const HALLAZGOS = [
@@ -142,9 +142,9 @@ const ASIGNACIONES_ACTIVAS = [
 ];
 
 const TAREAS_ACTIVAS = [
-  { id: id(), titulo: "Relevamiento inicial de requerimientos", estado: "COMPLETADA", prioridad: "ALTA" },
-  { id: id(), titulo: "Diseño de propuesta técnica", estado: "EN_PROGRESO", prioridad: "ALTA" },
-  { id: id(), titulo: "Presentación de propuesta al cliente", estado: "PENDIENTE", prioridad: "MEDIA" },
+  { id: id(), titulo: "Relevamiento inicial de requerimientos", estado: "COMPLETADA", prioridad: "ALTA", createdAt: date(-5), fechaLimite: date(5) },
+  { id: id(), titulo: "Diseño de propuesta técnica", estado: "EN_PROGRESO", prioridad: "ALTA", createdAt: date(-2), fechaLimite: date(10) },
+  { id: id(), titulo: "Presentación de propuesta al cliente", estado: "PENDIENTE", prioridad: "MEDIA", createdAt: date(0), fechaLimite: date(15) },
 ];
 
 const COMENTARIOS_SEED = [
@@ -339,6 +339,8 @@ async function main() {
         prioridad: tarea.prioridad,
         proyectoId: PROYECTO_ID,
         asignacionId: ASIGNACIONES[asigIdx].id,
+        createdAt: tarea.createdAt,
+        fechaLimite: tarea.fechaLimite,
       },
     });
     log(`[${tarea.fase}] ${tarea.titulo}`);
@@ -647,6 +649,8 @@ async function main() {
         prioridad: tarea.prioridad,
         proyectoId: PROYECTO_ACTIVO_ID,
         asignacionId: ASIGNACIONES_ACTIVAS[0].id,
+        createdAt: tarea.createdAt,
+        fechaLimite: tarea.fechaLimite,
       },
     });
     log(`${tarea.titulo} (${tarea.estado})`);

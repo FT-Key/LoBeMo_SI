@@ -37,7 +37,6 @@ export function GanttChart({ tareas, hitos, fechaInicioProyecto, fechaEstimadaFi
     const safeFallback = Number.isFinite(fallback) ? fallback : 0
     let start = valid.length > 0 ? Math.min(...valid) : safeFallback
     let end = valid.length > 0 ? Math.max(...valid) : safeFallback + 14 * DAY_MS
-    // Margen de 2 días a cada lado y rango mínimo de 14 días
     start -= 2 * DAY_MS
     end += 2 * DAY_MS
     if (end - start < 14 * DAY_MS) end = start + 14 * DAY_MS
@@ -55,7 +54,7 @@ export function GanttChart({ tareas, hitos, fechaInicioProyecto, fechaEstimadaFi
     return list
   }, [days, rangeStart, tickEvery])
 
-  const labelWidth = Math.max(days * 28, 560)
+  const labelWidth = Math.max(days * 28, 640)
 
   if (tareas.length === 0 && hitos.length === 0) {
     return <p className="text-sm text-muted-foreground">Sin tareas ni hitos para mostrar en el timeline.</p>
@@ -85,11 +84,11 @@ export function GanttChart({ tareas, hitos, fechaInicioProyecto, fechaEstimadaFi
       <div className="overflow-x-auto rounded-md border">
         <div className="min-w-full" style={{ minWidth: labelWidth }}>
           {/* Escala temporal */}
-          <div className="relative ml-48 h-8 border-b bg-muted/20">
+          <div className="relative ml-52 h-10 border-b bg-muted/20">
             {ticks.map((tick, i) => (
               <span
                 key={i}
-                className="absolute top-1 -translate-x-1/2 text-[10px] text-muted-foreground"
+                className="absolute top-2 -translate-x-1/2 text-xs text-muted-foreground"
                 style={{ left: `${tick.offset}%` }}
               >
                 {tick.date.toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit" })}
@@ -100,7 +99,7 @@ export function GanttChart({ tareas, hitos, fechaInicioProyecto, fechaEstimadaFi
           {/* Filas de tareas */}
           {tareas.map((tarea) => (
             <div key={tarea.id} className="flex items-center border-b last:border-0">
-              <div className="w-48 shrink-0 truncate px-3 py-1.5 text-xs font-medium" title={tarea.titulo}>
+              <div className="w-52 shrink-0 truncate px-3 py-2 text-sm font-medium" title={tarea.titulo}>
                 {tarea.titulo}
               </div>
               <div className="relative flex-1">
@@ -112,17 +111,17 @@ export function GanttChart({ tareas, hitos, fechaInicioProyecto, fechaEstimadaFi
           {/* Carril de hitos */}
           {hitos.length > 0 && (
             <div className="flex items-center bg-purple-500/5">
-              <div className="w-48 shrink-0 px-3 py-1.5 text-xs font-medium text-purple-300">
+              <div className="w-52 shrink-0 px-3 py-2 text-sm font-medium text-purple-300">
                 Hitos ({hitos.length})
               </div>
-              <div className="relative h-8 flex-1">
+              <div className="relative h-10 flex-1">
                 {hitos.map((hito) => {
                   const offset = ((toMs(hito.fechaPrevista) - rangeStart) / (rangeMs || 1)) * 100
                   if (offset < 0 || offset > 100) return null
                   return (
                     <span
                       key={hito.id}
-                      className={`absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-[2px] ${
+                      className={`absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-[2px] ${
                         hito.completado ? "bg-green-400" : "bg-purple-400"
                       }`}
                       style={{ left: `${offset}%` }}

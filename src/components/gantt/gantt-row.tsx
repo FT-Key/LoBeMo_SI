@@ -31,9 +31,9 @@ export function GanttRow({ tarea, rangeStartMs, rangeMs }: GanttRowProps) {
   const color = TAREA_BAR_COLORS[tarea.estado] ?? "bg-primary/70"
 
   return (
-    <div className="relative h-8">
+    <div className="relative h-10">
       <div
-        className={`absolute top-1/2 h-4 -translate-y-1/2 rounded-md ${color}`}
+        className={`absolute top-1/2 h-6 -translate-y-1/2 rounded-md ${color}`}
         style={{ left: `${left}%`, width: `${width}%` }}
         title={`${tarea.titulo} — ${tarea.estado.replace(/_/g, " ")}${tarea.fechaLimite ? ` (límite: ${new Date(tarea.fechaLimite).toLocaleDateString()})` : " (sin fecha límite)"}`}
       />
