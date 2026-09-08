@@ -56,12 +56,12 @@
 | US-051 | ✅ Done | feat/US-051-logging-estructurado | PR #88 → dev | .opencode/workflow/history/US-051.md |
 | US-052 | ✅ Done | feat/US-052-limpieza-codigo-muerto | PR #89 → dev | .opencode/workflow/history/US-052.md |
 | US-053 | ✅ Done | fix/US-53-rutas-rotas-busqueda-csp | PR #90 → dev (merged) | .opencode/workflow/history/US-053.md |
+| US-054 | ✅ Done | feat/US-054-fix-comentarios-seed | PR #91 → dev (merged) | .opencode/workflow/history/US-054.md |
+| US-055 | ✅ Done | feat/US-055-servicios-modal-crear | PR #92 → dev | .opencode/workflow/history/US-055.md |
 
 ## Backlog
 | US | Trello# | Tipo | Prioridad | Detail |
 |----|---------|------|-----------|--------|
-| US-054 | 54 | Fix | MEDIO | Fix API comentarios 500 + Seed roles/permisos — validar FK autorId, agregar empleado VENTAS, seed con proyectos activos |
-| US-055 | 55 | Feature | MEDIO | Servicios: Modal + Crear nuevo — migrar edición inline a FormModal, agregar POST con warning de precaución |
 | US-056 | 56 | Feature | BAJO | Certificados de capacitación: Generación PDF profesional con diseño y link de descarga |
 | US-057 | 57 | Fix | BAJO | Kanban y Gantt: Verificar accesibilidad desde navbar/menú de navegación |
 | US-058 | 58 | Fix | BAJO | Evidencia pentesting: tamaño fijo imágenes, PDFs en nueva pestaña, verificar borrado de R2 |
@@ -75,15 +75,15 @@
 — (backlog vacío)
 
 ## Project Status
-✅ 53 US completadas (US-001 a US-053, US-037 duplicada).
-📋 10 tareas en backlog (US-054 a US-063).
+✅ 55 US completadas (US-001 a US-055, US-037 duplicada).
+📋 8 tareas en backlog (US-056 a US-063).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-053: Fix rutas rotas búsqueda global, CSP R2, input evaluación** — Completado, PR #90 → dev (merged)
-- Creada página detalle `/clientes/[id]/page.tsx` (elimina 404 desde búsqueda global)
-- Search API: tareas ahora incluyen `proyectoId` y son clickeables (redirigen a `/proyectos/[id]`)
-- CSP: agregado `*.r2.cloudflarestorage.com` a `img-src` y `connect-src` (imágenes R2 ya no se bloquean)
-- Capacitación detalle: input evaluación con `onChange` (sincroniza estado local inmediatamente)
+**US-055: Servicios Modal + Crear Nuevo** — Completado, PR #92 → dev (abierto)
+- POST `/api/servicios` con validación Zod y audit log
+- NuevoServicioForm con FormModal (patrón clientes/empleados)
+- Warning de precaución sobre nombre único
+- Quality gates: ✅ Typecheck, ✅ Build
