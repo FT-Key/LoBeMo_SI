@@ -65,50 +65,28 @@
 | US-060 | ✅ Done | feat/US-060-tests-regression | PR #98 → dev | .opencode/workflow/history/US-060.md |
 | US-061 | ✅ Done | feat/US-061-qa-manual | PR → dev | docs/qa-manual.md |
 | US-064 | ✅ Done | fix/US-064-kanban-gantt-fixes | PR #96 → dev (merged) | .opencode/workflow/history/US-064.md |
+| US-063 | ✅ Done | feat/US-063-auditoria-navbar | PR pendiente → dev | .opencode/workflow/history/US-063.md |
 
 ## Backlog
 | US | Trello# | Tipo | Prioridad | Detail |
 |----|---------|------|-----------|--------|
 | US-062 | 62 | Docs | — | Actualizar README + Documentación usuario — módulos nuevos, variables R2, screenshots, guía de usuario |
-| US-063 | 63 | QA | — | Auditoría navbar y navegación — ver detalle abajo |
-
-### Detalle US-063: Auditoría Navbar y Navegación
-
-**Objetivo:** Verificar que TODAS las funcionalidades del sistema sean accesibles desde el menú/sidebar.
-
-**Alcance de la auditoría:**
-1. **Sidebar principal** — Verificar que cada enlace funcione y lleve a la página correcta.
-2. **Submenús** — Verificar que los acordeones/dropdowns abran y muestren todas las opciones.
-3. **Navegación interna** — Desde cada página, verificar que los botones/tabs/regresos funcionen.
-4. **Breadcrumbs** — Verificar que la navegación de回来了 sea clara.
-5. **Accesibilidad por rol** — Cada rol solo ve lo que le corresponde (RBAC).
-
-**Formato del documento de salida:** Crear `docs/auditoria-navbar.md` con:
-- Checklist de cada enlace del sidebar (nombre, ruta, funciona ✓/✗)
-- Por cada módulo: subrutas accesibles, botones de acción, tabs
-- Roles que deben ver cada elemento
-- Issues encontrados (si los hay)
-
-**Criterios de aceptación:**
-- [ ] Todos los enlaces del sidebar funcionan (sin rutas rotas)
-- [ ] Cada funcionalidad documentada en US-001 a US-060 es accesible desde el menú
-- [ ] Los roles ven solo sus módulos permitidos
-- [ ] No hay 404s ni errores de navegación
 
 ## Current
 Ninguna US activa.
-Siguiente: US-062 (Docs), US-063 (Auditoría navbar)
+Siguiente: US-062 (Docs)
 
 ## Project Status
-✅ 62 US completadas (US-001 a US-064, US-037 duplicada, US-061 QA Manual).
-📋 2 tareas en backlog (US-062, US-063).
+✅ 63 US completadas (US-001 a US-064, US-037 duplicada).
+📋 1 tarea en backlog (US-062).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Tests: 207 passing (25 archivos)
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-060: Tests automatizados US-047 a US-052 + Regression** — PR #98 → dev
-- 50 tests nuevos: theme-toggle, page-transition, actividad-reciente, pagination, search-input, filter-select, documentos
-- Infraestructura: @testing-library/react, vitest.setup.ts, jsdom environment
-- Merge conflict resuelto: vitest.config.ts + vitest.setup.ts (combinados US-050 + US-059)
+**US-063: Auditoría Navbar y Navegación** — Documento `docs/auditoria-navbar.md`
+- 15 enlaces del sidebar verificados (todos funcionan)
+- RBAC de doble capa verificado (client-side + server-side)
+- 2 issues menores documentados: ruta `/auditoria` sin sidebar, propuestas sin link directo
+- Matriz de visibilidad por rol completa
