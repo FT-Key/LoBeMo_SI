@@ -5,6 +5,9 @@ import { SECTORES, SECTORES_LABELS } from "@/shared/validation"
 import { FormModal } from "@/components/ui/form-modal"
 import { TableActionButton } from "@/components/ui/table-actions"
 import { SavedFilters } from "@/components/ui/saved-filters"
+import { Pagination, type PaginationInfo } from "@/components/ui/pagination"
+import { SearchInput } from "@/components/ui/search-input"
+import { FilterSelect } from "@/components/ui/filter-select"
 import { NuevoClienteForm } from "@/app/clientes/nuevo/form"
 import { EditarClienteForm } from "@/app/clientes/[id]/editar/form"
 
@@ -21,13 +24,6 @@ type Cliente = {
   _count: { proyectos: number }
 }
 
-type Pagination = {
-  page: number
-  limit: number
-  total: number
-  totalPages: number
-}
-
 export function ClientesList({
   puedeEditar,
   initialData,
@@ -38,7 +34,7 @@ export function ClientesList({
   initialTotal: number
 }) {
   const [clientes, setClientes] = useState<Cliente[]>(initialData)
-  const [pagination, setPagination] = useState<Pagination>({
+  const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     limit: 10,
     total: initialTotal,
@@ -91,23 +87,17 @@ export function ClientesList({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-4">
-        <input
-          type="text"
+        <SearchInput
           placeholder="Buscar por razón social, CUIT o email..."
           value={search}
-          onChange={(e) => { const v = e.target.value; setSearch(v); fetchClientes(1, v, sector) }}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm min-w-[250px]"
+          onChange={(v) => { setSearch(v); fetchClientes(1, v, sector) }}
         />
-        <select
+        <FilterSelect
           value={sector}
-          onChange={(e) => { const v = e.target.value; setSector(v); fetchClientes(1, search, v) }}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
-          <option value="">Todos los sectores</option>
-          {SECTORES.map((s) => (
-            <option key={s} value={s}>{SECTORES_LABELS[s] || s}</option>
-          ))}
-        </select>
+          onChange={(v) => { setSector(v); fetchClientes(1, search, v) }}
+          options={SECTORES.map((s) => ({ value: s, label: SECTORES_LABELS[s] || s }))}
+          allLabel="Todos los sectores"
+        />
         {puedeEditar && (
           <SavedFilters
             modulo="clientes"
@@ -190,29 +180,10 @@ export function ClientesList({
         </table>
       </div>
 
-      {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            Mostrando {(pagination.page - 1) * pagination.limit + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total}
-          </span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => { const np = Math.max(1, pagination.page - 1); fetchClientes(np, search, sector) }}
-              disabled={pagination.page <= 1}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => { const np = Math.min(pagination.totalPages, pagination.page + 1); fetchClientes(np, search, sector) }}
-              disabled={pagination.page >= pagination.totalPages}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        pagination={pagination}
+        onPageChange={(p) => fetchClientes(p, search, sector)}
+      />
 
       <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Nuevo cliente">
         <NuevoClienteForm onSuccess={() => { setModalOpen(false); fetchClientes(1, search, sector) }} />

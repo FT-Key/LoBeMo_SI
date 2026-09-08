@@ -2,6 +2,9 @@
 
 import { useState, useCallback } from "react"
 import Link from "next/link"
+import { Pagination, type PaginationInfo } from "@/components/ui/pagination"
+import { SearchInput } from "@/components/ui/search-input"
+import { FilterSelect } from "@/components/ui/filter-select"
 
 const ESTADOS = ["ENVIADA", "ACEPTADA", "RECHAZADA", "RECOTIZADA"] as const
 
@@ -28,13 +31,6 @@ type Propuesta = {
   }
 }
 
-type Pagination = {
-  page: number
-  limit: number
-  total: number
-  totalPages: number
-}
-
 export function PropuestasList({
   initialData,
   initialTotal,
@@ -45,7 +41,7 @@ export function PropuestasList({
   estadoLabels: Record<string, string>
 }) {
   const [propuestas, setPropuestas] = useState<Propuesta[]>(initialData)
-  const [pagination, setPagination] = useState<Pagination>({
+  const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     limit: 10,
     total: initialTotal,
@@ -80,23 +76,18 @@ export function PropuestasList({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-4">
-        <input
-          type="text"
+        <SearchInput
           placeholder="Buscar por proyecto..."
           value={search}
-          onChange={(e) => handleFilter("search", e.target.value, setSearch)}
+          onChange={(v) => handleFilter("search", v, setSearch)}
           className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm min-w-[200px]"
         />
-        <select
+        <FilterSelect
           value={estado}
-          onChange={(e) => handleFilter("estado", e.target.value, setEstado)}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
-          <option value="">Todos los estados</option>
-          {ESTADOS.map((e) => (
-            <option key={e} value={e}>{estadoLabels[e] ?? e}</option>
-          ))}
-        </select>
+          onChange={(v) => handleFilter("estado", v, setEstado)}
+          options={ESTADOS.map((e) => ({ value: e, label: estadoLabels[e] ?? e }))}
+          allLabel="Todos los estados"
+        />
       </div>
 
       <div className="rounded-md border">
@@ -145,29 +136,10 @@ export function PropuestasList({
         </table>
       </div>
 
-      {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            Mostrando {(pagination.page - 1) * pagination.limit + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total}
-          </span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => { const np = Math.max(1, pagination.page - 1); fetchPropuestas(np, search, estado) }}
-              disabled={pagination.page <= 1}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => { const np = Math.min(pagination.totalPages, pagination.page + 1); fetchPropuestas(np, search, estado) }}
-              disabled={pagination.page >= pagination.totalPages}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        pagination={pagination}
+        onPageChange={(p) => fetchPropuestas(p, search, estado)}
+      />
     </div>
   )
 }

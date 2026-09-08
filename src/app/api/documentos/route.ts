@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { createDocumentoSchema, createDocumentoBase64Schema } from "@/shared/validation"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
-import { deleteFromR2, isR2Configured } from "@/lib/r2"
 import { logger } from "@/lib/logger"
 
 const MIMES_PERMITIDOS = [
