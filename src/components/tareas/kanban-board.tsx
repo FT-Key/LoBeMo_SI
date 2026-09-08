@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import {
   DndContext,
   closestCenter,
@@ -28,7 +28,7 @@ const COLUMNAS = [
   { id: "CANCELADA", label: "Cancelada", color: "bg-muted text-muted-foreground" },
 ] as const
 
-const COLUMN_IDS = COLUMNAS.map((c) => c.id)
+const COLUMN_IDS = COLUMNAS.map((c) => c.id) as readonly string[]
 
 const PRIORIDAD_COLORS: Record<string, string> = {
   BAJA: "bg-muted text-muted-foreground",
@@ -143,9 +143,22 @@ function buildTareasPorColumna(tareasList: Tarea[]): Record<string, Tarea[]> {
   }, {} as Record<string, Tarea[]>)
 }
 
+function findColumnInState(state: Record<string, Tarea[]>, taskId: string): string | null {
+  for (const [estado, tareasCol] of Object.entries(state)) {
+    if (tareasCol.some((t) => t.id === taskId)) return estado
+  }
+  return null
+}
+
 export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
-  const [dragSourceColumn, setDragSourceColumn] = useState<string | null>(null)
+  const [tareasPorColumnaLocal, setTareasPorColumnaLocal] = useState(() => buildTareasPorColumna(tareas))
+
+  const stateRef = useRef(tareasPorColumnaLocal)
+  stateRef.current = tareasPorColumnaLocal
+
+  const onMoveTareaRef = useRef(onMoveTarea)
+  onMoveTareaRef.current = onMoveTarea
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -154,41 +167,38 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
     })
   )
 
-  const [tareasPorColumnaLocal, setTareasPorColumnaLocal] = useState(() => buildTareasPorColumna(tareas))
-
   useEffect(() => {
     setTareasPorColumnaLocal(buildTareasPorColumna(tareas))
   }, [tareas])
 
-  const activeTarea = activeId ? tareas.find((t) => t.id === activeId) ?? tareasPorColumnaLocal[dragSourceColumn ?? ""]?.find((t) => t.id === activeId) : null
+  const activeTarea = activeId
+    ? tareas.find((t) => t.id === activeId)
+      ?? Object.values(tareasPorColumnaLocal).flat().find((t) => t.id === activeId)
+    : null
 
-  function findColumn(taskId: string): string | null {
-    for (const [estado, tareasCol] of Object.entries(tareasPorColumnaLocal)) {
-      if (tareasCol.some((t) => t.id === taskId)) return estado
-    }
-    return null
-  }
-
-  function handleDragStart(event: DragStartEvent) {
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     const taskId = event.active.id as string
     setActiveId(taskId)
-    setDragSourceColumn(findColumn(taskId))
-  }
+  }, [])
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
     setActiveId(null)
 
-    if (!over || !dragSourceColumn) return
+    if (!over) return
 
-    let overColumn = findColumn(over.id as string)
-    if (!overColumn && (COLUMN_IDS as readonly string[]).includes(over.id as string)) {
+    const currentState = stateRef.current
+    const sourceColumn = findColumnInState(currentState, active.id as string)
+    if (!sourceColumn) return
+
+    let overColumn = findColumnInState(currentState, over.id as string)
+    if (!overColumn && COLUMN_IDS.includes(over.id as string)) {
       overColumn = over.id as string
     }
     if (!overColumn) return
 
     setTareasPorColumnaLocal((prev) => {
-      const sourceItems = [...(prev[dragSourceColumn] ?? [])]
+      const sourceItems = [...(prev[sourceColumn] ?? [])]
       const activeIndex = sourceItems.findIndex((t) => t.id === active.id)
       if (activeIndex === -1) return prev
 
@@ -197,7 +207,7 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
 
       const destItems = [...(prev[overColumn] ?? [])]
 
-      if (dragSourceColumn === overColumn) {
+      if (sourceColumn === overColumn) {
         const overIndex = destItems.findIndex((t) => t.id === over.id)
         if (overIndex >= 0) {
           destItems.splice(overIndex, 0, movedItem)
@@ -209,22 +219,21 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
       }
 
       destItems.forEach((t, i) => {
-        onMoveTarea(t.id, t.estado, i)
+        onMoveTareaRef.current(t.id, t.estado, i)
       })
 
-      return { ...prev, [dragSourceColumn]: sourceItems, [overColumn]: destItems }
+      return { ...prev, [sourceColumn]: sourceItems, [overColumn]: destItems }
     })
+  }, [])
 
-    setDragSourceColumn(null)
-  }, [dragSourceColumn, onMoveTarea])
-
-  function handleDragOver(event: DragOverEvent) {
+  const handleDragOver = useCallback((event: DragOverEvent) => {
     const { active, over } = event
     if (!over) return
 
-    const activeColumn = findColumn(active.id as string)
-    let overColumn = findColumn(over.id as string)
-    if (!overColumn && (COLUMN_IDS as readonly string[]).includes(over.id as string)) {
+    const currentState = stateRef.current
+    const activeColumn = findColumnInState(currentState, active.id as string)
+    let overColumn = findColumnInState(currentState, over.id as string)
+    if (!overColumn && COLUMN_IDS.includes(over.id as string)) {
       overColumn = over.id as string
     }
 
@@ -249,7 +258,7 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
 
       return { ...prev, [activeColumn]: sourceItems, [overColumn]: destItems }
     })
-  }
+  }, [])
 
   return (
     <DndContext
