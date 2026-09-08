@@ -240,8 +240,6 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
     if (!over) return
 
     const currentState = stateRef.current
-    const sourceColumn = findColumnInState(currentState, active.id as string)
-    if (!sourceColumn) return
 
     let overColumn: string | null = findColumnInState(currentState, over.id as string)
     if (!overColumn) {
@@ -255,23 +253,47 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
     if (!overColumn) return
 
     setTareasPorColumnaLocal((prev) => {
-      const sourceItems = [...(prev[sourceColumn] ?? [])]
-      const activeIndex = sourceItems.findIndex((t) => t.id === active.id)
-      if (activeIndex === -1) return prev
+      let movedItem: Tarea | null = null
 
-      const [movedItem] = sourceItems.splice(activeIndex, 1)
-      movedItem.estado = overColumn
+      let sourceCol = findColumnInState(prev, active.id as string)
+      if (sourceCol) {
+        const sourceItems = [...prev[sourceCol]]
+        const idx = sourceItems.findIndex((t) => t.id === active.id)
+        if (idx >= 0) {
+          movedItem = sourceItems.splice(idx, 1)[0]
+          movedItem.estado = overColumn
+          prev = { ...prev, [sourceCol]: sourceItems }
+        }
+      }
+
+      if (!movedItem) {
+        for (const [col, items] of Object.entries(prev)) {
+          const idx = items.findIndex((t) => t.id === active.id)
+          if (idx >= 0) {
+            const copy = [...items]
+            movedItem = copy.splice(idx, 1)[0]
+            movedItem.estado = overColumn
+            prev = { ...prev, [col]: copy }
+            sourceCol = col
+            break
+          }
+        }
+      }
+
+      if (!movedItem) return prev
 
       const destItems = [...(prev[overColumn] ?? [])]
 
-      if (sourceColumn === overColumn) {
-        const overSortableIndex = destItems.findIndex((t) => t.id === over.id)
-        if (overSortableIndex >= 0) {
-          destItems.splice(overSortableIndex, 0, movedItem)
+      if (sourceCol === overColumn) {
+        const overIdx = destItems.findIndex((t) => t.id === over.id)
+        if (overIdx >= 0) {
+          destItems.splice(overIdx, 0, movedItem)
         } else {
           destItems.push(movedItem)
         }
       } else {
+        const existingIdx = destItems.findIndex((t) => t.id === active.id)
+        if (existingIdx >= 0) destItems.splice(existingIdx, 1)
         destItems.push(movedItem)
       }
 
@@ -279,7 +301,7 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
         onMoveTareaRef.current(t.id, t.estado, i)
       })
 
-      return { ...prev, [sourceColumn]: sourceItems, [overColumn]: destItems }
+      return { ...prev, [overColumn]: destItems }
     })
   }, [])
 
