@@ -21,6 +21,8 @@ import {
   ChevronLeft,
   LogOut,
   User,
+  LayoutGrid,
+  ChartGantt,
 } from "lucide-react"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
 import { SearchGlobal } from "@/components/search/search-global"
@@ -52,6 +54,8 @@ const NAV_ITEMS: {
   { href: "/pentesting", label: "Pentesting", roles: ["PENTESTER", "CISO", "GERENTE_GENERAL", "ANALISTA_SEGURIDAD"], icon: <Shield className="size-4" />, section: "Operaciones" },
   { href: "/soporte", label: "Soporte", roles: ["SOPORTE_TECNICO", "GERENTE_GENERAL", "CISO"], icon: <HeadphonesIcon className="size-4" />, section: "Operaciones" },
   { href: "/informes-auditoria", label: "Auditoría", roles: ["AUDITOR", "GERENTE_GENERAL", "CISO"], icon: <FileText className="size-4" />, section: "Operaciones" },
+  { href: "/kanban", label: "Tablero", roles: null, icon: <LayoutGrid className="size-4" />, section: "Herramientas" },
+  { href: "/gantt", label: "Cronograma", roles: null, icon: <ChartGantt className="size-4" />, section: "Herramientas" },
   { href: "/calendario", label: "Calendario", roles: null, icon: <Calendar className="size-4" />, section: "Herramientas" },
   { href: "/admin/manual", label: "Manual", roles: ["GERENTE_GENERAL"], icon: <BookOpen className="size-4" />, section: "Sistema" },
   { href: "/admin", label: "Configuración", roles: ["GERENTE_GENERAL"], icon: <Settings className="size-4" />, section: "Sistema" },
