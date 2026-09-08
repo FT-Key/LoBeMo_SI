@@ -100,6 +100,14 @@ export const POST = withRole(ALL_ROLES, async (request, _ctx, session) => {
       }
     }
 
+    const empleado = await prisma.empleado.findUnique({ where: { id: session.user.id } })
+    if (!empleado) {
+      return NextResponse.json(
+        { error: "Empleado no encontrado. Verifique su sesión." },
+        { status: 400 }
+      )
+    }
+
     const comentario = await prisma.comentario.create({
       data: {
         contenido: contenido.trim(),
@@ -126,6 +134,15 @@ export const POST = withRole(ALL_ROLES, async (request, _ctx, session) => {
     return NextResponse.json({ data: comentario }, { status: 201 })
   } catch (error) {
     logger.error({ err: error }, "Error creating comentario")
+    if (
+      error instanceof Error &&
+      error.message.includes("Foreign key constraint failed")
+    ) {
+      return NextResponse.json(
+        { error: "Referencia inválida: el empleado o la entidad asociada no existe" },
+        { status: 400 }
+      )
+    }
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
