@@ -7,6 +7,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  useDroppable,
   type DragEndEvent,
   type DragOverEvent,
   type DragStartEvent,
@@ -150,6 +151,59 @@ function findColumnInState(state: Record<string, Tarea[]>, taskId: string): stri
   return null
 }
 
+function KanbanColumn({
+  col,
+  tareas,
+  onEdit,
+  readonly,
+}: {
+  col: { id: string; label: string; color: string }
+  tareas: Tarea[]
+  onEdit?: (t: Tarea) => void
+  readonly?: boolean
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id: `column-${col.id}` })
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2 mb-2">
+        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${col.color}`}>
+          {col.label}
+        </span>
+        <span className="text-xs text-muted-foreground">
+          {tareas.length}
+        </span>
+      </div>
+      <SortableContext
+        items={tareas.map((t) => t.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <div
+          ref={setNodeRef}
+          className={`space-y-2 min-h-[100px] rounded-lg border p-2 transition-colors ${
+            isOver
+              ? "border-primary bg-primary/5 border-solid"
+              : "border-dashed border-border/50"
+          }`}
+        >
+          {tareas.map((t) => (
+            <KanbanCard
+              key={t.id}
+              tarea={t}
+              onEdit={readonly ? undefined : () => onEdit?.(t)}
+            />
+          ))}
+          {tareas.length === 0 && (
+            <p className="text-xs text-muted-foreground text-center py-4">
+              {isOver ? "Soltar aquí" : "Sin tareas"}
+            </p>
+          )}
+        </div>
+      </SortableContext>
+    </div>
+  )
+}
+
 export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [tareasPorColumnaLocal, setTareasPorColumnaLocal] = useState(() => buildTareasPorColumna(tareas))
@@ -177,23 +231,26 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
     : null
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
-    const taskId = event.active.id as string
-    setActiveId(taskId)
+    setActiveId(event.active.id as string)
   }, [])
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
     setActiveId(null)
-
     if (!over) return
 
     const currentState = stateRef.current
     const sourceColumn = findColumnInState(currentState, active.id as string)
     if (!sourceColumn) return
 
-    let overColumn = findColumnInState(currentState, over.id as string)
-    if (!overColumn && COLUMN_IDS.includes(over.id as string)) {
-      overColumn = over.id as string
+    let overColumn: string | null = findColumnInState(currentState, over.id as string)
+    if (!overColumn) {
+      const overIdStr = over.id as string
+      if (overIdStr.startsWith("column-")) {
+        overColumn = overIdStr.replace("column-", "")
+      } else if ((COLUMN_IDS as readonly string[]).includes(overIdStr)) {
+        overColumn = overIdStr
+      }
     }
     if (!overColumn) return
 
@@ -208,9 +265,9 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
       const destItems = [...(prev[overColumn] ?? [])]
 
       if (sourceColumn === overColumn) {
-        const overIndex = destItems.findIndex((t) => t.id === over.id)
-        if (overIndex >= 0) {
-          destItems.splice(overIndex, 0, movedItem)
+        const overSortableIndex = destItems.findIndex((t) => t.id === over.id)
+        if (overSortableIndex >= 0) {
+          destItems.splice(overSortableIndex, 0, movedItem)
         } else {
           destItems.push(movedItem)
         }
@@ -232,12 +289,18 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
 
     const currentState = stateRef.current
     const activeColumn = findColumnInState(currentState, active.id as string)
-    let overColumn = findColumnInState(currentState, over.id as string)
-    if (!overColumn && COLUMN_IDS.includes(over.id as string)) {
-      overColumn = over.id as string
-    }
+    if (!activeColumn) return
 
-    if (!activeColumn || !overColumn || activeColumn === overColumn) return
+    let overColumn: string | null = findColumnInState(currentState, over.id as string)
+    if (!overColumn) {
+      const overIdStr = over.id as string
+      if (overIdStr.startsWith("column-")) {
+        overColumn = overIdStr.replace("column-", "")
+      } else if ((COLUMN_IDS as readonly string[]).includes(overIdStr)) {
+        overColumn = overIdStr
+      }
+    }
+    if (!overColumn || activeColumn === overColumn) return
 
     setTareasPorColumnaLocal((prev) => {
       const sourceItems = [...(prev[activeColumn] ?? [])]
@@ -270,36 +333,13 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {COLUMNAS.map((col) => (
-          <div key={col.id} className="space-y-2">
-            <div className="flex items-center gap-2 mb-2">
-              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${col.color}`}>
-                {col.label}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {tareasPorColumnaLocal[col.id]?.length ?? 0}
-              </span>
-            </div>
-            <SortableContext
-              items={tareasPorColumnaLocal[col.id]?.map((t) => t.id) ?? []}
-              strategy={verticalListSortingStrategy}
-            >
-              <div
-                className="space-y-2 min-h-[100px] rounded-lg border border-dashed border-border/50 p-2 transition-colors"
-                data-column-id={col.id}
-              >
-                {tareasPorColumnaLocal[col.id]?.map((t) => (
-                  <KanbanCard
-                    key={t.id}
-                    tarea={t}
-                    onEdit={readonly ? undefined : () => onEditTarea?.(t)}
-                  />
-                ))}
-                {(!tareasPorColumnaLocal[col.id] || tareasPorColumnaLocal[col.id].length === 0) && (
-                  <p className="text-xs text-muted-foreground text-center py-4">Sin tareas</p>
-                )}
-              </div>
-            </SortableContext>
-          </div>
+          <KanbanColumn
+            key={col.id}
+            col={col}
+            tareas={tareasPorColumnaLocal[col.id] ?? []}
+            onEdit={onEditTarea}
+            readonly={readonly}
+          />
         ))}
       </div>
 
