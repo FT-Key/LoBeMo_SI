@@ -5,6 +5,9 @@ import { FormModal } from "@/components/ui/form-modal"
 import { TableActionLink } from "@/components/ui/table-actions"
 import { SavedFilters } from "@/components/ui/saved-filters"
 import { TicketForm } from "@/components/soporte/ticket-form"
+import { Pagination, type PaginationInfo } from "@/components/ui/pagination"
+import { SearchInput } from "@/components/ui/search-input"
+import { FilterSelect } from "@/components/ui/filter-select"
 
 const ESTADOS = ["ABIERTO", "EN_PROCESO", "RESUELTO", "CERRADO"]
 
@@ -44,13 +47,6 @@ type Ticket = {
 
 type Proyecto = { id: string; nombre: string }
 
-type Pagination = {
-  page: number
-  limit: number
-  total: number
-  totalPages: number
-}
-
 export function TicketList({
   initialData,
   initialTotal,
@@ -63,7 +59,7 @@ export function TicketList({
   empleados: { id: string; nombre: string; apellido: string }[]
 }) {
   const [tickets, setTickets] = useState<Ticket[]>(initialData)
-  const [pagination, setPagination] = useState<Pagination>({
+  const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     limit: 10,
     total: initialTotal,
@@ -101,56 +97,50 @@ export function TicketList({
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-        <input
-          type="text"
+        <SearchInput
           placeholder="Buscar por título, cliente o proyecto..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={setSearch}
           onKeyDown={(e) => {
             if (e.key === "Enter") fetchTickets(1, search, proyectoId, estado, prioridad)
           }}
           className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm w-full sm:w-64"
         />
-        <select
+        <FilterSelect
           value={proyectoId}
-          onChange={(e) => {
-            setProyectoId(e.target.value)
-            fetchTickets(1, search, e.target.value, estado, prioridad)
+          onChange={(v) => {
+            setProyectoId(v)
+            fetchTickets(1, search, v, estado, prioridad)
           }}
+          options={proyectos.map((p) => ({ value: p.id, label: p.nombre }))}
+          allLabel="Todos los proyectos"
           className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
-          <option value="">Todos los proyectos</option>
-          {proyectos.map((p) => (
-            <option key={p.id} value={p.id}>{p.nombre}</option>
-          ))}
-        </select>
-        <select
+        />
+        <FilterSelect
           value={estado}
-          onChange={(e) => {
-            setEstado(e.target.value)
-            fetchTickets(1, search, proyectoId, e.target.value, prioridad)
+          onChange={(v) => {
+            setEstado(v)
+            fetchTickets(1, search, proyectoId, v, prioridad)
           }}
+          options={ESTADOS.map((e) => ({ value: e, label: ESTADO_LABELS[e] }))}
+          allLabel="Todos los estados"
           className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
-          <option value="">Todos los estados</option>
-          {ESTADOS.map((e) => (
-            <option key={e} value={e}>{ESTADO_LABELS[e]}</option>
-          ))}
-        </select>
-        <select
+        />
+        <FilterSelect
           value={prioridad}
-          onChange={(e) => {
-            setPrioridad(e.target.value)
-            fetchTickets(1, search, proyectoId, estado, e.target.value)
+          onChange={(v) => {
+            setPrioridad(v)
+            fetchTickets(1, search, proyectoId, estado, v)
           }}
+          options={[
+            { value: "BAJA", label: "Baja" },
+            { value: "MEDIA", label: "Media" },
+            { value: "ALTA", label: "Alta" },
+            { value: "CRITICA", label: "Crítica" },
+          ]}
+          allLabel="Todas las prioridades"
           className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
-          <option value="">Todas las prioridades</option>
-          <option value="BAJA">Baja</option>
-          <option value="MEDIA">Media</option>
-          <option value="ALTA">Alta</option>
-          <option value="CRITICA">Crítica</option>
-        </select>
+        />
         <button
           onClick={() => fetchTickets(1, search, proyectoId, estado, prioridad)}
           className="h-10 rounded-md bg-foreground px-4 text-sm font-medium text-background hover:bg-foreground/90"
@@ -233,29 +223,11 @@ export function TicketList({
         </table>
       </div>
 
-      {pagination.totalPages > 1 && (
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-sm">
-          <span className="text-muted-foreground">
-            Mostrando {(pagination.page - 1) * pagination.limit + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total}
-          </span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => { const np = Math.max(1, pagination.page - 1); fetchTickets(np, search, proyectoId, estado, prioridad) }}
-              disabled={pagination.page <= 1}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => { const np = Math.min(pagination.totalPages, pagination.page + 1); fetchTickets(np, search, proyectoId, estado, prioridad) }}
-              disabled={pagination.page >= pagination.totalPages}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        pagination={pagination}
+        onPageChange={(p) => fetchTickets(p, search, proyectoId, estado, prioridad)}
+        className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-sm"
+      />
 
       <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Nuevo ticket de soporte" maxWidth="max-w-xl">
         <TicketForm

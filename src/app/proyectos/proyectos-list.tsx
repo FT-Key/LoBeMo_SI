@@ -4,6 +4,9 @@ import { useState, useCallback } from "react"
 import { FormModal } from "@/components/ui/form-modal"
 import { TableActionLink } from "@/components/ui/table-actions"
 import { SavedFilters } from "@/components/ui/saved-filters"
+import { Pagination, type PaginationInfo } from "@/components/ui/pagination"
+import { SearchInput } from "@/components/ui/search-input"
+import { FilterSelect } from "@/components/ui/filter-select"
 import { NuevoProyectoForm } from "@/app/proyectos/nuevo/nuevo-proyecto-form"
 
 const ESTADOS = [
@@ -39,13 +42,6 @@ type Proyecto = {
 type Cliente = { id: string; razonSocial: string }
 type Servicio = { id: string; nombre: string }
 
-type Pagination = {
-  page: number
-  limit: number
-  total: number
-  totalPages: number
-}
-
 export function ProyectosList({
   initialData,
   initialTotal,
@@ -62,7 +58,7 @@ export function ProyectosList({
   puedeCrear?: boolean
 }) {
   const [proyectos, setProyectos] = useState<Proyecto[]>(initialData)
-  const [pagination, setPagination] = useState<Pagination>({
+  const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     limit: 10,
     total: initialTotal,
@@ -102,43 +98,30 @@ export function ProyectosList({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-4">
-        <input
-          type="text"
+        <SearchInput
           placeholder="Buscar proyecto..."
           value={search}
-          onChange={(e) => handleFilter("search", e.target.value, setSearch)}
+          onChange={(v) => handleFilter("search", v, setSearch)}
           className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm min-w-[200px]"
         />
-        <select
+        <FilterSelect
           value={estado}
-          onChange={(e) => handleFilter("estado", e.target.value, setEstado)}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
-          <option value="">Todos los estados</option>
-          {ESTADOS.map((e) => (
-            <option key={e} value={e}>{estadoLabels[e] ?? e}</option>
-          ))}
-        </select>
-        <select
+          onChange={(v) => handleFilter("estado", v, setEstado)}
+          options={ESTADOS.map((e) => ({ value: e, label: estadoLabels[e] ?? e }))}
+          allLabel="Todos los estados"
+        />
+        <FilterSelect
           value={clienteId}
-          onChange={(e) => handleFilter("clienteId", e.target.value, setClienteId)}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
-          <option value="">Todos los clientes</option>
-          {clientes.map((c) => (
-            <option key={c.id} value={c.id}>{c.razonSocial}</option>
-          ))}
-        </select>
-        <select
+          onChange={(v) => handleFilter("clienteId", v, setClienteId)}
+          options={clientes.map((c) => ({ value: c.id, label: c.razonSocial }))}
+          allLabel="Todos los clientes"
+        />
+        <FilterSelect
           value={servicioId}
-          onChange={(e) => handleFilter("servicioId", e.target.value, setServicioId)}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
-          <option value="">Todos los servicios</option>
-          {servicios.map((s) => (
-            <option key={s.id} value={s.id}>{s.nombre.replace(/_/g, " ")}</option>
-          ))}
-        </select>
+          onChange={(v) => handleFilter("servicioId", v, setServicioId)}
+          options={servicios.map((s) => ({ value: s.id, label: s.nombre.replace(/_/g, " ") }))}
+          allLabel="Todos los servicios"
+        />
         {puedeCrear && (
           <SavedFilters
             modulo="proyectos"
@@ -208,29 +191,10 @@ export function ProyectosList({
         </table>
       </div>
 
-      {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            Mostrando {(pagination.page - 1) * pagination.limit + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total}
-          </span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => { const np = Math.max(1, pagination.page - 1); fetchProyectos(np, search, estado, clienteId, servicioId) }}
-              disabled={pagination.page <= 1}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => { const np = Math.min(pagination.totalPages, pagination.page + 1); fetchProyectos(np, search, estado, clienteId, servicioId) }}
-              disabled={pagination.page >= pagination.totalPages}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        pagination={pagination}
+        onPageChange={(p) => fetchProyectos(p, search, estado, clienteId, servicioId)}
+      />
 
       <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Nuevo proyecto" maxWidth="max-w-2xl">
         <NuevoProyectoForm

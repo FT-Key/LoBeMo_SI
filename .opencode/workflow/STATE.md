@@ -54,6 +54,7 @@
 | US-049 | ✅ Done | feat/US-049-actividad-dashboard | PR #86 → dev (merged) | .opencode/workflow/history/US-049.md |
 | US-050 | ✅ Done | feat/US-050-tests | PR #87 → dev | .opencode/workflow/history/US-050.md |
 | US-051 | ✅ Done | feat/US-051-logging-estructurado | PR #88 → dev | .opencode/workflow/history/US-051.md |
+| US-052 | ✅ Done | feat/US-052-limpieza-codigo-muerto | PR pendiente → dev | .opencode/workflow/history/US-052.md |
 
 ## Backlog
 | US | Status | Detail |
@@ -67,24 +68,24 @@
 | US-048 | 📋 Backlog | Animaciones de Transición — .opencode/workflow/history/US-048.md |
 | US-049 | 📋 Backlog | Historial Actividad en Dashboard — .opencode/workflow/history/US-049.md |
 | US-050 | 📋 Backlog | Tests Automatizados — .opencode/workflow/history/US-050.md |
-| US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
-US-052 — Limpiar Código Muerto
+— (backlog vacío)
 
 ## Project Status
-✅ 51 US completadas (US-001 a US-051, US-037 duplicada).
-📋 1 US en Backlog (US-052).
+✅ 52 US completadas (US-001 a US-052, US-037 duplicada).
+📋 Backlog vacío.
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-051: Logging Estructurado (Pino)** — Completado, en PR (→ dev)
-- `src/lib/logger.ts`: pino base + helpers requestId/contexto/logApiError (RNF-12)
-- Middleware propaga `x-request-id` (trace ID) en request/response
-- 58 archivos migrados de console.* a logger (56 API routes + auth + login actions)
-- Quality gates: ✅ Tests 59/59, ✅ TypeScript, ✅ Build, ✅ Lint (archivos tocados limpios)
+**US-052: Limpiar Código Muerto** — Completado, branch pusheado (PR → dev pendiente)
+- Eliminado `src/components/navbar.tsx` (0 imports) + import muerto R2 en documentos route
+- Nuevos `src/components/ui/pagination.tsx`, `search-input.tsx`, `filter-select.tsx`
+- 10 listados refactorizados a componentes compartidos (sin cambios de comportamiento)
+- Schemas documentos unificados con `documentoBaseSchema`
+- Quality gates: ✅ Tests 59/59, ✅ TypeScript, ✅ Build, ✅ Lint (15 archivos tocados limpios)
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
 

@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { Pagination, type PaginationInfo } from "@/components/ui/pagination"
+import { SearchInput } from "@/components/ui/search-input"
 
 const NOMBRES_SERVICIOS: Record<string, string> = {
   AUDITORIA_ISO27001: "Auditoría ISO 27001",
@@ -19,13 +21,6 @@ type Servicio = {
   _count: { proyectos: number }
 }
 
-type Pagination = {
-  page: number
-  limit: number
-  total: number
-  totalPages: number
-}
-
 export function ServiciosList({
   esGerenteGeneral,
   initialData,
@@ -36,7 +31,7 @@ export function ServiciosList({
   initialTotal: number
 }) {
   const [servicios, setServicios] = useState<Servicio[]>(initialData)
-  const [pagination, setPagination] = useState<Pagination>({
+  const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     limit: 10,
     total: initialTotal,
@@ -105,12 +100,10 @@ export function ServiciosList({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-4">
-        <input
-          type="text"
+        <SearchInput
           placeholder="Buscar servicio..."
           value={search}
-          onChange={(e) => { const v = e.target.value; setSearch(v); fetchServicios(1, v) }}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm min-w-[250px]"
+          onChange={(v) => { setSearch(v); fetchServicios(1, v) }}
         />
       </div>
 
@@ -210,29 +203,10 @@ export function ServiciosList({
         </table>
       </div>
 
-      {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            Mostrando {(pagination.page - 1) * pagination.limit + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total}
-          </span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => { const np = Math.max(1, pagination.page - 1); fetchServicios(np, search) }}
-              disabled={pagination.page <= 1}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => { const np = Math.min(pagination.totalPages, pagination.page + 1); fetchServicios(np, search) }}
-              disabled={pagination.page >= pagination.totalPages}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        pagination={pagination}
+        onPageChange={(p) => fetchServicios(p, search)}
+      />
     </div>
   )
 }
