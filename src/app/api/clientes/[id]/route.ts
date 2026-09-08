@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { withRole, ROLES } from "@/lib/api-auth"
 import { validateBody } from "@/lib/api-validate"
 import { updateClienteSchema } from "@/shared/validation"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.MANAGE_CLIENTES, async (_request, ctx) => {
   const { id } = await ctx.params
@@ -73,7 +74,7 @@ export const PATCH = withRole(ROLES.MANAGE_CLIENTES, async (request, ctx, sessio
 
     return NextResponse.json(cliente)
   } catch (error) {
-    console.error("Error updating client:", error)
+    logger.error({ err: error }, "Error updating client")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -121,7 +122,7 @@ export const DELETE = withRole(ROLES.MANAGE_CLIENTES, async (_request, ctx, sess
 
     return NextResponse.json(updated)
   } catch (error) {
-    console.error("Error deactivating client:", error)
+    logger.error({ err: error }, "Error deactivating client")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

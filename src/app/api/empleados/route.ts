@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { createEmpleadoSchema } from "@/shared/validation"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const POST = withRole(ROLES.MANAGE_EMPLEADOS, async (request) => {
   try {
@@ -46,7 +47,7 @@ export const POST = withRole(ROLES.MANAGE_EMPLEADOS, async (request) => {
       { status: 201 }
     )
   } catch (error) {
-    console.error("Error creating employee:", error)
+    logger.error({ err: error }, "Error creating employee")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

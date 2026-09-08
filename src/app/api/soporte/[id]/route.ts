@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { withRole, ROLES } from "@/lib/api-auth"
 import { validateBody } from "@/lib/api-validate"
 import { updateTicketSchema } from "@/shared/validation"
+import { logger } from "@/lib/logger"
 
 const ESTADOS = ["ABIERTO", "EN_PROCESO", "RESUELTO", "CERRADO"]
 const PRIORIDADES = ["BAJA", "MEDIA", "ALTA", "CRITICA"]
@@ -27,7 +28,7 @@ export const GET = withRole(ROLES.VIEW_SOPORTE, async (_request, ctx) => {
 
     return NextResponse.json(ticket)
   } catch (error) {
-    console.error("Error getting ticket:", error)
+    logger.error({ err: error }, "Error getting ticket")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -132,7 +133,7 @@ export const PATCH = withRole(ROLES.VIEW_SOPORTE, async (request, ctx, session) 
 
     return NextResponse.json(actualizado)
   } catch (error) {
-    console.error("Error updating ticket:", error)
+    logger.error({ err: error }, "Error updating ticket")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -167,7 +168,7 @@ export const DELETE = withRole(ROLES.VIEW_SOPORTE, async (_request, ctx, session
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting ticket:", error)
+    logger.error({ err: error }, "Error deleting ticket")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

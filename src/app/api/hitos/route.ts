@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { createHitoSchema } from "@/shared/validation"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
   try {
@@ -32,7 +33,7 @@ export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {
-    console.error("Error listing hitos:", error)
+    logger.error({ err: error }, "Error listing hitos")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -69,7 +70,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
 
     return NextResponse.json(hito, { status: 201 })
   } catch (error) {
-    console.error("Error creating hito:", error)
+    logger.error({ err: error }, "Error creating hito")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

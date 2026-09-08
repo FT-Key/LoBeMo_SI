@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { prisma } from "@/lib/prisma"
 import { portalCambioClaveSchema } from "@/shared/validation/proyectos"
+import { logger } from "@/lib/logger"
 
 const JWT_SECRET = process.env.PORTAL_JWT_SECRET || process.env.AUTH_SECRET || "portal-secret-fallback"
 
@@ -70,7 +71,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ ok: true, message: "Clave actualizada correctamente" })
   } catch (error) {
-    console.error("Portal password change error:", error)
+    logger.error({ err: error }, "Portal password change error")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

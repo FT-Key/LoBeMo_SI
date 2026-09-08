@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { logger } from "@/lib/logger"
 
 export async function PATCH(
   _request: NextRequest,
@@ -34,7 +35,7 @@ export async function PATCH(
 
     return NextResponse.json(actualizada)
   } catch (error) {
-    console.error("Error updating notificacion:", error)
+    logger.error({ err: error }, "Error updating notificacion")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 }

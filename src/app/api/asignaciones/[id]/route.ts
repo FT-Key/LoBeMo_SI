@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, session) => {
   try {
@@ -41,7 +42,7 @@ export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, ses
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting asignacion:", error)
+    logger.error({ err: error }, "Error deleting asignacion")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

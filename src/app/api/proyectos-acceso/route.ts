@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma"
+import { logger } from "@/lib/logger"
 import {
   resolverDestinatario,
   createTransporter,
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
             attachments: logoAttachment,
           })
         } catch (emailError) {
-          console.error(`Error sending credentials email for project ${p.codigo}:`, emailError)
+          logger.error({ err: emailError }, `Error sending credentials email for project ${p.codigo}`)
         }
       }
     }
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
       proyectos: proyectosConClave,
     })
   } catch (error) {
-    console.error("Project access lookup error:", error)
+    logger.error({ err: error }, "Project access lookup error")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server"
+﻿import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
 import { validateBody } from "@/lib/api-validate"
 import { updateProyectoSchema } from "@/shared/validation"
+import { logger } from "@/lib/logger"
 import {
   resolverDestinatario,
   createTransporter,
@@ -51,7 +52,7 @@ export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx) => {
 
     return NextResponse.json(proyecto)
   } catch (error) {
-    console.error("Error getting project:", error)
+    logger.error({ err: error }, "Error getting project")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -108,13 +109,13 @@ export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, sessi
 
           const asunto = portalActivado
             ? `Acceso al portal de seguimiento - ${proyecto.nombre}`
-            : `Contraseña actualizada - ${proyecto.nombre}`
+            : `ContraseÃ±a actualizada - ${proyecto.nombre}`
           const titulo = portalActivado
             ? "Portal de seguimiento habilitado"
-            : "Tu contraseña fue actualizada"
+            : "Tu contraseÃ±a fue actualizada"
           const subtitulo = portalActivado
-            ? "Se habilitó el acceso al portal para tu proyecto"
-            : "Se actualizó la contraseña de acceso a tu proyecto"
+            ? "Se habilitÃ³ el acceso al portal para tu proyecto"
+            : "Se actualizÃ³ la contraseÃ±a de acceso a tu proyecto"
 
           await transport.sendMail({
             from: `"LoBeMo Seguridad" <${process.env.SMTP_USER}>`,
@@ -133,7 +134,7 @@ export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, sessi
           })
         }
       } catch (emailError) {
-        console.error("Error sending portal activation email:", emailError)
+        logger.error({ err: emailError }, "Error sending portal activation email")
       }
     }
 
@@ -149,7 +150,7 @@ export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, sessi
 
     return NextResponse.json(proyecto)
   } catch (error) {
-    console.error("Error updating project:", error)
+    logger.error({ err: error }, "Error updating project")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -191,7 +192,7 @@ export const DELETE = withRole([Rol.GERENTE_GENERAL] as Rol[], async (_request, 
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting project:", error)
+    logger.error({ err: error }, "Error deleting project")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

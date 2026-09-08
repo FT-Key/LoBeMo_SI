@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole } from "@/lib/api-auth"
 import { Rol } from "@/generated/prisma/enums"
+import { logger } from "@/lib/logger"
 
 const ALL_ROLES = Object.values(Rol)
 
@@ -33,7 +34,7 @@ export const GET = withRole(ALL_ROLES, async (request) => {
 
     return NextResponse.json({ data: registros })
   } catch (error) {
-    console.error("Error fetching registros de horas:", error)
+    logger.error({ err: error }, "Error fetching registros de horas")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -80,7 +81,7 @@ export const POST = withRole(ALL_ROLES, async (request, _ctx, session) => {
 
     return NextResponse.json({ data: registro }, { status: 201 })
   } catch (error) {
-    console.error("Error creating registro de horas:", error)
+    logger.error({ err: error }, "Error creating registro de horas")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

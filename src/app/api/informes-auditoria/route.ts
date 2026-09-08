@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { createInformeSchema } from "@/shared/validation"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.VIEW_METRICAS, async (request) => {
   const { searchParams } = new URL(request.url)
@@ -93,7 +94,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
 
     return NextResponse.json(informe, { status: 201 })
   } catch (error) {
-    console.error("Error creating informe de auditoría:", error)
+    logger.error({ err: error }, "Error creating informe de auditoría")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

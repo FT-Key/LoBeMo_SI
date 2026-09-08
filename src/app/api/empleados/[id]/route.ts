@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"
 import { withRole, ROLES } from "@/lib/api-auth"
 import { validateBody } from "@/lib/api-validate"
 import { updateEmpleadoSchema } from "@/shared/validation"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.MANAGE_EMPLEADOS, async (_request, ctx) => {
   try {
@@ -28,7 +29,7 @@ export const GET = withRole(ROLES.MANAGE_EMPLEADOS, async (_request, ctx) => {
 
     return NextResponse.json(empleado)
   } catch (error) {
-    console.error("Error fetching employee:", error)
+    logger.error({ err: error }, "Error fetching employee")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -90,7 +91,7 @@ export const PUT = withRole(ROLES.MANAGE_EMPLEADOS, async (request, ctx, session
       rol: empleado.rol,
     })
   } catch (error) {
-    console.error("Error updating employee:", error)
+    logger.error({ err: error }, "Error updating employee")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -141,7 +142,7 @@ export const DELETE = withRole(ROLES.MANAGE_EMPLEADOS, async (_request, ctx, ses
 
     return NextResponse.json(updated)
   } catch (error) {
-    console.error("Error toggling employee status:", error)
+    logger.error({ err: error }, "Error toggling employee status")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

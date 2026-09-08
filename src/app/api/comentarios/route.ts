@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole } from "@/lib/api-auth"
 import { Rol } from "@/generated/prisma/enums"
+import { logger } from "@/lib/logger"
 
 const ALL_ROLES = Object.values(Rol)
 
@@ -44,7 +45,7 @@ export const GET = withRole(ALL_ROLES, async (request) => {
 
     return NextResponse.json({ data: comentarios })
   } catch (error) {
-    console.error("Error fetching comentarios:", error)
+    logger.error({ err: error }, "Error fetching comentarios")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -124,7 +125,7 @@ export const POST = withRole(ALL_ROLES, async (request, _ctx, session) => {
 
     return NextResponse.json({ data: comentario }, { status: 201 })
   } catch (error) {
-    console.error("Error creating comentario:", error)
+    logger.error({ err: error }, "Error creating comentario")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { createPropuestaSchema } from "@/shared/validation"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.CREATE_PROPUESTAS, async (request) => {
   try {
@@ -60,7 +61,7 @@ export const GET = withRole(ROLES.CREATE_PROPUESTAS, async (request) => {
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {
-    console.error("Error listing propuestas:", error)
+    logger.error({ err: error }, "Error listing propuestas")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -137,7 +138,7 @@ export const POST = withRole(ROLES.CREATE_PROPUESTAS, async (request, _ctx, sess
 
     return NextResponse.json(propuesta, { status: 201 })
   } catch (error) {
-    console.error("Error creating propuesta:", error)
+    logger.error({ err: error }, "Error creating propuesta")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

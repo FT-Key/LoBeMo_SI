@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
 import { uploadToR2, isR2Configured } from "@/lib/r2"
+import { logger } from "@/lib/logger"
 
 const MIMES_PERMITIDOS = [
   "application/pdf",
@@ -115,7 +116,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
 
     return NextResponse.json(documento, { status: 201 })
   } catch (error) {
-    console.error("Error uploading documento:", error)
+    logger.error({ err: error }, "Error uploading documento")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

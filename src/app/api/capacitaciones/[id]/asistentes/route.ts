@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(
   [Rol.CAPACITADOR, Rol.GERENTE_GENERAL, Rol.CISO] as Rol[],
@@ -18,7 +19,7 @@ export const GET = withRole(
 
       return NextResponse.json({ data: asistentes })
     } catch (error) {
-      console.error("Error listing asistentes:", error)
+      logger.error({ err: error }, "Error listing asistentes")
       return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
     }
   }
@@ -73,7 +74,7 @@ export const POST = withRole(
 
       return NextResponse.json(asistente, { status: 201 })
     } catch (error) {
-      console.error("Error creating asistente:", error)
+      logger.error({ err: error }, "Error creating asistente")
       return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
     }
   }

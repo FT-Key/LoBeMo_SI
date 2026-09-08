@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.VIEW_DASHBOARD, async (request) => {
   try {
@@ -86,7 +87,7 @@ export const GET = withRole(ROLES.VIEW_DASHBOARD, async (request) => {
       },
     })
   } catch (error) {
-    console.error("Error fetching dashboard data:", error)
+    logger.error({ err: error }, "Error fetching dashboard data")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

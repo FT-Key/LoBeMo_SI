@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole } from "@/lib/api-auth"
 import { Rol } from "@/generated/prisma/enums"
+import { logger } from "@/lib/logger"
 
 const ALL_ROLES = Object.values(Rol)
 
@@ -47,7 +48,7 @@ export const PATCH = withRole(ALL_ROLES, async (request, ctx, session) => {
 
     return NextResponse.json({ data: updated })
   } catch (error) {
-    console.error("Error stopping registro de horas:", error)
+    logger.error({ err: error }, "Error stopping registro de horas")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -78,7 +79,7 @@ export const DELETE = withRole(ALL_ROLES, async (request, ctx, session) => {
 
     return NextResponse.json({ data: { deleted: true } })
   } catch (error) {
-    console.error("Error deleting registro de horas:", error)
+    logger.error({ err: error }, "Error deleting registro de horas")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

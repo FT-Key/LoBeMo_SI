@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole([...ROLES.VIEW_DASHBOARD, Rol.VENTAS, Rol.SOPORTE_TECNICO, Rol.CAPACITADOR, Rol.PENTESTER], async (_request, _ctx, session) => {
   try {
@@ -90,7 +91,7 @@ export const GET = withRole([...ROLES.VIEW_DASHBOARD, Rol.VENTAS, Rol.SOPORTE_TE
 
     return NextResponse.json({ eventos })
   } catch (error) {
-    console.error("Error getting calendario:", error)
+    logger.error({ err: error }, "Error getting calendario")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

@@ -2,6 +2,7 @@ import NextAuth, { type User } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
+import { logger } from "@/lib/logger"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
@@ -36,7 +37,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             rol: empleado.rol,
           }
         } catch (error) {
-          console.error("[auth] authorize error:", error)
+          logger.error({ err: error }, "[auth] authorize error")
           return null
         }
       },
