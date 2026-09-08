@@ -61,6 +61,7 @@
 | US-056 | ✅ Done | feat/US-056-certificados-pdf | PR #93 → dev | .opencode/workflow/history/US-056.md |
 | US-057 | ✅ Done | feat/US-057-navbar-accesibilidad | PR #94 → dev | .opencode/workflow/history/US-057.md |
 | US-058 | ✅ Done | feat/US-058-evidencia-pentesting-fix | PR #95 → dev | .opencode/workflow/history/US-058.md |
+| US-064 | 🔄 In Progress | fix/US-064-kanban-gantt-fixes | PR #96 → dev | .opencode/workflow/history/US-064.md |
 
 ## Backlog
 | US | Trello# | Tipo | Prioridad | Detail |
@@ -72,18 +73,20 @@
 | US-063 | 63 | QA | — | Auditoría completa navbar y navegación — verificar que todas las funcionalidades sean accesibles desde el menú |
 
 ## Current
-— (backlog vacío)
+US-064: Kanban/Gantt fixes — PR #96 → dev (pendiente merge)
 
 ## Project Status
 ✅ 58 US completadas (US-001 a US-058, US-037 duplicada).
+🔄 US-064 en progreso (kanban/gantt fixes).
 📋 5 tareas en backlog (US-059 a US-063).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-058: Evidencia pentesting — fixes** — Completado, PR #95 → dev
-- Imágenes: `object-cover` → `object-contain` (sin recorte de evidencia)
-- PDFs: label diferenciado "Abrir PDF" en nueva pestaña
-- Borrado R2: cascade limpio de evidencias al eliminar hallazgo (antes quedaban huérfanos)
-- Iconos por tipo de archivo (🖼 📄 📝 📊 📎)
+**US-064: Kanban/Gantt fixes** — PR #96 → dev
+- Layout: kanban/gantt toman ancho completo en proyecto-detalle
+- Kanban: fix drag-and-drop cross-column (track source column, resolve over target)
+- Kanban: readonly deshabilita drag (previene 400 en proyectos cerrados)
+- Gantt: increase label width, row height, bar height, text sizes
+- Seed: tareas con createdAt/fechaLimite variados (Gantt realista)
