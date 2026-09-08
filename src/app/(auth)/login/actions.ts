@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { cookies } from "next/headers"
 import { encode } from "@auth/core/jwt"
+import { logger } from "@/lib/logger"
 
 export async function loginAction(
   _prevState: unknown,
@@ -12,26 +13,26 @@ export async function loginAction(
   const email = formData.get("email") as string
   const password = formData.get("password") as string
 
-  console.log("[loginAction] email:", email)
+  logger.debug({ email }, "[loginAction] intento de login")
 
   if (!email || !password) {
-    console.log("[loginAction] missing fields")
+    logger.debug("[loginAction] campos faltantes")
     return { error: "Email y contraseña son requeridos" }
   }
 
   const empleado = await prisma.empleado.findUnique({ where: { email } })
   if (!empleado || !empleado.activo) {
-    console.log("[loginAction] user not found or inactive")
+    logger.debug({ email }, "[loginAction] usuario no encontrado o inactivo")
     return { error: "Email o contraseña incorrectos" }
   }
 
   const isValid = await bcrypt.compare(password, empleado.password)
   if (!isValid) {
-    console.log("[loginAction] invalid password")
+    logger.warn({ email }, "[loginAction] credenciales invalidas")
     return { error: "Email o contraseña incorrectos" }
   }
 
-  console.log("[loginAction] password valid, creating session token")
+  logger.debug("[loginAction] credenciales validas, creando sesion")
 
   const token = {
     sub: empleado.id,
@@ -51,7 +52,7 @@ export async function loginAction(
     maxAge: 30 * 24 * 60 * 60,
   })
 
-  console.log("[loginAction] encodedToken length:", encodedToken.length)
+  logger.debug("[loginAction] token de sesion generado")
 
   const cookieJar = await cookies()
   cookieJar.set(cookieName, encodedToken, {
@@ -62,7 +63,7 @@ export async function loginAction(
     maxAge: 30 * 24 * 60 * 60,
   })
 
-  console.log("[loginAction] cookie set, returning success")
+  logger.debug("[loginAction] sesion creada con exito")
 
   return { success: true }
 }

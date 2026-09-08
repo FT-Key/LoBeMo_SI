@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx) => {
   try {
@@ -19,7 +20,7 @@ export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx) => {
 
     return NextResponse.json(hito)
   } catch (error) {
-    console.error("Error getting hito:", error)
+    logger.error({ err: error }, "Error getting hito")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -90,7 +91,7 @@ export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, sessi
 
     return NextResponse.json(hitoActualizado)
   } catch (error) {
-    console.error("Error updating hito:", error)
+    logger.error({ err: error }, "Error updating hito")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -129,7 +130,7 @@ export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, ses
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting hito:", error)
+    logger.error({ err: error }, "Error deleting hito")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

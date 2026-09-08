@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server"
 import jwt from "jsonwebtoken"
 import { prisma } from "@/lib/prisma"
+import { logger } from "@/lib/logger"
 
 const JWT_SECRET = process.env.PORTAL_JWT_SECRET || process.env.AUTH_SECRET || "portal-secret-fallback"
 
@@ -114,7 +115,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(proyecto)
   } catch (error) {
-    console.error("Portal project fetch error:", error)
+    logger.error({ err: error }, "Portal project fetch error")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

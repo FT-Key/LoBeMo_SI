@@ -53,6 +53,7 @@
 | US-048 | ✅ Done | feat/US-048-transiciones | PR #85 → dev (merged) | .opencode/workflow/history/US-048.md |
 | US-049 | ✅ Done | feat/US-049-actividad-dashboard | PR #86 → dev (merged) | .opencode/workflow/history/US-049.md |
 | US-050 | ✅ Done | feat/US-050-tests | PR #87 → dev | .opencode/workflow/history/US-050.md |
+| US-051 | ✅ Done | feat/US-051-logging-estructurado | PR → dev | .opencode/workflow/history/US-051.md |
 
 ## Backlog
 | US | Status | Detail |
@@ -66,24 +67,24 @@
 | US-048 | 📋 Backlog | Animaciones de Transición — .opencode/workflow/history/US-048.md |
 | US-049 | 📋 Backlog | Historial Actividad en Dashboard — .opencode/workflow/history/US-049.md |
 | US-050 | 📋 Backlog | Tests Automatizados — .opencode/workflow/history/US-050.md |
-| US-051 | 📋 Backlog | Logging Estructurado (Pino) — .opencode/workflow/history/US-051.md |
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
-US-051 — Logging Estructurado (Pino)
+US-052 — Limpiar Código Muerto
 
 ## Project Status
-✅ 50 US completadas (US-001 a US-050, US-037 duplicada).
-📋 2 US en Backlog (US-051 a US-052).
+✅ 51 US completadas (US-001 a US-051, US-037 duplicada).
+📋 1 US en Backlog (US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-050: Tests Automatizados** — Completado, en PR (→ dev)
-- Vitest 3 + coverage v8, config con alias @, scripts test/test:run/test:coverage
-- 54 tests unitarios en 7 archivos (utils, email layout, proyecto-codigo con prisma mock, validaciones auth/clientes/tareas/proyectos)
-- Quality gates: ✅ Tests 54/54, ✅ TypeScript, ✅ Build, ✅ Lint (archivos tocados limpios)
+**US-051: Logging Estructurado (Pino)** — Completado, en PR (→ dev)
+- `src/lib/logger.ts`: pino base + helpers requestId/contexto/logApiError (RNF-12)
+- Middleware propaga `x-request-id` (trace ID) en request/response
+- 58 archivos migrados de console.* a logger (56 API routes + auth + login actions)
+- Quality gates: ✅ Tests 59/59, ✅ TypeScript, ✅ Build, ✅ Lint (archivos tocados limpios)
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
 

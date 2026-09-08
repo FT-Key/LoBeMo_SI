@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server"
+﻿import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { createProyectoSchema } from "@/shared/validation"
 import { generarCodigoProyecto } from "@/lib/proyecto-codigo"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 import {
   resolverDestinatario,
   createTransporter,
@@ -73,7 +74,7 @@ export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
       },
     })
   } catch (error) {
-    console.error("Error listing projects:", error)
+    logger.error({ err: error }, "Error listing projects")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -144,7 +145,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
           })
         }
       } catch (emailError) {
-        console.error("Error sending portal welcome email:", emailError)
+        logger.error({ err: emailError }, "Error sending portal welcome email")
       }
     }
 
@@ -169,7 +170,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
 
     return NextResponse.json(proyecto, { status: 201 })
   } catch (error) {
-    console.error("Error creating project:", error)
+    logger.error({ err: error }, "Error creating project")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

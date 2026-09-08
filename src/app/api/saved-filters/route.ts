@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole } from "@/lib/api-auth"
 import { Rol } from "@/generated/prisma/enums"
+import { logger } from "@/lib/logger"
 
 const ALL_ROLES = Object.values(Rol)
 
@@ -34,7 +35,7 @@ export const GET = withRole(ALL_ROLES, async (request, _ctx, session) => {
 
     return NextResponse.json({ data: filters })
   } catch (error) {
-    console.error("Error fetching saved filters:", error)
+    logger.error({ err: error }, "Error fetching saved filters")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -103,7 +104,7 @@ export const POST = withRole(ALL_ROLES, async (request, _ctx, session) => {
 
     return NextResponse.json({ data: filter }, { status: 201 })
   } catch (error) {
-    console.error("Error creating saved filter:", error)
+    logger.error({ err: error }, "Error creating saved filter")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -145,7 +146,7 @@ export const DELETE = withRole(ALL_ROLES, async (request, _ctx, session) => {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting saved filter:", error)
+    logger.error({ err: error }, "Error deleting saved filter")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

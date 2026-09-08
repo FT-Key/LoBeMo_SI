@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
 import { deleteFromR2, isR2Configured } from "@/lib/r2"
+import { logger } from "@/lib/logger"
 
 async function puedeAccederDocumento(usuarioId: string, proyectoId: string, rol: Rol) {
   if (ROLES.MANAGE_PROYECTOS.includes(rol)) return true
@@ -42,7 +43,7 @@ export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, sessio
 
     return NextResponse.json(documento)
   } catch (error) {
-    console.error("Error getting documento:", error)
+    logger.error({ err: error }, "Error getting documento")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -77,7 +78,7 @@ export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, ses
       try {
         await deleteFromR2(documento.storageKey)
       } catch (r2Error) {
-        console.error("Error deleting from R2 (continuing with DB delete):", r2Error)
+        logger.error({ err: r2Error }, "Error deleting from R2 (continuing with DB delete)")
       }
     }
 
@@ -100,7 +101,7 @@ export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, ses
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting documento:", error)
+    logger.error({ err: error }, "Error deleting documento")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

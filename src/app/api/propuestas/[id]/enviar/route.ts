@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES } from "@/lib/api-auth"
 import { createTransporter, getLogoAttachment, propuestaEmail } from "@/lib/email-templates"
+import { logger } from "@/lib/logger"
 
 export const POST = withRole(ROLES.CREATE_PROPUESTAS, async (_request, ctx, session) => {
   try {
@@ -72,7 +73,7 @@ export const POST = withRole(ROLES.CREATE_PROPUESTAS, async (_request, ctx, sess
 
     return NextResponse.json({ success: true, message: "Propuesta enviada por email" })
   } catch (error) {
-    console.error("Error sending propuesta email:", error)
+    logger.error({ err: error }, "Error sending propuesta email")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

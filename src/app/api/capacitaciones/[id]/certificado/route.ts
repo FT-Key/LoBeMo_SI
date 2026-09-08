@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const POST = withRole(ROLES.MANAGE_CAPACITACIONES, async (request, ctx, session) => {
   try {
@@ -59,7 +60,7 @@ export const POST = withRole(ROLES.MANAGE_CAPACITACIONES, async (request, ctx, s
 
     return NextResponse.json(certificado, { status: 201 })
   } catch (error) {
-    console.error("Error generating certificado:", error)
+    logger.error({ err: error }, "Error generating certificado")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

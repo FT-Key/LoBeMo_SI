@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { createClienteSchema } from "@/shared/validation"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 const SECTORES = [
   "SALUD", "CONTABLE_JURIDICO", "COMERCIAL", "LOGISTICA",
@@ -97,7 +98,7 @@ export const POST = withRole(ROLES.MANAGE_CLIENTES, async (request, _ctx, sessio
 
     return NextResponse.json(cliente, { status: 201 })
   } catch (error) {
-    console.error("Error creating client:", error)
+    logger.error({ err: error }, "Error creating client")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

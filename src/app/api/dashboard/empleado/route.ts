@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole } from "@/lib/api-auth"
 import { Rol } from "@/generated/prisma/enums"
+import { logger } from "@/lib/logger"
 
 const ALL_ROLES = Object.values(Rol)
 
@@ -71,7 +72,7 @@ export const GET = withRole(ALL_ROLES, async (_request, _ctx, session) => {
       },
     })
   } catch (error) {
-    console.error("Error fetching employee dashboard:", error)
+    logger.error({ err: error }, "Error fetching employee dashboard")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

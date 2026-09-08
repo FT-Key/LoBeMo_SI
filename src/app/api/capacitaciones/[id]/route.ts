@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
 import { validateBody } from "@/lib/api-validate"
 import { updateCapacitacionSchema } from "@/shared/validation"
+import { logger } from "@/lib/logger"
 
 const ESTADOS = ["PLANIFICADA", "EN_CURSO", "COMPLETADA", "CANCELADA"]
 
@@ -31,7 +32,7 @@ export const GET = withRole(
 
       return NextResponse.json(capacitacion)
     } catch (error) {
-      console.error("Error getting capacitacion:", error)
+      logger.error({ err: error }, "Error getting capacitacion")
       return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
     }
   }
@@ -101,7 +102,7 @@ export const PATCH = withRole(
 
       return NextResponse.json(actualizada)
     } catch (error) {
-      console.error("Error updating capacitacion:", error)
+      logger.error({ err: error }, "Error updating capacitacion")
       return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
     }
   }
@@ -145,7 +146,7 @@ export const DELETE = withRole(
 
       return NextResponse.json({ success: true })
     } catch (error) {
-      console.error("Error deleting capacitacion:", error)
+      logger.error({ err: error }, "Error deleting capacitacion")
       return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
     }
   }

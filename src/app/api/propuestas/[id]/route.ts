@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { updatePropuestaSchema } from "@/shared/validation"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.CREATE_PROPUESTAS, async (_request, ctx) => {
   try {
@@ -42,7 +43,7 @@ export const GET = withRole(ROLES.CREATE_PROPUESTAS, async (_request, ctx) => {
 
     return NextResponse.json(propuesta)
   } catch (error) {
-    console.error("Error getting propuesta:", error)
+    logger.error({ err: error }, "Error getting propuesta")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -135,7 +136,7 @@ export const PATCH = withRole(ROLES.CREATE_PROPUESTAS, async (request, ctx, sess
 
     return NextResponse.json(updated)
   } catch (error) {
-    console.error("Error updating propuesta:", error)
+    logger.error({ err: error }, "Error updating propuesta")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

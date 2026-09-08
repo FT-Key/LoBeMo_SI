@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx) => {
   const { id } = await ctx.params
@@ -58,7 +59,7 @@ export const PATCH = withRole([Rol.GERENTE_GENERAL] as Rol[], async (request, ct
 
     return NextResponse.json(servicio)
   } catch (error) {
-    console.error("Error updating service:", error)
+    logger.error({ err: error }, "Error updating service")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -101,7 +102,7 @@ export const DELETE = withRole([Rol.GERENTE_GENERAL] as Rol[], async (_request, 
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting service:", error)
+    logger.error({ err: error }, "Error deleting service")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

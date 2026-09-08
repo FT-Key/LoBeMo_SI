@@ -4,6 +4,7 @@ import { validateBody } from "@/lib/api-validate"
 import { createTareaSchema } from "@/shared/validation"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
 import { createTransporter, getLogoAttachment, tareaAsignada } from "@/lib/email-templates"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
   try {
@@ -44,7 +45,7 @@ export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {
-    console.error("Error listing tareas:", error)
+    logger.error({ err: error }, "Error listing tareas")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -153,7 +154,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
           })
         }
       } catch (emailError) {
-        console.error("Error sending task assignment email:", emailError)
+        logger.error({ err: emailError }, "Error sending task assignment email")
       }
     }
 
@@ -169,7 +170,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
 
     return NextResponse.json(tarea, { status: 201 })
   } catch (error) {
-    console.error("Error creating tarea:", error)
+    logger.error({ err: error }, "Error creating tarea")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

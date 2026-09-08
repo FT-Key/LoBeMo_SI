@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.VIEW_METRICAS, async (_request, ctx) => {
   try {
@@ -97,7 +98,7 @@ export const GET = withRole(ROLES.VIEW_METRICAS, async (_request, ctx) => {
       })),
     })
   } catch (error) {
-    console.error("Error getting metricas:", error)
+    logger.error({ err: error }, "Error getting metricas")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

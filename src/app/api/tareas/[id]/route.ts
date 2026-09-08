@@ -4,6 +4,7 @@ import { validateBody } from "@/lib/api-validate"
 import { updateTareaSchema } from "@/shared/validation"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
 import { createTransporter, getLogoAttachment, tareaAsignada } from "@/lib/email-templates"
+import { logger } from "@/lib/logger"
 
 const ESTADOS_VALIDOS = ["PENDIENTE", "EN_PROGRESO", "COMPLETADA", "CANCELADA"]
 
@@ -53,7 +54,7 @@ export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, sessio
 
     return NextResponse.json(tarea)
   } catch (error) {
-    console.error("Error getting tarea:", error)
+    logger.error({ err: error }, "Error getting tarea")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -181,7 +182,7 @@ export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, sessi
             })
           }
         } catch (emailError) {
-          console.error("Error sending critical task email:", emailError)
+          logger.error({ err: emailError }, "Error sending critical task email")
         }
       }
     }
@@ -202,7 +203,7 @@ export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, sessi
 
     return NextResponse.json(tareaActualizada)
   } catch (error) {
-    console.error("Error updating tarea:", error)
+    logger.error({ err: error }, "Error updating tarea")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -241,7 +242,7 @@ export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, ses
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting tarea:", error)
+    logger.error({ err: error }, "Error deleting tarea")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

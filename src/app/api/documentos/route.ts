@@ -4,6 +4,7 @@ import { validateBody } from "@/lib/api-validate"
 import { createDocumentoSchema, createDocumentoBase64Schema } from "@/shared/validation"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
 import { deleteFromR2, isR2Configured } from "@/lib/r2"
+import { logger } from "@/lib/logger"
 
 const MIMES_PERMITIDOS = [
   "application/pdf",
@@ -87,7 +88,7 @@ export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessio
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {
-    console.error("Error listing documentos:", error)
+    logger.error({ err: error }, "Error listing documentos")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -205,7 +206,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
       { status: 400 }
     )
   } catch (error) {
-    console.error("Error creating documento:", error)
+    logger.error({ err: error }, "Error creating documento")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

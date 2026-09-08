@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { updateInformeSchema } from "@/shared/validation"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 const ESTADOS_VALIDOS = ["BORRADOR", "COMPLETADO"]
 
@@ -40,7 +41,7 @@ export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, sessio
 
     return NextResponse.json(informe)
   } catch (error) {
-    console.error("Error getting informe de auditoría:", error)
+    logger.error({ err: error }, "Error getting informe de auditoría")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -142,7 +143,7 @@ export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, sessi
 
     return NextResponse.json(informeActualizado)
   } catch (error) {
-    console.error("Error updating informe de auditoría:", error)
+    logger.error({ err: error }, "Error updating informe de auditoría")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -187,7 +188,7 @@ export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, ses
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting informe de auditoría:", error)
+    logger.error({ err: error }, "Error deleting informe de auditoría")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

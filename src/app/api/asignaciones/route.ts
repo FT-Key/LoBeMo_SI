@@ -4,6 +4,7 @@ import { validateBody } from "@/lib/api-validate"
 import { createAsignacionSchema } from "@/shared/validation"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
 import { createTransporter, getLogoAttachment, asignacionProyecto } from "@/lib/email-templates"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
   try {
@@ -36,7 +37,7 @@ export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {
-    console.error("Error listing asignaciones:", error)
+    logger.error({ err: error }, "Error listing asignaciones")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -162,7 +163,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
         })
       }
     } catch (emailError) {
-      console.error("Error sending assignment email:", emailError)
+      logger.error({ err: emailError }, "Error sending assignment email")
     }
 
     await prisma.auditLog.create({
@@ -177,7 +178,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
 
     return NextResponse.json(asignacion, { status: 201 })
   } catch (error) {
-    console.error("Error creating asignacion:", error)
+    logger.error({ err: error }, "Error creating asignacion")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

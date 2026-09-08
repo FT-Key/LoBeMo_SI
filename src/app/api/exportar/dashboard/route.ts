@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES } from "@/lib/api-auth"
 import ExcelJS from "exceljs"
+import { logger } from "@/lib/logger"
 
 const ESTADO_LABELS: Record<string, string> = {
   RELEVAMIENTO: "Relevamiento",
@@ -125,7 +126,7 @@ export const GET = withRole(ROLES.VIEW_DASHBOARD, async (request) => {
       },
     })
   } catch (error) {
-    console.error("Error exporting dashboard:", error)
+    logger.error({ err: error }, "Error exporting dashboard")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

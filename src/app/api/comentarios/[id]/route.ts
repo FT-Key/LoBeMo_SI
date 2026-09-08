@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole } from "@/lib/api-auth"
 import { Rol } from "@/generated/prisma/enums"
+import { logger } from "@/lib/logger"
 
 const ALL_ROLES = Object.values(Rol)
 
@@ -39,7 +40,7 @@ export const DELETE = withRole(ALL_ROLES, async (request, ctx, session) => {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting comentario:", error)
+    logger.error({ err: error }, "Error deleting comentario")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

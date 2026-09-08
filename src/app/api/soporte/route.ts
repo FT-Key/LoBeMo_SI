@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { createTicketSchema } from "@/shared/validation"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.VIEW_SOPORTE, async (request) => {
   try {
@@ -46,7 +47,7 @@ export const GET = withRole(ROLES.VIEW_SOPORTE, async (request) => {
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {
-    console.error("Error listing tickets:", error)
+    logger.error({ err: error }, "Error listing tickets")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })
@@ -102,7 +103,7 @@ export const POST = withRole(ROLES.VIEW_SOPORTE, async (request, _ctx, session) 
 
     return NextResponse.json(ticket, { status: 201 })
   } catch (error) {
-    console.error("Error creating ticket:", error)
+    logger.error({ err: error }, "Error creating ticket")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
 })

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 export const PATCH = withRole(
   ROLES.MANAGE_CAPACITACIONES,
@@ -59,7 +60,7 @@ export const PATCH = withRole(
 
       return NextResponse.json(actualizado)
     } catch (error) {
-      console.error("Error updating asistente:", error)
+      logger.error({ err: error }, "Error updating asistente")
       return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
     }
   }
@@ -93,7 +94,7 @@ export const DELETE = withRole(
 
       return NextResponse.json({ success: true })
     } catch (error) {
-      console.error("Error deleting asistente:", error)
+      logger.error({ err: error }, "Error deleting asistente")
       return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
     }
   }

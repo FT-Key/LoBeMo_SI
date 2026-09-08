@@ -10,6 +10,7 @@ import {
   cambioEstado,
 } from "@/lib/email-templates"
 import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 interface TransicionValida {
   desde: string[]
@@ -229,7 +230,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, sessio
             })
           }
         } catch (emailError) {
-          console.error("Error sending portal notification email:", emailError)
+          logger.error({ err: emailError }, "Error sending portal notification email")
         }
       }
     }
@@ -256,7 +257,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, sessio
 
     return NextResponse.json(proyectoActualizado)
   } catch (error) {
-    console.error("Error en transicion de estado:", error)
+    logger.error({ err: error }, "Error en transicion de estado")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

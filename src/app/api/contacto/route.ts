@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createContactoSchema, SERVICIOS_CONTACTO_LABELS } from "@/shared/validation/contacto"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { logger } from "@/lib/logger"
 import {
   resolverDestinatario,
   createTransporter,
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
     const contactEmail = process.env.CONTACT_EMAIL
 
     if (!transporter || !contactEmail) {
-      console.error("[contacto] Faltan variables de entorno SMTP_USER, SMTP_PASS o CONTACT_EMAIL")
+      logger.error("[contacto] Faltan variables de entorno SMTP_USER, SMTP_PASS o CONTACT_EMAIL")
       return NextResponse.json(
         { error: "Servicio de email no configurado. Contactanos directamente a info@lobemo.com" },
         { status: 503 },
@@ -93,7 +94,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, message: "Mensaje enviado correctamente" })
   } catch (error) {
-    console.error("[contacto] Error:", error)
+    logger.error({ err: error }, "[contacto] Error")
     return NextResponse.json(
       { error: "Error al enviar el mensaje. Intentá nuevamente." },
       { status: 500 },
