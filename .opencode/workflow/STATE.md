@@ -57,11 +57,11 @@
 | US-052 | ✅ Done | feat/US-052-limpieza-codigo-muerto | PR #89 → dev | .opencode/workflow/history/US-052.md |
 | US-053 | ✅ Done | fix/US-53-rutas-rotas-busqueda-csp | PR #90 → dev (merged) | .opencode/workflow/history/US-053.md |
 | US-054 | ✅ Done | feat/US-054-fix-comentarios-seed | PR #91 → dev (merged) | .opencode/workflow/history/US-054.md |
+| US-055 | ✅ Done | feat/US-055-servicios-modal-crear | PR #92 → dev | .opencode/workflow/history/US-055.md |
 
 ## Backlog
 | US | Trello# | Tipo | Prioridad | Detail |
 |----|---------|------|-----------|--------|
-| US-055 | 55 | Feature | MEDIO | Servicios: Modal + Crear nuevo — migrar edición inline a FormModal, agregar POST con warning de precaución |
 | US-056 | 56 | Feature | BAJO | Certificados de capacitación: Generación PDF profesional con diseño y link de descarga |
 | US-057 | 57 | Fix | BAJO | Kanban y Gantt: Verificar accesibilidad desde navbar/menú de navegación |
 | US-058 | 58 | Fix | BAJO | Evidencia pentesting: tamaño fijo imágenes, PDFs en nueva pestaña, verificar borrado de R2 |
@@ -75,14 +75,15 @@
 — (backlog vacío)
 
 ## Project Status
-✅ 54 US completadas (US-001 a US-054, US-037 duplicada).
-📋 9 tareas en backlog (US-055 a US-063).
+✅ 55 US completadas (US-001 a US-055, US-037 duplicada).
+📋 8 tareas en backlog (US-056 a US-063).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-054: Fix API comentarios 500 + Seed roles/permisos** — Completado, PR #91 → dev (merged)
-- Fix POST `/api/comentarios` FK validation (error 500)
-- Seed: empleado VENTAS, proyecto activo, comentarios de ejemplo
+**US-055: Servicios Modal + Crear Nuevo** — Completado, PR #92 → dev (abierto)
+- POST `/api/servicios` con validación Zod y audit log
+- NuevoServicioForm con FormModal (patrón clientes/empleados)
+- Warning de precaución sobre nombre único
 - Quality gates: ✅ Typecheck, ✅ Build
