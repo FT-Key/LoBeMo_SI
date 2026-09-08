@@ -164,12 +164,6 @@ function KanbanColumn({
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: `column-${col.id}` })
 
-  useEffect(() => {
-    if (isOver) {
-      console.log(`[COL] ${col.id} isOver=true, tareas=${tareas.length}`)
-    }
-  }, [isOver, col.id, tareas.length])
-
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2 mb-2">
@@ -228,14 +222,8 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
   )
 
   useEffect(() => {
-    console.log("[KANBAN] tareas prop changed, rebuilding state. readonly=", readonly)
-    console.log("[KANBAN] tareas:", tareas.map(t => `${t.titulo}(${t.estado})`))
     setTareasPorColumnaLocal(buildTareasPorColumna(tareas))
-  }, [tareas, readonly])
-
-  useEffect(() => {
-    console.log("[KANBAN] local state:", Object.entries(tareasPorColumnaLocal).map(([k, v]) => `${k}: ${v.length} tareas`))
-  }, [tareasPorColumnaLocal])
+  }, [tareas])
 
   const activeTarea = activeId
     ? tareas.find((t) => t.id === activeId)
@@ -243,21 +231,13 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
     : null
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
-    const taskId = event.active.id as string
-    console.log(`[DRAG_START] active.id=${taskId}`)
-    console.log(`[DRAG_START] state:`, Object.entries(stateRef.current).map(([k, v]) => `${k}: ${v.map(t => t.id).join(',')}`))
-    setActiveId(taskId)
+    setActiveId(event.active.id as string)
   }, [])
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
-    console.log(`[DRAG_END] active.id=${active.id}, over.id=${over?.id ?? 'NULL'}`)
-    console.log(`[DRAG_END] over?.data:`, over ? JSON.stringify(over.data) : 'N/A')
     setActiveId(null)
-    if (!over) {
-      console.log("[DRAG_END] ABORT: over is null")
-      return
-    }
+    if (!over) return
 
     const currentState = stateRef.current
 
@@ -266,31 +246,17 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
       const overIdStr = over.id as string
       if (overIdStr.startsWith("column-")) {
         overColumn = overIdStr.replace("column-", "")
-        console.log(`[DRAG_END] over.id="${overIdStr}" -> column droppable -> overColumn="${overColumn}"`)
       } else if ((COLUMN_IDS as readonly string[]).includes(overIdStr)) {
         overColumn = overIdStr
-        console.log(`[DRAG_END] over.id="${overIdStr}" matches COLUMN_IDS -> overColumn="${overColumn}"`)
       }
-    } else {
-      console.log(`[DRAG_END] over.id="${over.id}" found in state -> overColumn="${overColumn}"`)
     }
-    if (!overColumn) {
-      console.log(`[DRAG_END] ABORT: could not resolve overColumn from over.id="${over.id}"`)
-      return
-    }
-
-    console.log(`[DRAG_END] proceeding with overColumn="${overColumn}"`)
-    console.log(`[DRAG_END] prev state before setState:`, Object.entries(currentState).map(([k, v]) => `${k}: ${v.map(t => t.id).join(',')}`))
+    if (!overColumn) return
 
     setTareasPorColumnaLocal((prev) => {
-      console.log(`[DRAG_END] setState prev:`, Object.entries(prev).map(([k, v]) => `${k}: ${v.map(t => t.id).join(',')}`))
-
       let movedItem: Tarea | null = null
       let sourceCol: string | null = null
 
       sourceCol = findColumnInState(prev, active.id as string)
-      console.log(`[DRAG_END] findColumnInState(prev, "${active.id}") => "${sourceCol}"`)
-
       if (sourceCol) {
         const sourceItems = [...prev[sourceCol]]
         const idx = sourceItems.findIndex((t) => t.id === active.id)
@@ -298,12 +264,10 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
           movedItem = sourceItems.splice(idx, 1)[0]
           movedItem.estado = overColumn
           prev = { ...prev, [sourceCol]: sourceItems }
-          console.log(`[DRAG_END] removed "${movedItem.titulo}" from "${sourceCol}", new estado="${overColumn}"`)
         }
       }
 
       if (!movedItem) {
-        console.log(`[DRAG_END] item not found via findColumnInState, doing brute force search...`)
         for (const [col, items] of Object.entries(prev)) {
           const idx = items.findIndex((t) => t.id === active.id)
           if (idx >= 0) {
@@ -312,21 +276,16 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
             movedItem.estado = overColumn
             prev = { ...prev, [col]: copy }
             sourceCol = col
-            console.log(`[DRAG_END] brute force found "${movedItem.titulo}" in "${col}"`)
             break
           }
         }
       }
 
-      if (!movedItem) {
-        console.log(`[DRAG_END] ABORT: movedItem is null - item "${active.id}" not found anywhere in state!`)
-        return prev
-      }
+      if (!movedItem) return prev
 
       const destItems = [...(prev[overColumn] ?? [])]
 
       if (sourceCol === overColumn) {
-        console.log(`[DRAG_END] same column reorder in "${overColumn}"`)
         const overIdx = destItems.findIndex((t) => t.id === over.id)
         if (overIdx >= 0) {
           destItems.splice(overIdx, 0, movedItem)
@@ -334,37 +293,26 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
           destItems.push(movedItem)
         }
       } else {
-        console.log(`[DRAG_END] cross-column move "${sourceCol}" -> "${overColumn}"`)
         const existingIdx = destItems.findIndex((t) => t.id === active.id)
         if (existingIdx >= 0) destItems.splice(existingIdx, 1)
         destItems.push(movedItem)
       }
 
-      console.log(`[DRAG_END] calling onMoveTarea for ${destItems.length} items in "${overColumn}":`, destItems.map(t => `${t.titulo}(${t.estado})`))
-
       destItems.forEach((t, i) => {
-        console.log(`[DRAG_END] -> onMoveTarea("${t.id}", "${t.estado}", ${i})`)
         onMoveTareaRef.current(t.id, t.estado, i)
       })
 
-      console.log(`[DRAG_END] new state:`, { ...prev, [overColumn]: destItems })
       return { ...prev, [overColumn]: destItems }
     })
   }, [])
 
   const handleDragOver = useCallback((event: DragOverEvent) => {
     const { active, over } = event
-    if (!over) {
-      console.log(`[DRAG_OVER] over is null, skipping`)
-      return
-    }
+    if (!over) return
 
     const currentState = stateRef.current
     const activeColumn = findColumnInState(currentState, active.id as string)
-    if (!activeColumn) {
-      console.log(`[DRAG_OVER] active.id="${active.id}" not found in any column!`)
-      return
-    }
+    if (!activeColumn) return
 
     let overColumn: string | null = findColumnInState(currentState, over.id as string)
     if (!overColumn) {
@@ -375,23 +323,14 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
         overColumn = overIdStr
       }
     }
-
-    if (!overColumn || activeColumn === overColumn) {
-      console.log(`[DRAG_OVER] skip: activeCol="${activeColumn}", overCol="${overColumn}" (same or null)`)
-      return
-    }
-
-    console.log(`[DRAG_OVER] CROSS-COLUMN: active="${active.id}" from "${activeColumn}" -> to "${overColumn}", over="${over.id}"`)
+    if (!overColumn || activeColumn === overColumn) return
 
     setTareasPorColumnaLocal((prev) => {
       const sourceItems = [...(prev[activeColumn] ?? [])]
       const destItems = [...(prev[overColumn] ?? [])]
 
       const activeIndex = sourceItems.findIndex((t) => t.id === active.id)
-      if (activeIndex === -1) {
-        console.log(`[DRAG_OVER] setState: active.id="${active.id}" not in "${activeColumn}", skip`)
-        return prev
-      }
+      if (activeIndex === -1) return prev
 
       const movedItem = { ...sourceItems[activeIndex], estado: overColumn }
       sourceItems.splice(activeIndex, 1)
@@ -403,7 +342,6 @@ export function KanbanBoard({ tareas, onMoveTarea, onEditTarea, readonly }: Kanb
         destItems.push(movedItem)
       }
 
-      console.log(`[DRAG_OVER] setState result: ${activeColumn}=[${sourceItems.map(t=>t.titulo)}], ${overColumn}=[${destItems.map(t=>t.titulo)}]`)
       return { ...prev, [activeColumn]: sourceItems, [overColumn]: destItems }
     })
   }, [])
