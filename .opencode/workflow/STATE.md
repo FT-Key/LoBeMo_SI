@@ -58,11 +58,11 @@
 | US-053 | ✅ Done | fix/US-53-rutas-rotas-busqueda-csp | PR #90 → dev (merged) | .opencode/workflow/history/US-053.md |
 | US-054 | ✅ Done | feat/US-054-fix-comentarios-seed | PR #91 → dev (merged) | .opencode/workflow/history/US-054.md |
 | US-055 | ✅ Done | feat/US-055-servicios-modal-crear | PR #92 → dev | .opencode/workflow/history/US-055.md |
+| US-056 | ✅ Done | feat/US-056-certificados-pdf | PR #93 → dev | .opencode/workflow/history/US-056.md |
 
 ## Backlog
 | US | Trello# | Tipo | Prioridad | Detail |
 |----|---------|------|-----------|--------|
-| US-056 | 56 | Feature | BAJO | Certificados de capacitación: Generación PDF profesional con diseño y link de descarga |
 | US-057 | 57 | Fix | BAJO | Kanban y Gantt: Verificar accesibilidad desde navbar/menú de navegación |
 | US-058 | 58 | Fix | BAJO | Evidencia pentesting: tamaño fijo imágenes, PDFs en nueva pestaña, verificar borrado de R2 |
 | US-059 | 59 | Testing | — | Tests automatizados US-035 a US-046 (email, propuestas, export, búsqueda, filtros, comentarios, mi-dashboard, kanban, timer, gantt, evidencia, theme) |
@@ -75,15 +75,15 @@
 — (backlog vacío)
 
 ## Project Status
-✅ 55 US completadas (US-001 a US-055, US-037 duplicada).
-📋 8 tareas en backlog (US-056 a US-063).
+✅ 56 US completadas (US-001 a US-056, US-037 duplicada).
+📋 7 tareas en backlog (US-057 a US-063).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-055: Servicios Modal + Crear Nuevo** — Completado, PR #92 → dev (abierto)
-- POST `/api/servicios` con validación Zod y audit log
-- NuevoServicioForm con FormModal (patrón clientes/empleados)
-- Warning de precaución sobre nombre único
-- Quality gates: ✅ Typecheck, ✅ Build
+**US-056: Certificados de capacitación PDF profesional** — Completado, PR #93 → dev (abierto)
+- Nueva ruta `/api/exportar/certificado/[id]` con HTML landscape profesional
+- Marco dorado, esquinas decorativas, sellos, firmas, código de certificado
+- Botón "Descargar PDF" en capacitacion-detalle.tsx
+- Quality gates: ✅ Typecheck
