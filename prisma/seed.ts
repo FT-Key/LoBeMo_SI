@@ -40,7 +40,7 @@ function log(msg: string) {
 
 const EMPLEADOS = [
   { id: id(), nombre: "Super", apellido: "Admin", email: "superadmin@lobemo.com", rol: "GERENTE_GENERAL", area: "GERENCIA" },
-  { id: id(), nombre: "Franco Nicolás", apellido: "Toledo", email: "fr4nc0t2@gmail.com", rol: "DESARROLLADOR", area: "SISTEMAS" },
+  { id: id(), nombre: "Franco Nicolás", apellido: "Toledo", email: "fr4nc0t2@gmail.com", rol: "GERENTE_GENERAL", area: "SISTEMAS" },
   { id: id(), nombre: "Mario", apellido: "Villarreal", email: "mariovillarreal.isj@gmail.com", rol: "CISO", area: "SISTEMAS" },
   { id: id(), nombre: "Juan", apellido: "Robles", email: "roblesreinosojuan@gmail.com", rol: "DESARROLLADOR", area: "SISTEMAS" },
   { id: id(), nombre: "Julián", apellido: "Molicia", email: "julimolicia7@gmail.com", rol: "ANALISTA_SEGURIDAD", area: "SISTEMAS" },
