@@ -626,7 +626,8 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className={`grid gap-6 ${vistaTareas === "lista" ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"}`}>
+        {vistaTareas === "lista" && (
         <div className="rounded-lg border bg-surface-elevated/80 p-6">
           <h3 className="text-lg font-semibold mb-3">Asignaciones ({p._count.asignaciones})</h3>
 
@@ -696,8 +697,9 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
             </ul>
           )}
         </div>
+        )}
 
-        <div className="rounded-lg border bg-surface-elevated/80 p-6">
+        <div className={`rounded-lg border bg-surface-elevated/80 p-6 ${vistaTareas !== "lista" ? "md:col-span-2" : ""}`}>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-lg font-semibold">Tareas ({p._count.tareas})</h3>
             {p.tareas.length > 0 && (
