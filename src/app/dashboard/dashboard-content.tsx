@@ -12,6 +12,7 @@ import {
   Download,
   ChevronDown,
 } from "lucide-react"
+import { ActividadReciente } from "@/components/dashboard/actividad-reciente"
 
 const MAPA_ESTADOS: Record<string, { label: string; color: string }> = {
   RELEVAMIENTO: { label: "Relevamiento", color: "bg-info" },
@@ -284,6 +285,9 @@ export function DashboardContent({ initialData }: { initialData: DashboardData }
           </div>
         </div>
       </div>
+
+      {/* Recent Activity */}
+      <ActividadReciente />
     </div>
   )
 }
