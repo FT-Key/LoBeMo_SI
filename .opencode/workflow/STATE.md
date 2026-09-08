@@ -59,12 +59,12 @@
 | US-054 | ✅ Done | feat/US-054-fix-comentarios-seed | PR #91 → dev (merged) | .opencode/workflow/history/US-054.md |
 | US-055 | ✅ Done | feat/US-055-servicios-modal-crear | PR #92 → dev | .opencode/workflow/history/US-055.md |
 | US-056 | ✅ Done | feat/US-056-certificados-pdf | PR #93 → dev | .opencode/workflow/history/US-056.md |
+| US-057 | ✅ Done | feat/US-057-navbar-accesibilidad | PR #94 → dev | .opencode/workflow/history/US-057.md |
+| US-058 | ✅ Done | feat/US-058-evidencia-pentesting-fix | PR #95 → dev | .opencode/workflow/history/US-058.md |
 
 ## Backlog
 | US | Trello# | Tipo | Prioridad | Detail |
 |----|---------|------|-----------|--------|
-| US-057 | 57 | Fix | BAJO | Kanban y Gantt: Verificar accesibilidad desde navbar/menú de navegación |
-| US-058 | 58 | Fix | BAJO | Evidencia pentesting: tamaño fijo imágenes, PDFs en nueva pestaña, verificar borrado de R2 |
 | US-059 | 59 | Testing | — | Tests automatizados US-035 a US-046 (email, propuestas, export, búsqueda, filtros, comentarios, mi-dashboard, kanban, timer, gantt, evidencia, theme) |
 | US-060 | 60 | Testing | — | Tests automatizados US-047 a US-052 + Regression general |
 | US-061 | 61 | QA | — | QA Manual: Mapa de funcionalidades 35-52 — documentar paso a paso cómo acceder y probar cada funcionalidad |
@@ -75,15 +75,15 @@
 — (backlog vacío)
 
 ## Project Status
-✅ 56 US completadas (US-001 a US-056, US-037 duplicada).
-📋 7 tareas en backlog (US-057 a US-063).
+✅ 58 US completadas (US-001 a US-058, US-037 duplicada).
+📋 5 tareas en backlog (US-059 a US-063).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-056: Certificados de capacitación PDF profesional** — Completado, PR #93 → dev (abierto)
-- Nueva ruta `/api/exportar/certificado/[id]` con HTML landscape profesional
-- Marco dorado, esquinas decorativas, sellos, firmas, código de certificado
-- Botón "Descargar PDF" en capacitacion-detalle.tsx
-- Quality gates: ✅ Typecheck
+**US-058: Evidencia pentesting — fixes** — Completado, PR #95 → dev
+- Imágenes: `object-cover` → `object-contain` (sin recorte de evidencia)
+- PDFs: label diferenciado "Abrir PDF" en nueva pestaña
+- Borrado R2: cascade limpio de evidencias al eliminar hallazgo (antes quedaban huérfanos)
+- Iconos por tipo de archivo (🖼 📄 📝 📊 📎)
