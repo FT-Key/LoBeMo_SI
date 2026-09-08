@@ -51,7 +51,7 @@
 | US-046 | ✅ Done | feat/US-046-evidencia-pentesting | PR #83 → dev (merged) | .opencode/workflow/history/US-046.md |
 | US-047 | ✅ Done | feat/US-047-theme | PR #84 → dev | .opencode/workflow/history/US-047.md |
 | US-048 | ✅ Done | feat/US-048-transiciones | PR #85 → dev (merged) | .opencode/workflow/history/US-048.md |
-| US-049 | ✅ Done | feat/US-049-actividad-dashboard | PR → dev | .opencode/workflow/history/US-049.md |
+| US-049 | ✅ Done | feat/US-049-actividad-dashboard | PR #86 → dev | .opencode/workflow/history/US-049.md |
 
 ## Backlog
 | US | Status | Detail |
