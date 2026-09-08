@@ -9,12 +9,16 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+    setupFiles: ["./vitest.setup.ts"],
+    environmentMatchGlobs: [
+      ["src/**/*.test.tsx", "jsdom"],
+    ],
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],
       include: ["src/lib/**/*.ts", "src/shared/**/*.ts"],
-      exclude: ["src/**/*.test.ts", "src/generated/**"],
+      exclude: ["src/**/*.test.ts", "src/**/*.test.tsx", "src/generated/**"],
     },
   },
 })
