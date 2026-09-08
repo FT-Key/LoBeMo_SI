@@ -51,7 +51,7 @@ export const GET = withRole(ROLES.VIEW_DASHBOARD, async (request) => {
         where: {
           titulo: { contains: term, mode: "insensitive" },
         },
-        select: { id: true, titulo: true, estado: true, prioridad: true },
+        select: { id: true, titulo: true, estado: true, prioridad: true, proyectoId: true },
         take: 5,
       }),
     ])
@@ -84,7 +84,7 @@ export const GET = withRole(ROLES.VIEW_DASHBOARD, async (request) => {
           id: t.id,
           titulo: t.titulo,
           subtitulo: `${t.estado} — ${t.prioridad}`,
-          href: null,
+          href: t.proyectoId ? `/proyectos/${t.proyectoId}` : null,
         })),
       ],
     })

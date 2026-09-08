@@ -498,6 +498,15 @@ export function CapacitacionDetalle({
                       min="1"
                       max="10"
                       value={asis.evaluacion ?? ""}
+                      onChange={(e) => {
+                        const val = e.target.value ? parseInt(e.target.value) : null
+                        setCapacitacion((prev) => ({
+                          ...prev,
+                          asistentes: prev.asistentes.map((a) =>
+                            a.id === asis.id ? { ...a, evaluacion: val } : a
+                          ),
+                        }))
+                      }}
                       onBlur={(e) => actualizarAsistente(asis.id, { evaluacion: e.target.value ? parseInt(e.target.value) : null })}
                       className="flex h-8 w-20 rounded-md border border-input bg-background px-2 py-1 text-xs"
                     />
