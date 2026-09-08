@@ -50,7 +50,8 @@
 | US-045 | ✅ Done | feat/US-045-gantt | PR #82 → dev (merged) | .opencode/workflow/history/US-045.md |
 | US-046 | ✅ Done | feat/US-046-evidencia-pentesting | PR #83 → dev (merged) | .opencode/workflow/history/US-046.md |
 | US-047 | ✅ Done | feat/US-047-theme | PR #84 → dev | .opencode/workflow/history/US-047.md |
-| US-048 | ✅ Done | feat/US-048-transiciones | PR → dev | .opencode/workflow/history/US-048.md |
+| US-048 | ✅ Done | feat/US-048-transiciones | PR #85 → dev (merged) | .opencode/workflow/history/US-048.md |
+| US-049 | ✅ Done | feat/US-049-actividad-dashboard | PR → dev | .opencode/workflow/history/US-049.md |
 
 ## Backlog
 | US | Status | Detail |
@@ -68,19 +69,20 @@
 | US-052 | 📋 Backlog | Limpiar Código Muerto — .opencode/workflow/history/US-052.md |
 
 ## Current
-US-049 — Historial Actividad en Dashboard
+US-050 — Tests Automatizados
 
 ## Project Status
-✅ 48 US completadas (US-001 a US-048, US-037 duplicada).
-📋 4 US en Backlog (US-049 a US-052).
+✅ 49 US completadas (US-001 a US-049, US-037 duplicada).
+📋 3 US en Backlog (US-050 a US-052).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-048: Animaciones de Transición** — Completado, en PR (→ dev)
-- PageTransition (framer-motion fade+slide, key por pathname, respeta reduced-motion)
-- Integrado en AdminSidebar (envuelve children del main)
+**US-049: Historial Actividad en Dashboard** — Completado, en PR (→ dev)
+- Endpoint GET /api/dashboard/actividad (últimas 20 del audit log, rol VIEW_DASHBOARD)
+- Componente ActividadReciente (avatar, badge acción, entidad, timestamp relativo, TanStack Query)
+- Integrado en DashboardContent como sección final
 - Quality gates: ✅ TypeScript, ✅ Build, ✅ Lint (archivos tocados limpios)
 
 ## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
