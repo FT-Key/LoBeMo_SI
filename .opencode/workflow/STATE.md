@@ -54,7 +54,7 @@
 | US-049 | ✅ Done | feat/US-049-actividad-dashboard | PR #86 → dev (merged) | .opencode/workflow/history/US-049.md |
 | US-050 | ✅ Done | feat/US-050-tests | PR #87 → dev | .opencode/workflow/history/US-050.md |
 | US-051 | ✅ Done | feat/US-051-logging-estructurado | PR #88 → dev | .opencode/workflow/history/US-051.md |
-| US-052 | ✅ Done | feat/US-052-limpieza-codigo-muerto | PR pendiente → dev | .opencode/workflow/history/US-052.md |
+| US-052 | ✅ Done | feat/US-052-limpieza-codigo-muerto | PR #89 → dev | .opencode/workflow/history/US-052.md |
 
 ## Backlog
 | US | Status | Detail |
@@ -80,7 +80,7 @@
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-052: Limpiar Código Muerto** — Completado, branch pusheado (PR → dev pendiente)
+**US-052: Limpiar Código Muerto** — Completado, en PR #89 (→ dev, abierto para revisión)
 - Eliminado `src/components/navbar.tsx` (0 imports) + import muerto R2 en documentos route
 - Nuevos `src/components/ui/pagination.tsx`, `search-input.tsx`, `filter-select.tsx`
 - 10 listados refactorizados a componentes compartidos (sin cambios de comportamiento)
