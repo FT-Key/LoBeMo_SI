@@ -61,35 +61,31 @@
 | US-056 | ✅ Done | feat/US-056-certificados-pdf | PR #93 → dev | .opencode/workflow/history/US-056.md |
 | US-057 | ✅ Done | feat/US-057-navbar-accesibilidad | PR #94 → dev | .opencode/workflow/history/US-057.md |
 | US-058 | ✅ Done | feat/US-058-evidencia-pentesting-fix | PR #95 → dev | .opencode/workflow/history/US-058.md |
+| US-059 | ✅ Done | feat/US-059-tests-regression-35-46 | PR #97 → dev (merged) | .opencode/workflow/history/US-059.md |
+| US-060 | ✅ Done | feat/US-060-tests-regression | PR #98 → dev | .opencode/workflow/history/US-060.md |
 | US-064 | ✅ Done | fix/US-064-kanban-gantt-fixes | PR #96 → dev (merged) | .opencode/workflow/history/US-064.md |
-| US-059 | 🔄 In Progress | feat/US-059-tests-automated | PR #97 → dev | .opencode/workflow/history/US-059.md |
 
 ## Backlog
 | US | Trello# | Tipo | Prioridad | Detail |
 |----|---------|------|-----------|--------|
-| US-060 | 60 | Testing | — | Tests automatizados US-047 a US-052 + Regression general |
 | US-061 | 61 | QA | — | QA Manual: Mapa de funcionalidades 35-52 — documentar paso a paso cómo acceder y probar cada funcionalidad |
 | US-062 | 62 | Docs | — | Actualizar README + Documentación usuario — módulos nuevos, variables R2, screenshots, guía de usuario |
 | US-063 | 63 | QA | — | Auditoría completa navbar y navegación — verificar que todas las funcionalidades sean accesibles desde el menú |
 
 ## Current
-US-059: Tests automatizados US-035 a US-046 — PR #97 → dev (pendiente merge)
+Ninguna US activa.
+Siguiente: US-061 (QA Manual), US-062 (Docs), US-063 (Auditoría navbar)
 
 ## Project Status
-✅ 58 US completadas (US-001 a US-058, US-037 duplicada).
-🔄 US-064 mergeado a dev.
-🔄 US-059 PR #97 → dev (tests automatizados).
-📋 4 tareas en backlog (US-060 a US-063).
+✅ 61 US completadas (US-001 a US-064, US-037 duplicada).
+📋 3 tareas en backlog (US-061 a US-063).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
+✅ Tests: 207 passing (25 archivos)
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
-✅ Tests: 158 passing en 18 archivos.
 
 ## Último Cambio
-**US-059: Tests automatizados US-035 a US-046** — PR #97 → dev
-- Email templates: propuesta-email, asignacion-proyecto, cambio-estado, tarea-asignada
-- Email templates extra: credenciales, contactoNotificacion, contactoConfirmacion, portalBienvenida, portalActivacion
-- Email utils: resolverDestinatario
-- Validation schemas: hallazgos, propuestas
-- Business logic: comentarios, registro-horas, saved-filters, search, gantt
-- Vitest setup with next/server and next-auth mocks
+**US-060: Tests automatizados US-047 a US-052 + Regression** — PR #98 → dev
+- 50 tests nuevos: theme-toggle, page-transition, actividad-reciente, pagination, search-input, filter-select, documentos
+- Infraestructura: @testing-library/react, vitest.setup.ts, jsdom environment
+- Merge conflict resuelto: vitest.config.ts + vitest.setup.ts (combinados US-050 + US-059)
