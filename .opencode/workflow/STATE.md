@@ -65,7 +65,7 @@
 | US-060 | ✅ Done | feat/US-060-tests-regression | PR #98 → dev | .opencode/workflow/history/US-060.md |
 | US-061 | ✅ Done | feat/US-061-qa-manual | PR → dev | docs/qa-manual.md |
 | US-064 | ✅ Done | fix/US-064-kanban-gantt-fixes | PR #96 → dev (merged) | .opencode/workflow/history/US-064.md |
-| US-063 | ✅ Done | feat/US-063-auditoria-navbar | PR pendiente → dev | .opencode/workflow/history/US-063.md |
+| US-063 | ✅ Done | feat/US-063-auditoria-navbar | PR #100 → dev | .opencode/workflow/history/US-063.md |
 
 ## Backlog
 | US | Trello# | Tipo | Prioridad | Detail |
