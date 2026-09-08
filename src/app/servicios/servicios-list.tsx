@@ -3,6 +3,8 @@
 import { useState, useCallback } from "react"
 import { Pagination, type PaginationInfo } from "@/components/ui/pagination"
 import { SearchInput } from "@/components/ui/search-input"
+import { FormModal } from "@/components/ui/form-modal"
+import { NuevoServicioForm } from "./nuevo-servicio-form"
 
 const NOMBRES_SERVICIOS: Record<string, string> = {
   AUDITORIA_ISO27001: "Auditoría ISO 27001",
@@ -43,6 +45,7 @@ export function ServiciosList({
   const [editDescripcion, setEditDescripcion] = useState("")
   const [editPrecio, setEditPrecio] = useState("")
   const [saving, setSaving] = useState(false)
+  const [showCreateModal, setShowCreateModal] = useState(false)
 
   const fetchServicios = useCallback(async (p: number, s: string) => {
     setLoading(true)
@@ -99,12 +102,20 @@ export function ServiciosList({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4 items-center justify-between">
         <SearchInput
           placeholder="Buscar servicio..."
           value={search}
           onChange={(v) => { setSearch(v); fetchServicios(1, v) }}
         />
+        {esGerenteGeneral && (
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="h-10 px-4 rounded-md bg-foreground text-background text-sm font-medium hover:bg-foreground/90"
+          >
+            Nuevo servicio
+          </button>
+        )}
       </div>
 
       <div className="rounded-md border">
@@ -207,6 +218,19 @@ export function ServiciosList({
         pagination={pagination}
         onPageChange={(p) => fetchServicios(p, search)}
       />
+
+      <FormModal
+        open={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Nuevo servicio"
+      >
+        <NuevoServicioForm
+          onSuccess={() => {
+            setShowCreateModal(false)
+            fetchServicios(1, search)
+          }}
+        />
+      </FormModal>
     </div>
   )
 }

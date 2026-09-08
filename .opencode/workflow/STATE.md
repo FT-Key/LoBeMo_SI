@@ -55,66 +55,34 @@
 | US-050 | ✅ Done | feat/US-050-tests | PR #87 → dev | .opencode/workflow/history/US-050.md |
 | US-051 | ✅ Done | feat/US-051-logging-estructurado | PR #88 → dev | .opencode/workflow/history/US-051.md |
 | US-052 | ✅ Done | feat/US-052-limpieza-codigo-muerto | PR #89 → dev | .opencode/workflow/history/US-052.md |
+| US-053 | ✅ Done | fix/US-53-rutas-rotas-busqueda-csp | PR #90 → dev (merged) | .opencode/workflow/history/US-053.md |
+| US-054 | ✅ Done | feat/US-054-fix-comentarios-seed | PR #91 → dev (merged) | .opencode/workflow/history/US-054.md |
 
 ## Backlog
-| US | Status | Detail |
-|----|--------|--------|
-| US-042 | 📋 Backlog | Dashboard del Empleado — .opencode/workflow/history/US-042.md |
-| US-043 | 📋 Backlog | Kanban para Tareas — .opencode/workflow/history/US-043.md |
-| US-044 | 📋 Backlog | Timer de Horas Trabajadas — .opencode/workflow/history/US-044.md |
-| US-045 | 📋 Backlog | Gantt Simplificado — .opencode/workflow/history/US-045.md |
-| US-046 | 📋 Backlog | Evidencia en Pentesting — .opencode/workflow/history/US-046.md |
-| US-047 | 📋 Backlog | Modo Oscuro/Claro — .opencode/workflow/history/US-047.md |
-| US-048 | 📋 Backlog | Animaciones de Transición — .opencode/workflow/history/US-048.md |
-| US-049 | 📋 Backlog | Historial Actividad en Dashboard — .opencode/workflow/history/US-049.md |
-| US-050 | 📋 Backlog | Tests Automatizados — .opencode/workflow/history/US-050.md |
+| US | Trello# | Tipo | Prioridad | Detail |
+|----|---------|------|-----------|--------|
+| US-055 | 55 | Feature | MEDIO | Servicios: Modal + Crear nuevo — migrar edición inline a FormModal, agregar POST con warning de precaución |
+| US-056 | 56 | Feature | BAJO | Certificados de capacitación: Generación PDF profesional con diseño y link de descarga |
+| US-057 | 57 | Fix | BAJO | Kanban y Gantt: Verificar accesibilidad desde navbar/menú de navegación |
+| US-058 | 58 | Fix | BAJO | Evidencia pentesting: tamaño fijo imágenes, PDFs en nueva pestaña, verificar borrado de R2 |
+| US-059 | 59 | Testing | — | Tests automatizados US-035 a US-046 (email, propuestas, export, búsqueda, filtros, comentarios, mi-dashboard, kanban, timer, gantt, evidencia, theme) |
+| US-060 | 60 | Testing | — | Tests automatizados US-047 a US-052 + Regression general |
+| US-061 | 61 | QA | — | QA Manual: Mapa de funcionalidades 35-52 — documentar paso a paso cómo acceder y probar cada funcionalidad |
+| US-062 | 62 | Docs | — | Actualizar README + Documentación usuario — módulos nuevos, variables R2, screenshots, guía de usuario |
+| US-063 | 63 | QA | — | Auditoría completa navbar y navegación — verificar que todas las funcionalidades sean accesibles desde el menú |
 
 ## Current
 — (backlog vacío)
 
 ## Project Status
-✅ 52 US completadas (US-001 a US-052, US-037 duplicada).
-📋 Backlog vacío.
+✅ 54 US completadas (US-001 a US-054, US-037 duplicada).
+📋 9 tareas en backlog (US-055 a US-063).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Lint: 0 errores nuevos.
 ✅ Typecheck: pasa sin errores.
 
 ## Último Cambio
-**US-052: Limpiar Código Muerto** — Completado, en PR #89 (→ dev, abierto para revisión)
-- Eliminado `src/components/navbar.tsx` (0 imports) + import muerto R2 en documentos route
-- Nuevos `src/components/ui/pagination.tsx`, `search-input.tsx`, `filter-select.tsx`
-- 10 listados refactorizados a componentes compartidos (sin cambios de comportamiento)
-- Schemas documentos unificados con `documentoBaseSchema`
-- Quality gates: ✅ Tests 59/59, ✅ TypeScript, ✅ Build, ✅ Lint (15 archivos tocados limpios)
-
-## Plan: US-032 — Upload de Documentos PDF con Cloudflare R2
-
-### Objetivo
-Reemplazar el guardado de documentos como data URLs base64 en PostgreSQL por Cloudflare R2 (almacenamiento S3-compatible en la nube).
-
-### Stack
-- Cloudflare R2 (almacenamiento)
-- @aws-sdk/client-s3 + @aws-sdk/s3-request-presigner
-- Prisma (migración de modelo)
-- Next.js API Routes (multipart/form-data)
-
-### Archivos a crear
-- `src/lib/r2.ts` — Cliente R2 (S3-compatible)
-- `src/app/api/upload/route.ts` — Endpoint upload multipart
-- `src/app/api/upload/[key]/route.ts` — Endpoint delete
-- `src/components/ui/file-upload.tsx` — Componente UI drag & drop
-
-### Archivos a modificar
-| # | Archivo | Cambio |
-|---|---------|--------|
-| 1 | `prisma/schema.prisma` | Campos: mimeType, tamaño, storageKey, subidoPor en Documento |
-| 2 | `src/app/api/documentos/route.ts` | Adaptar para R2 |
-| 3 | `src/shared/validation/documentos.ts` | Actualizar validación |
-| 4 | `.env.example` | Variables R2 |
-
-### Acceptance Criteria
-- [ ] API upload funcionando con multipart/form-data
-- [ ] Validación MIME types y tamaño (25MB max)
-- [ ] Frontend: Componente FileUpload con drag & drop
-- [ ] Audit log para uploads
-- [ ] Build + Lint + Typecheck pasan
+**US-054: Fix API comentarios 500 + Seed roles/permisos** — Completado, PR #91 → dev (merged)
+- Fix POST `/api/comentarios` FK validation (error 500)
+- Seed: empleado VENTAS, proyecto activo, comentarios de ejemplo
+- Quality gates: ✅ Typecheck, ✅ Build
