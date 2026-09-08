@@ -63,22 +63,45 @@
 | US-058 | ✅ Done | feat/US-058-evidencia-pentesting-fix | PR #95 → dev | .opencode/workflow/history/US-058.md |
 | US-059 | ✅ Done | feat/US-059-tests-regression-35-46 | PR #97 → dev (merged) | .opencode/workflow/history/US-059.md |
 | US-060 | ✅ Done | feat/US-060-tests-regression | PR #98 → dev | .opencode/workflow/history/US-060.md |
+| US-061 | ✅ Done | feat/US-061-qa-manual | PR → dev | docs/qa-manual.md |
 | US-064 | ✅ Done | fix/US-064-kanban-gantt-fixes | PR #96 → dev (merged) | .opencode/workflow/history/US-064.md |
 
 ## Backlog
 | US | Trello# | Tipo | Prioridad | Detail |
 |----|---------|------|-----------|--------|
-| US-061 | 61 | QA | — | QA Manual: Mapa de funcionalidades 35-52 — documentar paso a paso cómo acceder y probar cada funcionalidad |
 | US-062 | 62 | Docs | — | Actualizar README + Documentación usuario — módulos nuevos, variables R2, screenshots, guía de usuario |
-| US-063 | 63 | QA | — | Auditoría completa navbar y navegación — verificar que todas las funcionalidades sean accesibles desde el menú |
+| US-063 | 63 | QA | — | Auditoría navbar y navegación — ver detalle abajo |
+
+### Detalle US-063: Auditoría Navbar y Navegación
+
+**Objetivo:** Verificar que TODAS las funcionalidades del sistema sean accesibles desde el menú/sidebar.
+
+**Alcance de la auditoría:**
+1. **Sidebar principal** — Verificar que cada enlace funcione y lleve a la página correcta.
+2. **Submenús** — Verificar que los acordeones/dropdowns abran y muestren todas las opciones.
+3. **Navegación interna** — Desde cada página, verificar que los botones/tabs/regresos funcionen.
+4. **Breadcrumbs** — Verificar que la navegación de回来了 sea clara.
+5. **Accesibilidad por rol** — Cada rol solo ve lo que le corresponde (RBAC).
+
+**Formato del documento de salida:** Crear `docs/auditoria-navbar.md` con:
+- Checklist de cada enlace del sidebar (nombre, ruta, funciona ✓/✗)
+- Por cada módulo: subrutas accesibles, botones de acción, tabs
+- Roles que deben ver cada elemento
+- Issues encontrados (si los hay)
+
+**Criterios de aceptación:**
+- [ ] Todos los enlaces del sidebar funcionan (sin rutas rotas)
+- [ ] Cada funcionalidad documentada en US-001 a US-060 es accesible desde el menú
+- [ ] Los roles ven solo sus módulos permitidos
+- [ ] No hay 404s ni errores de navegación
 
 ## Current
 Ninguna US activa.
-Siguiente: US-061 (QA Manual), US-062 (Docs), US-063 (Auditoría navbar)
+Siguiente: US-062 (Docs), US-063 (Auditoría navbar)
 
 ## Project Status
-✅ 61 US completadas (US-001 a US-064, US-037 duplicada).
-📋 3 tareas en backlog (US-061 a US-063).
+✅ 62 US completadas (US-001 a US-064, US-037 duplicada, US-061 QA Manual).
+📋 2 tareas en backlog (US-062, US-063).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Tests: 207 passing (25 archivos)
 ✅ Lint: 0 errores nuevos.
