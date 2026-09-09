@@ -59,6 +59,30 @@ export const PUT = withRole(ROLES.MANAGE_EMPLEADOS, async (request, ctx, session
       }
     }
 
+    if (id === session.user.id) {
+      if (result.data.rol !== undefined && result.data.rol !== existing.rol) {
+        return NextResponse.json(
+          { error: "No podés cambiar tu propio rol" },
+          { status: 400 }
+        )
+      }
+      if (result.data.password !== undefined && result.data.password !== "") {
+        if (!result.data.currentPassword) {
+          return NextResponse.json(
+            { error: "Debés ingresar tu contraseña actual para cambiarla" },
+            { status: 400 }
+          )
+        }
+        const isValid = await bcrypt.compare(result.data.currentPassword, existing.password)
+        if (!isValid) {
+          return NextResponse.json(
+            { error: "La contraseña actual es incorrecta" },
+            { status: 400 }
+          )
+        }
+      }
+    }
+
     const updateData: Record<string, unknown> = {}
     if (result.data.nombre !== undefined) updateData.nombre = result.data.nombre
     if (result.data.apellido !== undefined) updateData.apellido = result.data.apellido

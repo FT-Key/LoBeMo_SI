@@ -46,9 +46,11 @@ type Empleado = {
 export function EmpleadosContent({
   initialData,
   initialTotal,
+  sessionUserId,
 }: {
   initialData: Empleado[]
   initialTotal: number
+  sessionUserId: string
 }) {
   const [empleados, setEmpleados] = useState<Empleado[]>(initialData)
   const [pagination, setPagination] = useState<PaginationInfo>({
@@ -96,6 +98,9 @@ export function EmpleadosContent({
       setEmpleados((prev) =>
         prev.map((e) => (e.id === id ? { ...e, activo: !e.activo } : e))
       )
+    } else {
+      const json = await res.json()
+      alert(json.error || "Error al cambiar estado del empleado")
     }
     setTogglingId(null)
   }
@@ -104,7 +109,7 @@ export function EmpleadosContent({
     const res = await fetch(`/api/empleados/${emp.id}`)
     if (res.ok) {
       const data = await res.json()
-      setEditingEmpleado(data)
+      setEditingEmpleado({ ...data, isCurrentUser: emp.id === sessionUserId })
       setEditModalOpen(true)
     }
   }
@@ -213,13 +218,15 @@ export function EmpleadosContent({
                     <TableActionButton onClick={() => openEditModal(emp)}>
                       Editar
                     </TableActionButton>
-                    <TableActionButton
-                      onClick={() => toggleActivo(emp.id)}
-                      variant={emp.activo ? "danger" : "success"}
-                      disabled={togglingId === emp.id}
-                    >
-                      {togglingId === emp.id ? "..." : emp.activo ? "Desactivar" : "Activar"}
-                    </TableActionButton>
+                    {emp.id !== sessionUserId && (
+                      <TableActionButton
+                        onClick={() => toggleActivo(emp.id)}
+                        variant={emp.activo ? "danger" : "success"}
+                        disabled={togglingId === emp.id}
+                      >
+                        {togglingId === emp.id ? "..." : emp.activo ? "Desactivar" : "Activar"}
+                      </TableActionButton>
+                    )}
                   </div>
                 </td>
               </tr>
