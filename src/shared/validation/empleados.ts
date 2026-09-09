@@ -21,6 +21,7 @@ export const createEmpleadoSchema = z.object({
 
 export const updateEmpleadoSchema = createEmpleadoSchema.partial().omit({ password: true }).extend({
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres").optional().or(z.literal("")),
+  currentPassword: z.string().min(1, "La contraseña actual es requerida").optional(),
 })
 
 export type CreateEmpleadoFormData = z.infer<typeof createEmpleadoSchema>

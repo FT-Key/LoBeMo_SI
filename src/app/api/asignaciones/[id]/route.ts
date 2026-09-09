@@ -23,6 +23,13 @@ export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, ses
       )
     }
 
+    if (asignacion.empleadoId === session.user.id) {
+      return NextResponse.json(
+        { error: "No podés eliminarte a vos mismo de un proyecto" },
+        { status: 400 }
+      )
+    }
+
     await prisma.tarea.updateMany({
       where: { asignacionId: id },
       data: { asignacionId: null },

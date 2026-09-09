@@ -12,6 +12,7 @@ type EmpleadoData = {
   email: string
   rol: string
   area: string
+  isCurrentUser?: boolean
 }
 
 export function EditarEmpleadoForm({ empleado, onSuccess }: { empleado: EmpleadoData; onSuccess?: () => void }) {
@@ -82,6 +83,14 @@ export function EditarEmpleadoForm({ empleado, onSuccess }: { empleado: Empleado
         <input id="password" {...register("password")} type="password" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
         {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
       </div>
+
+      {empleado.isCurrentUser && (
+        <div className="space-y-2">
+          <label htmlFor="currentPassword" className="text-sm font-medium">Contraseña actual <span className="text-muted-foreground">(requerida para cambiar tu contraseña)</span></label>
+          <input id="currentPassword" {...register("currentPassword")} type="password" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+          {errors.currentPassword && <p className="text-xs text-destructive">{errors.currentPassword.message}</p>}
+        </div>
+      )}
 
       <div className="space-y-2">
         <label htmlFor="rol" className="text-sm font-medium">Rol</label>
