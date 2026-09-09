@@ -70,6 +70,8 @@
 | US-065 | ✅ Done | feat/US-065-validacion-inputs | PR #104 → dev | .opencode/workflow/history/US-065.md |
 | US-066 | ✅ Done | fix/email-redirect-lobemo | PR #105 → dev | .opencode/workflow/history/US-066.md |
 | US-067 | ✅ Done | fix/US-067-encoding-docs-nav | PR #107 → dev | .opencode/workflow/history/US-067.md |
+| US-068 | ✅ Done | fix/US-068-precio-string-bug | PR #109 → dev | .opencode/workflow/history/US-068.md |
+| US-069 | ✅ Done | fix/US-069-self-action-bugs | PR #111 → dev | .opencode/workflow/history/US-069.md |
 
 ## Backlog
 | US | Trello# | Tipo | Prioridad | Detail |
@@ -80,7 +82,7 @@
 Ninguna US activa.
 
 ## Project Status
-✅ 68 US completadas (US-001 a US-067, US-037 duplicada).
+✅ 71 US completadas (US-001 a US-069, US-037 duplicada).
 📋 Backlog vacío.
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Tests: 207 passing (25 archivos)
@@ -88,4 +90,4 @@ Ninguna US activa.
 ✅ Build: 62 páginas generadas exitosamente.
 
 ## Último Cambio
-**US-067: Fix encoding, documentos nueva pestaña y hrefs** — Branch `fix/US-067-encoding-docs-nav`, PR #107 → dev
+**US-069: Corrección de bugs menores - Acciones de auto-modificación** — Branch `fix/US-069-self-action-bugs`, PR #111 → dev

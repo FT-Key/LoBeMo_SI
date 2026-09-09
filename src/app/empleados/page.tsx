@@ -33,6 +33,7 @@ export default async function EmpleadosPage() {
       <EmpleadosContent
         initialData={JSON.parse(JSON.stringify(empleados))}
         initialTotal={total}
+        sessionUserId={session.user.id}
       />
     </AdminSidebar>
   )
