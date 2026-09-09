@@ -74,20 +74,21 @@
 | US-065 | — | Fix | Alta | Validación integral de inputs frontend+backend: fechas pasadas, campos vacíos, límites de caracteres, restricciones de selección. Implica: (1) min date en inputs type="date", (2) Zod refactor con regex/transforms para fechas, (3) max-length en textareas, (4) helper compartido `dateUtils.ts` |
 
 ## Current
-Ninguna US activa.
-Siguiente: US-062 (Docs)
+**US-062** — Actualizar README + Documentación de usuario
+- Branch: `feat/US-062-documentacion`
+- PR #101 → dev (abierto)
+- Archivos: `README.md`, `docs/guia-usuario.md`
 
 ## Project Status
-✅ 63 US completadas (US-001 a US-064, US-037 duplicada).
-📋 1 tarea en backlog (US-062).
+✅ 64 US completadas (US-001 a US-064, US-037 duplicada).
+📋 US-062 en revisión (PR #101).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Tests: 207 passing (25 archivos)
 ✅ Lint: 0 errores nuevos.
-✅ Typecheck: pasa sin errores.
+✅ Build: 62 páginas generadas exitosamente.
 
 ## Último Cambio
-**US-063: Auditoría Navbar y Navegación** — Documento `docs/auditoria-navbar.md`
-- 15 enlaces del sidebar verificados (todos funcionan)
-- RBAC de doble capa verificado (client-side + server-side)
-- 2 issues menores documentados: ruta `/auditoria` sin sidebar, propuestas sin link directo
-- Matriz de visibilidad por rol completa
+**US-062: Actualizar README + Guía de Usuario** — PR #101 → dev
+- README actualizado: versiones, módulos (31), env vars, scripts, estructura
+- Guía de usuario creada: 26 secciones, todos los módulos documentados
+- Quality gates: lint, typecheck y build pasan
