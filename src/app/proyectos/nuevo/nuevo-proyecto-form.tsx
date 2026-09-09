@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { createProyectoSchema, type CreateProyectoFormData } from "@/shared/validation"
+import { getMinDateForInput } from "@/shared/utils/date-utils"
 
 export function NuevoProyectoForm({
   clientes,
@@ -60,7 +61,7 @@ export function NuevoProyectoForm({
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Descripción</label>
-        <textarea {...register("descripcion")} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]" placeholder="Descripción del proyecto..." />
+        <textarea {...register("descripcion")} maxLength={500} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]" placeholder="Descripción del proyecto..." />
         {errors.descripcion && <p className="text-xs text-destructive">{errors.descripcion.message}</p>}
       </div>
 
@@ -88,7 +89,7 @@ export function NuevoProyectoForm({
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Fecha estimada de finalización</label>
-        <input {...register("fechaEstimadaFin")} type="date" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+        <input {...register("fechaEstimadaFin")} type="date" min={getMinDateForInput()} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
         {errors.fechaEstimadaFin && <p className="text-xs text-destructive">{errors.fechaEstimadaFin.message}</p>}
       </div>
 

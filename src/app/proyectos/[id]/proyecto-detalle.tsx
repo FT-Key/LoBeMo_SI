@@ -751,6 +751,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                 onChange={(e) => setTareaDescripcion(e.target.value)}
                 placeholder="Descripción (opcional)"
                 rows={2}
+                maxLength={1000}
                 className="w-full rounded-md border bg-background px-3 py-1.5 text-sm resize-none"
               />
               <div className="flex gap-2">
@@ -830,6 +831,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                         value={editandoDescripcion}
                         onChange={(e) => setEditandoDescripcion(e.target.value)}
                         rows={2}
+                        maxLength={1000}
                         className="w-full rounded-md border bg-background px-3 py-1.5 text-sm resize-none"
                       />
                       <div className="flex gap-2">
@@ -954,6 +956,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
               onChange={(e) => setHitoDescripcion(e.target.value)}
               placeholder="Descripción (opcional)"
               rows={2}
+              maxLength={500}
               className="w-full rounded-md border bg-background px-3 py-1.5 text-sm resize-none"
             />
             <div className="flex gap-2">
@@ -997,6 +1000,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                         value={editHitoDescripcion}
                         onChange={(e) => setEditHitoDescripcion(e.target.value)}
                         rows={2}
+                        maxLength={500}
                         className="w-full rounded-md border bg-background px-3 py-1.5 text-sm resize-none"
                       />
                       <div className="flex gap-2">
