@@ -1,16 +1,13 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { createTareaSchema } from "@/shared/validation"
+import { withRole, ROLES, Rol } from "@/lib/api-auth"
+import { createTransporter, getLogoAttachment, tareaAsignada } from "@/lib/email-templates"
+import { logger } from "@/lib/logger"
 
-export async function GET(request: NextRequest) {
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const { searchParams } = new URL(request.url)
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
@@ -48,18 +45,13 @@ export async function GET(request: NextRequest) {
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {
-    console.error("Error listing tareas:", error)
+    logger.error({ err: error }, "Error listing tareas")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function POST(request: Request) {
+export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const body = await request.json()
     const result = validateBody(createTareaSchema, body)
     if (!result.success) return result.error
@@ -69,7 +61,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Proyecto no encontrado" }, { status: 404 })
     }
 
-    const esCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
+    const esCisoOGerente = ROLES.MANAGE_PROYECTOS.includes(session.user.rol as Rol)
 
     if (!esCisoOGerente) {
       const asignacion = await prisma.asignacion.findFirst({
@@ -134,6 +126,38 @@ export async function POST(request: Request) {
       },
     })
 
+    if (result.data.asignacionId) {
+      try {
+        const asignacion = await prisma.asignacion.findUnique({
+          where: { id: result.data.asignacionId },
+          include: { empleado: { select: { nombre: true, apellido: true, email: true } } },
+        })
+        const transport = createTransporter()
+        if (transport && asignacion?.empleado.email) {
+          const logoAttachment = await getLogoAttachment()
+          const logoCid = logoAttachment.length > 0 ? logoAttachment[0].cid : ""
+          const proyecto = await prisma.proyecto.findUnique({ where: { id: result.data.proyectoId }, select: { nombre: true } })
+
+          await transport.sendMail({
+            from: `"LoBeMo Seguridad" <${process.env.SMTP_USER}>`,
+            to: asignacion.empleado.email,
+            subject: `Nueva tarea asignada - ${proyecto?.nombre || "Proyecto"}`,
+            html: tareaAsignada({
+              nombreEmpleado: `${asignacion.empleado.nombre} ${asignacion.empleado.apellido}`,
+              tituloTarea: tarea.titulo,
+              nombreProyecto: proyecto?.nombre || "Proyecto",
+              prioridad: result.data.prioridad,
+              fechaLimite: result.data.fechaLimite || undefined,
+              logoCid,
+            }),
+            attachments: logoAttachment,
+          })
+        }
+      } catch (emailError) {
+        logger.error({ err: emailError }, "Error sending task assignment email")
+      }
+    }
+
     await prisma.auditLog.create({
       data: {
         accion: "CREATE",
@@ -146,7 +170,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(tarea, { status: 201 })
   } catch (error) {
-    console.error("Error creating tarea:", error)
+    logger.error({ err: error }, "Error creating tarea")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

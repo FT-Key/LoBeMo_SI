@@ -19,6 +19,15 @@ type MetricasData = {
     pendientes: number
     porcentaje: number
   }
+  horas: {
+    totalMinutos: number
+    registros: number
+    porEmpleado: Array<{
+      nombre: string
+      apellido: string
+      minutos: number
+    }>
+  }
   asignaciones: {
     id: string
     empleado: string
@@ -139,6 +148,40 @@ export function MetricasProyecto({ proyectoId }: { proyectoId: string }) {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="rounded-lg border border-border bg-surface p-5">
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+          Horas trabajadas ({data.horas.registros} registros)
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="text-center">
+            <p className="text-2xl font-bold">{Math.floor(data.horas.totalMinutos / 60)}h</p>
+            <p className="text-xs text-muted-foreground">Total horas</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-bold">{data.horas.totalMinutos % 60}min</p>
+            <p className="text-xs text-muted-foreground">Minutos restantes</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-bold">{data.horas.porEmpleado.length}</p>
+            <p className="text-xs text-muted-foreground">Empleados con registros</p>
+          </div>
+        </div>
+        {data.horas.porEmpleado.length > 0 && (
+          <div className="space-y-2">
+            {data.horas.porEmpleado
+              .sort((a, b) => b.minutos - a.minutos)
+              .map((e) => (
+                <div key={`${e.nombre}-${e.apellido}`} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                  <p className="text-sm font-medium">{e.nombre} {e.apellido}</p>
+                  <span className="text-sm text-muted-foreground">
+                    {Math.floor(e.minutos / 60)}h {e.minutos % 60}min
+                  </span>
+                </div>
+              ))}
+          </div>
+        )}
       </div>
     </div>
   )

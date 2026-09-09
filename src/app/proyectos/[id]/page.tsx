@@ -45,6 +45,16 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
               empleado: { select: { id: true, nombre: true, apellido: true, rol: true } },
             },
           },
+          registrosHoras: {
+            select: {
+              id: true,
+              inicio: true,
+              fin: true,
+              duracionMin: true,
+              descripcion: true,
+              empleadoId: true,
+            },
+          },
         },
       },
       hitos: { orderBy: { fechaPrevista: "asc" } },
@@ -56,6 +66,19 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
         },
       },
       _count: { select: { tareas: true, asignaciones: true, propuestas: true, documentos: true } },
+    },
+  })
+
+  const comentarios = await prisma.comentario.findMany({
+    where: { proyectoId: id },
+    orderBy: { createdAt: "asc" },
+    select: {
+      id: true,
+      contenido: true,
+      createdAt: true,
+      autor: {
+        select: { id: true, nombre: true, apellido: true, rol: true },
+      },
     },
   })
 
@@ -71,6 +94,8 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
             <Link href="/proyectos" className="text-sm text-muted-foreground hover:text-foreground transition-colors">&larr; Volver a proyectos</Link>
             <span className="text-muted-foreground mx-1">|</span>
             <Link href={`/proyectos/${id}/metricas`} className="text-sm text-primary hover:underline">Métricas</Link>
+            <span className="text-muted-foreground mx-1">|</span>
+            <Link href={`/proyectos/${id}/gantt`} className="text-sm text-primary hover:underline">Gantt</Link>
           </div>
           <ExportarPDFButton url={`/api/exportar/proyecto/${id}`} label="Exportar PDF" />
         </div>
@@ -81,6 +106,7 @@ export default async function ProyectoDetallePage(props: { params: Promise<{ id:
           sessionUserId={session.user.id}
           estadoLabels={ESTADO_LABELS}
           empleados={JSON.parse(JSON.stringify(empleados))}
+          initialComments={JSON.parse(JSON.stringify(comentarios))}
         />
       </div>
     </AdminSidebar>

@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server"
-import nodemailer from "nodemailer"
-import { readFile } from "fs/promises"
-import { join } from "path"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { Rol } from "@/generated/prisma/enums"
 import { validateBody } from "@/lib/api-validate"
 import { transicionEstadoSchema } from "@/shared/validation"
-import { resolverDestinatario } from "@/lib/email"
+import {
+  resolverDestinatario,
+  createTransporter,
+  getLogoAttachment,
+  cambioEstado,
+} from "@/lib/email-templates"
+import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 interface TransicionValida {
   desde: string[]
@@ -93,21 +96,13 @@ const TRANSICIONES: Record<string, TransicionValida> = {
   },
 }
 
-const ROLES_CREAR = ["GERENTE_GENERAL", "CISO"]
-const ROLES_REVISION = ["GERENTE_GENERAL", "CISO", "AUDITOR"]
+const ROLES_CREAR = ROLES.MANAGE_PROYECTOS
+const ROLES_REVISION = [...ROLES.MANAGE_PROYECTOS, Rol.PENTESTER]
 const ROLES_TECNICOS = ["CISO", "ANALISTA_SEGURIDAD", "DESARROLLADOR", "ESPECIALISTA_REDES", "PENTESTER", "SOPORTE_TECNICO", "AUDITOR", "CAPACITADOR"]
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const body = await request.json()
     const result = validateBody(transicionEstadoSchema, body)
     if (!result.success) return result.error
@@ -213,76 +208,29 @@ export async function POST(
 
       if (proyCompleto?.cliente.emailContacto) {
         try {
-          const user = process.env.SMTP_USER
-          const pass = process.env.SMTP_PASS
-          if (user && pass) {
-            const transport = nodemailer.createTransport({ service: "gmail", auth: { user, pass } })
-            let logoCid = ""
-            let logoAttachment: { filename: string; content: Buffer; cid?: string }[] = []
-            try {
-              const logoBuffer = await readFile(join(process.cwd(), "public", "lobemo-logo.png"))
-              logoCid = "logo@lobemo"
-              logoAttachment = [{ filename: "lobemo-logo.png", content: logoBuffer, cid: logoCid }]
-            } catch { /* logo not found, skip */ }
-
-            const ESTADOS_LABELS: Record<string, string> = {
-              RELEVAMIENTO: "Relevamiento",
-              PROPUESTA: "Propuesta",
-              APROBADO: "Aprobado",
-              EN_EJECUCION: "En Ejecución",
-              EN_REVISION: "En Revisión",
-              ENTREGADO: "Entregado",
-              CERRADO: "Cerrado",
-            }
-
+          const transport = createTransporter()
+          if (transport) {
+            const logoAttachment = await getLogoAttachment()
+            const logoCid = logoAttachment.length > 0 ? logoAttachment[0].cid : ""
             const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"
             const portalUrl = `${baseUrl}/seguimiento/${proyecto.id}`
 
             await transport.sendMail({
-              from: `"LoBeMo Seguridad" <${user}>`,
+              from: `"LoBeMo Seguridad" <${process.env.SMTP_USER}>`,
               to: resolverDestinatario(proyCompleto.cliente.emailContacto),
               subject: `Estado del proyecto "${proyecto.nombre}" actualizado`,
-              html: `
-                <!DOCTYPE html>
-                <html><head><meta charset="utf-8"></head>
-                <body style="margin:0;padding:0;background:#0a0a1a;font-family:'Segoe UI',Tahoma,sans-serif;">
-                  <div style="max-width:600px;margin:0 auto;padding:32px 24px;">
-                    ${logoCid ? `<img src="cid:${logoCid}" alt="LoBeMo" style="height:40px;margin-bottom:24px;" />` : ""}
-                    <h1 style="color:#e2e8f0;font-size:20px;margin:0 0 8px;">Actualización de estado</h1>
-                    <p style="color:#94a3b8;font-size:14px;margin:0 0 24px;">Tu proyecto ha cambiado de estado</p>
-
-                    <div style="background:#111827;border:1px solid #1e293b;border-radius:12px;padding:24px;margin-bottom:24px;">
-                      <p style="color:#64748b;font-size:12px;margin:0 0 4px;text-transform:uppercase;letter-spacing:1px;">Proyecto</p>
-                      <p style="color:#f1f5f9;font-size:16px;font-weight:600;margin:0 0 16px;">${proyecto.nombre}</p>
-
-                      <div style="display:flex;gap:16px;margin-bottom:0;">
-                        <div style="flex:1;background:#1e293b;border-radius:8px;padding:12px;">
-                          <p style="color:#64748b;font-size:11px;margin:0 0 4px;text-transform:uppercase;">Anterior</p>
-                          <p style="color:#94a3b8;font-size:14px;margin:0;">${ESTADOS_LABELS[estadoAnterior] || estadoAnterior}</p>
-                        </div>
-                        <div style="flex:0 0 auto;display:flex;align-items:center;color:#00d4ff;font-size:20px;">→</div>
-                        <div style="flex:1;background:#1e293b;border-radius:8px;padding:12px;">
-                          <p style="color:#64748b;font-size:11px;margin:0 0 4px;text-transform:uppercase;">Nuevo</p>
-                          <p style="color:#00d4ff;font-size:14px;font-weight:600;margin:0;">${ESTADOS_LABELS[nuevoEstado] || nuevoEstado}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <a href="${portalUrl}" style="display:inline-block;background:#00d4ff;color:#0a0a1a;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;">Ver seguimiento del proyecto</a>
-
-                    <p style="color:#475569;font-size:12px;margin:24px 0 0;">Si no podés hacer clic en el botón, copiá y pegá este enlace en tu navegador:</p>
-                    <p style="color:#00d4ff;font-size:12px;margin:4px 0 0;word-break:break-all;">${portalUrl}</p>
-
-                    <hr style="border:none;border-top:1px solid #1e293b;margin:32px 0;" />
-                    <p style="color:#475569;font-size:11px;margin:0;">LoBeMo Seguridad Informática · Seguimiento de Proyectos</p>
-                  </div>
-                </body></html>
-              `,
+              html: cambioEstado({
+                nombreProyecto: proyecto.nombre,
+                estadoAnterior,
+                nuevoEstado,
+                portalUrl,
+                logoCid,
+              }),
               attachments: logoAttachment,
             })
           }
         } catch (emailError) {
-          console.error("Error sending portal notification email:", emailError)
+          logger.error({ err: emailError }, "Error sending portal notification email")
         }
       }
     }
@@ -309,10 +257,10 @@ export async function POST(
 
     return NextResponse.json(proyectoActualizado)
   } catch (error) {
-    console.error("Error en transicion de estado:", error)
+    logger.error({ err: error }, "Error en transicion de estado")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
     )
   }
-}
+})

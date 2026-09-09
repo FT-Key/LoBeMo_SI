@@ -1,16 +1,12 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { createCapacitacionSchema } from "@/shared/validation"
+import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
-export async function GET(request: NextRequest) {
+export const GET = withRole(ROLES.MANAGE_CAPACITACIONES, async (request) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const { searchParams } = new URL(request.url)
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
@@ -25,13 +21,6 @@ export async function GET(request: NextRequest) {
       ]
     }
     if (estado) where.estado = estado
-
-    const esCapacitadorOGerente = session.user.rol === "CAPACITADOR" || session.user.rol === "GERENTE_GENERAL"
-    const esCiso = session.user.rol === "CISO"
-
-    if (!esCapacitadorOGerente && !esCiso) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
 
     const [capacitaciones, total] = await Promise.all([
       prisma.capacitacion.findMany({
@@ -52,26 +41,13 @@ export async function GET(request: NextRequest) {
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {
-    console.error("Error listing capacitaciones:", error)
+    logger.error({ err: error }, "Error listing capacitaciones")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function POST(request: Request) {
+export const POST = withRole(ROLES.MANAGE_CAPACITACIONES, async (request, _ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const puedeCrear = session.user.rol === "CAPACITADOR" || session.user.rol === "GERENTE_GENERAL"
-    if (!puedeCrear) {
-      return NextResponse.json(
-        { error: "Solo el Capacitador o Gerente General pueden crear capacitaciones (RN-CAP-01)" },
-        { status: 403 }
-      )
-    }
-
     const body = await request.json()
     const result = validateBody(createCapacitacionSchema, body)
     if (!result.success) return result.error
@@ -113,7 +89,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(capacitacion, { status: 201 })
   } catch (error) {
-    console.error("Error creating capacitacion:", error)
+    logger.error({ err: error }, "Error creating capacitacion")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

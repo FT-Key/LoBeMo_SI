@@ -4,6 +4,11 @@ import Image from "next/image"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { PortalSection } from "./portal-section"
+import { FileUpload, formatBytes } from "@/components/ui/file-upload"
+import { CommentSection, type Comentario } from "@/components/comentarios/comment-section"
+import { KanbanBoard } from "@/components/tareas/kanban-board"
+import { GanttChart } from "@/components/gantt/gantt-chart"
+import { LayoutList, Columns3, ChartGantt } from "lucide-react"
 
 const ESTADO_BADGES: Record<string, string> = {
   RELEVAMIENTO: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
@@ -91,6 +96,7 @@ type TareaItem = {
   descripcion: string | null
   estado: string
   prioridad: string
+  orden: number
   fechaLimite: string | null
   createdAt: string
   asignacion: TareaAsignacion | null
@@ -103,13 +109,15 @@ type ProyectoDetalleProps = {
   sessionUserId: string
   estadoLabels: Record<string, string>
   empleados: EmpleadoBrief[]
+  initialComments?: Comentario[]
 }
 
-export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLabels, empleados }: ProyectoDetalleProps) {
+export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLabels, empleados, initialComments }: ProyectoDetalleProps) {
   const router = useRouter()
   const [transitioning, setTransitioning] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [vistaTareas, setVistaTareas] = useState<"lista" | "kanban" | "gantt">("lista")
 
   const p = proyecto as {
     id: string
@@ -132,7 +140,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
     }>
     tareas: TareaItem[]
     hitos: Array<{ id: string; nombre: string; descripcion: string | null; fechaPrevista: string; fechaReal: string | null; completado: boolean }>
-    documentos: Array<{ id: string; nombreArchivo: string; tipo: string; url: string; createdAt: string; tareaId: string | null }>
+    documentos: Array<{ id: string; nombreArchivo: string; tipo: string; url: string | null; mimeType: string | null; tamanio: number | null; storageKey: string | null; createdAt: string; tareaId: string | null }>
     historialEstados: Array<{
       id: string
       estadoAnterior: string | null
@@ -194,9 +202,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
   const [editandoHitoLoading, setEditandoHitoLoading] = useState(false)
   const [eliminandoHitoId, setEliminandoHitoId] = useState<string | null>(null)
 
-  const [docArchivo, setDocArchivo] = useState<File | null>(null)
   const [docTipo, setDocTipo] = useState("OTRO")
-  const [docSubiendo, setDocSubiendo] = useState(false)
   const [docError, setDocError] = useState("")
   const [docSuccess, setDocSuccess] = useState("")
   const [viendoDocId, setViendoDocId] = useState<string | null>(null)
@@ -399,6 +405,18 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
     }
   }
 
+  async function handleMoveTarea(tareaId: string, nuevoEstado: string, nuevoOrden: number) {
+    try {
+      await fetch(`/api/tareas/${tareaId}/orden`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ estado: nuevoEstado, orden: nuevoOrden }),
+      })
+    } catch {
+      setError("Error al mover tarea")
+    }
+  }
+
   async function handleCrearHito(e: React.FormEvent) {
     e.preventDefault()
     setHitoError("")
@@ -485,85 +503,13 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
     }
   }
 
-  function leerArchivoBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = () => reject(new Error("Error al leer el archivo"))
-      reader.readAsDataURL(file)
-    })
+  function handleDocUploaded(_doc: { id: string; nombreArchivo: string; storageKey: string }) {
+    setDocSuccess("Documento subido correctamente")
+    router.refresh()
   }
 
-  async function handleSubirDocumento(e: React.FormEvent) {
-    e.preventDefault()
-    setDocError("")
-    setDocSuccess("")
-
-    if (!docArchivo) {
-      setDocError("Selecciona un archivo")
-      return
-    }
-
-    const maxSize = 10 * 1024 * 1024
-    if (docArchivo.size > maxSize) {
-      setDocError("El archivo no puede superar los 10MB")
-      return
-    }
-
-    const tiposValidos = [
-      "application/pdf",
-      "image/png",
-      "image/jpeg",
-      "image/gif",
-      "image/webp",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/vnd.ms-excel",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "text/plain",
-      "text/csv",
-    ]
-
-    if (!tiposValidos.includes(docArchivo.type) && !docArchivo.name.match(/\.(pdf|png|jpg|jpeg|gif|webp|doc|docx|xls|xlsx|txt|csv)$/i)) {
-      setDocError("Tipo de archivo no soportado. Usa PDF, imágenes, Office o texto.")
-      return
-    }
-
-    setDocSubiendo(true)
-    try {
-      const base64 = await leerArchivoBase64(docArchivo)
-
-      const res = await fetch("/api/documentos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          proyectoId: p.id,
-          nombreArchivo: docArchivo.name,
-          tipo: docTipo,
-          url: base64,
-        }),
-      })
-      const json = await res.json()
-      if (res.ok) {
-        setDocSuccess("Documento subido correctamente")
-        setDocArchivo(null)
-        setDocTipo("OTRO")
-        router.refresh()
-      } else {
-        setDocError(json.error || "Error al subir documento")
-      }
-    } catch {
-      setDocError("Error de conexión")
-    } finally {
-      setDocSubiendo(false)
-    }
-  }
-
-  function formatearTamano(base64: string): string {
-    const bytes = Math.round((base64.length * 3) / 4)
-    if (bytes < 1024) return `${bytes} B`
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  function handleDocError(msg: string) {
+    setDocError(msg)
   }
 
   async function handleEliminarDocumento(docId: string) {
@@ -680,7 +626,8 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className={`grid gap-6 ${vistaTareas === "lista" ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"}`}>
+        {vistaTareas === "lista" && (
         <div className="rounded-lg border bg-surface-elevated/80 p-6">
           <h3 className="text-lg font-semibold mb-3">Asignaciones ({p._count.asignaciones})</h3>
 
@@ -750,9 +697,37 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
             </ul>
           )}
         </div>
+        )}
 
-        <div className="rounded-lg border bg-surface-elevated/80 p-6">
-          <h3 className="text-lg font-semibold mb-3">Tareas ({p._count.tareas})</h3>
+        <div className={`rounded-lg border bg-surface-elevated/80 p-6 ${vistaTareas !== "lista" ? "md:col-span-2" : ""}`}>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-semibold">Tareas ({p._count.tareas})</h3>
+            {p.tareas.length > 0 && (
+              <div className="flex items-center gap-1 rounded-md border border-border/50 p-0.5">
+                <button
+                  onClick={() => setVistaTareas("lista")}
+                  className={`p-1.5 rounded ${vistaTareas === "lista" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Vista lista"
+                >
+                  <LayoutList className="size-4" />
+                </button>
+                <button
+                  onClick={() => setVistaTareas("kanban")}
+                  className={`p-1.5 rounded ${vistaTareas === "kanban" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Vista Kanban"
+                >
+                  <Columns3 className="size-4" />
+                </button>
+                <button
+                  onClick={() => setVistaTareas("gantt")}
+                  className={`p-1.5 rounded ${vistaTareas === "gantt" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Vista Gantt"
+                >
+                  <ChartGantt className="size-4" />
+                </button>
+              </div>
+            )}
+          </div>
 
           {tareaError && (
             <div className="rounded-md bg-red-500/15 border border-red-500/25 p-2 mb-3 text-xs text-red-400">{tareaError}</div>
@@ -808,6 +783,36 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
 
           {p.tareas.length === 0 ? (
             <p className="text-sm text-muted-foreground">Sin tareas registradas</p>
+          ) : vistaTareas === "kanban" ? (
+            <KanbanBoard
+              tareas={p.tareas.map((t) => ({
+                ...t,
+                orden: t.orden ?? 0,
+                fechaLimite: t.fechaLimite ?? null,
+              }))}
+              onMoveTarea={handleMoveTarea}
+              onEditTarea={(t) => iniciarEdicion(t as TareaItem)}
+              readonly={!puedeGestionarTareas || esCerrado}
+            />
+          ) : vistaTareas === "gantt" ? (
+            <GanttChart
+              tareas={p.tareas.map((t) => ({
+                id: t.id,
+                titulo: t.titulo,
+                estado: t.estado,
+                prioridad: t.prioridad,
+                createdAt: t.createdAt,
+                fechaLimite: t.fechaLimite ?? null,
+              }))}
+              hitos={(p.hitos as { id: string; nombre: string; fechaPrevista: string; completado: boolean }[]).map((h) => ({
+                id: h.id,
+                nombre: h.nombre,
+                fechaPrevista: h.fechaPrevista,
+                completado: h.completado,
+              }))}
+              fechaInicioProyecto={(p.fechaInicio as string) ?? (p.tareas[0]?.createdAt as string)}
+              fechaEstimadaFin={(p.fechaEstimadaFin as string | null) ?? null}
+            />
           ) : (
             <div className="space-y-3 max-h-[500px] overflow-y-auto">
               {p.tareas.map((t) => (
@@ -1098,12 +1103,13 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
         )}
 
         {(puedeGestionarTareas || sessionRol === "AUDITOR" || sessionRol === "CAPACITADOR") && !esCerrado && (
-          <form onSubmit={handleSubirDocumento} className="mb-4 p-3 rounded-md bg-muted/30 space-y-2">
+          <div className="mb-4 space-y-2">
             <p className="text-xs font-medium text-muted-foreground">Subir documento</p>
-            <input
-              type="file"
-              onChange={(e) => setDocArchivo(e.target.files?.[0] ?? null)}
-              className="w-full text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary-hover"
+            <FileUpload
+              proyectoId={p.id}
+              tipo={docTipo}
+              onUploaded={handleDocUploaded}
+              onError={handleDocError}
             />
             <select
               value={docTipo}
@@ -1114,14 +1120,9 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                 <option key={val} value={val}>{label}</option>
               ))}
             </select>
-            <button
-              type="submit"
-              disabled={docSubiendo}
-              className="inline-flex h-8 w-full items-center justify-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
-            >
-              {docSubiendo ? "Subiendo..." : "Subir documento"}
-            </button>
-          </form>
+            {docError && <p className="text-xs text-red-400">{docError}</p>}
+            {docSuccess && <p className="text-xs text-green-400">{docSuccess}</p>}
+          </div>
         )}
 
         {p.documentos.length === 0 ? (
@@ -1156,17 +1157,29 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-[10px] text-muted-foreground mt-1">
-                  <span>{formatearTamano(d.url)}</span>
+                  <span>{d.tamanio ? formatBytes(d.tamanio) : d.url && d.url !== "[base64]" ? formatBytes(d.url.length * 0.75) : "—"}</span>
                   <span>{new Date(d.createdAt).toLocaleDateString("es-AR")}</span>
                   {d.tareaId && <span>Vinculado a tarea</span>}
+                  {d.mimeType && <span>{d.mimeType}</span>}
                 </div>
                 {viendoDocId === d.id && (
                   <div className="mt-3 rounded-md overflow-hidden border border-border/50">
-                    {d.url.startsWith("data:image/") ? (
+                    {d.storageKey ? (
+                      <div className="p-4 text-center">
+                        <p className="text-sm text-muted-foreground mb-2">Archivo almacenado en la nube</p>
+                        <a
+                          href={`/api/upload/${encodeURIComponent(d.storageKey)}`}
+                          download={d.nombreArchivo}
+                          className="text-sm text-primary hover:underline"
+                        >
+                          Descargar {d.nombreArchivo}
+                        </a>
+                      </div>
+                    ) : d.url && d.url.startsWith("data:image/") ? (
                       <Image src={d.url} alt={d.nombreArchivo} width={640} height={320} className="max-w-full max-h-80 object-contain mx-auto" />
-                    ) : d.url.startsWith("data:application/pdf") ? (
+                    ) : d.url && d.url.startsWith("data:application/pdf") ? (
                       <iframe src={d.url} className="w-full h-80" title={d.nombreArchivo} />
-                    ) : (
+                    ) : d.url ? (
                       <div className="p-4 text-center">
                         <a
                           href={d.url}
@@ -1177,6 +1190,10 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                         >
                           Descargar {d.nombreArchivo}
                         </a>
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center text-sm text-muted-foreground">
+                        Archivo no disponible
                       </div>
                     )}
                   </div>
@@ -1223,6 +1240,10 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
             ))}
           </div>
         )}
+      </div>
+
+      <div className="rounded-lg border bg-surface-elevated/80 p-6">
+        <CommentSection proyectoId={p.id} sessionUserId={sessionUserId} initialData={initialComments} />
       </div>
 
       <div className="text-xs text-muted-foreground">

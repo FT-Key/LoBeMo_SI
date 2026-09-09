@@ -1,16 +1,12 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
 const ACCIONES = ["CREATE", "UPDATE", "DELETE"] as const
 
-export async function GET(request: NextRequest) {
+export const GET = withRole(ROLES.VIEW_AUDIT_LOG, async (request) => {
   try {
-    const session = await auth()
-    if (!session?.user || session.user.rol !== "GERENTE_GENERAL") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const { searchParams } = new URL(request.url)
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
@@ -64,10 +60,10 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error("Error fetching audit logs:", error)
+    logger.error({ err: error }, "Error fetching audit logs")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 },
     )
   }
-}
+})

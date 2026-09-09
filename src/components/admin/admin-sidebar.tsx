@@ -20,9 +20,15 @@ import {
   Settings,
   ChevronLeft,
   LogOut,
+  User,
+  LayoutGrid,
+  ChartGantt,
 } from "lucide-react"
 import { NotificacionDropdown } from "@/components/notificaciones/notificacion-dropdown"
+import { SearchGlobal } from "@/components/search/search-global"
 import { SignOutModal } from "@/components/modals/signout-modal"
+import { ThemeToggle } from "@/components/theme-toggle"
+import { PageTransition } from "@/components/page-transition"
 
 type AdminSidebarProps = {
   name: string | null | undefined
@@ -39,6 +45,7 @@ const NAV_ITEMS: {
   section?: string
 }[] = [
   { href: "/dashboard", label: "Dashboard", roles: ["GERENTE_GENERAL", "CISO", "ADMINISTRACION"], icon: <LayoutDashboard className="size-4" />, section: "Principal" },
+  { href: "/mi-dashboard", label: "Mi Dashboard", roles: null, icon: <User className="size-4" />, section: "Principal" },
   { href: "/proyectos", label: "Proyectos", roles: null, icon: <FolderOpen className="size-4" />, section: "Gestión" },
   { href: "/clientes", label: "Clientes", roles: null, icon: <Users className="size-4" />, section: "Gestión" },
   { href: "/empleados", label: "Empleados", roles: ["GERENTE_GENERAL"], icon: <UserCog className="size-4" />, section: "Gestión" },
@@ -47,6 +54,8 @@ const NAV_ITEMS: {
   { href: "/pentesting", label: "Pentesting", roles: ["PENTESTER", "CISO", "GERENTE_GENERAL", "ANALISTA_SEGURIDAD"], icon: <Shield className="size-4" />, section: "Operaciones" },
   { href: "/soporte", label: "Soporte", roles: ["SOPORTE_TECNICO", "GERENTE_GENERAL", "CISO"], icon: <HeadphonesIcon className="size-4" />, section: "Operaciones" },
   { href: "/informes-auditoria", label: "Auditoría", roles: ["AUDITOR", "GERENTE_GENERAL", "CISO"], icon: <FileText className="size-4" />, section: "Operaciones" },
+  { href: "/kanban", label: "Tablero", roles: null, icon: <LayoutGrid className="size-4" />, section: "Herramientas" },
+  { href: "/gantt", label: "Cronograma", roles: null, icon: <ChartGantt className="size-4" />, section: "Herramientas" },
   { href: "/calendario", label: "Calendario", roles: null, icon: <Calendar className="size-4" />, section: "Herramientas" },
   { href: "/admin/manual", label: "Manual", roles: ["GERENTE_GENERAL"], icon: <BookOpen className="size-4" />, section: "Sistema" },
   { href: "/admin", label: "Configuración", roles: ["GERENTE_GENERAL"], icon: <Settings className="size-4" />, section: "Sistema" },
@@ -137,7 +146,8 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
           ))}
         </nav>
 
-        <div className={`border-t border-border p-3 ${collapsed ? "flex justify-center" : ""}`}>
+        <div className={`border-t border-border p-3 space-y-1 ${collapsed ? "flex flex-col items-center" : ""}`}>
+          <ThemeToggle collapsed={collapsed} />
           <button
             onClick={() => setSignOutOpen(true)}
             className={`flex items-center gap-3 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors w-full ${
@@ -204,7 +214,8 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
               })}
             </div>
           ))}
-          <div className="mt-auto border-t border-border pt-3">
+          <div className="mt-auto border-t border-border pt-3 space-y-1">
+            <ThemeToggle />
             <button
               onClick={() => { setSidebarOpen(false); setSignOutOpen(true) }}
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors w-full"
@@ -235,7 +246,11 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <SearchGlobal />
               <NotificacionDropdown />
+              <div className="hidden sm:block w-9">
+                <ThemeToggle collapsed />
+              </div>
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/30">
                 <div className="size-2 rounded-full bg-success animate-pulse" />
                 <span className="text-xs font-medium text-muted-foreground">{rol.replace(/_/g, " ")}</span>
@@ -247,7 +262,7 @@ export function AdminSidebar({ name, rol, currentPath, children }: AdminSidebarP
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto bg-background">
           <div className="container mx-auto px-4 lg:px-6 py-6 lg:py-8">
-            {children}
+            <PageTransition>{children}</PageTransition>
           </div>
         </main>
       </div>

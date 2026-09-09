@@ -20,6 +20,7 @@ type PropuestaDetalleProps = {
 export function PropuestaDetalle({ propuesta, sessionRol, estadoLabels }: PropuestaDetalleProps) {
   const router = useRouter()
   const [updating, setUpdating] = useState(false)
+  const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
 
@@ -70,6 +71,28 @@ export function PropuestaDetalle({ propuesta, sessionRol, estadoLabels }: Propue
       setUpdating(false)
     }
   }
+
+  async function handleEnviarEmail() {
+    setError("")
+    setSuccess("")
+    setEnviando(true)
+
+    try {
+      const res = await fetch(`/api/propuestas/${p.id}/enviar`, { method: "POST" })
+      const json = await res.json()
+      if (res.ok) {
+        setSuccess("Propuesta enviada por email al cliente")
+      } else {
+        setError(json.error || "Error al enviar la propuesta")
+      }
+    } catch {
+      setError("Error de conexión")
+    } finally {
+      setEnviando(false)
+    }
+  }
+
+  const puedeEnviar = ["GERENTE_GENERAL", "ADMINISTRACION", "VENTAS"].includes(sessionRol)
 
   return (
     <div className="space-y-6">
@@ -161,6 +184,15 @@ export function PropuestaDetalle({ propuesta, sessionRol, estadoLabels }: Propue
         <div className="rounded-lg border bg-surface-elevated/80 p-6">
           <h3 className="text-lg font-semibold mb-3">Acciones</h3>
           <div className="flex flex-wrap gap-2">
+            {puedeEnviar && (
+              <button
+                onClick={handleEnviarEmail}
+                disabled={enviando}
+                className="inline-flex h-10 items-center justify-center rounded-md bg-blue-600 px-4 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                {enviando ? "Enviando..." : "Enviar por email"}
+              </button>
+            )}
             {puedeAceptar && (
               <button
                 onClick={() => handleCambioEstado("ACEPTADA")}

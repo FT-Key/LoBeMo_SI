@@ -1,18 +1,11 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const hito = await prisma.hito.findUnique({
       where: { id },
@@ -27,30 +20,14 @@ export async function GET(
 
     return NextResponse.json(hito)
   } catch (error) {
-    console.error("Error getting hito:", error)
+    logger.error({ err: error }, "Error getting hito")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const soloCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
-    if (!soloCisoOGerente) {
-      return NextResponse.json(
-        { error: "Solo el CISO o Gerente General pueden modificar hitos (RF-36)" },
-        { status: 403 }
-      )
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const body = await request.json()
     const { nombre, descripcion, fechaPrevista, fechaReal, completado } = body
 
@@ -114,30 +91,14 @@ export async function PATCH(
 
     return NextResponse.json(hitoActualizado)
   } catch (error) {
-    console.error("Error updating hito:", error)
+    logger.error({ err: error }, "Error updating hito")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const soloCisoOGerente = session.user.rol === "CISO" || session.user.rol === "GERENTE_GENERAL"
-    if (!soloCisoOGerente) {
-      return NextResponse.json(
-        { error: "Solo el CISO o Gerente General pueden eliminar hitos" },
-        { status: 403 }
-      )
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const hito = await prisma.hito.findUnique({
       where: { id },
@@ -169,7 +130,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting hito:", error)
+    logger.error({ err: error }, "Error deleting hito")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

@@ -34,182 +34,58 @@
 | US-029 | ✅ Done | feat/US-029-v2 | Merge directo → dev, Merge directo → main | .opencode/workflow/history/US-029.md |
 | US-030 | ✅ Done | feat/US-030-form-validations | Merge directo → dev, Merge directo → main | .opencode/workflow/history/US-030.md |
 | US-031 | ✅ Done | feat/US-031-login-secure-cookie + fix/US-031-salt-router | PR #31 → dev, PR #33 → dev, PR #32 → main, PR #34 → main | .opencode/workflow/history/US-031.md |
+| US-033 | ✅ Done | feat/US-033-rbac-centralizado | PR #70 → dev | .opencode/workflow/history/US-033.md |
+| US-032 | ✅ Done | feat/US-032-upload-r2 | PR #71 → dev | .opencode/workflow/history/US-032.md |
+| US-034 | ✅ Done | feat/US-034-email-templates-refactor | PR #72 → dev | .opencode/workflow/history/US-034.md |
+| US-035 | ✅ Done | feat/US-035-email-notif-empleados | PR #73 → dev | .opencode/workflow/history/US-035.md |
+| US-036 | ✅ Done | feat/US-036-envio-propuestas-email | PR #74 → dev | .opencode/workflow/history/US-036.md |
+| US-037 | ❌ Duplicada | Duplicado de US-032 | — | .opencode/workflow/history/US-037.md |
+| US-038 | ✅ Done | feat/US-038-export-dashboard | PR #75 → dev | .opencode/workflow/history/US-038.md |
+| US-039 | ✅ Done | feat/US-039-busqueda-global | PR #76 → dev | .opencode/workflow/history/US-039.md |
+| US-040 | ✅ Done | feat/US-040-saved-filters | PR #77 → dev | .opencode/workflow/history/US-040.md |
+| US-041 | ✅ Done | feat/US-041-comentarios | PR #78 → dev | .opencode/workflow/history/US-041.md |
+| US-042 | ✅ Done | feat/US-042-mi-dashboard | PR #79 → dev | .opencode/workflow/history/US-042.md |
+| US-043 | ✅ Done | feat/US-043-kanban-tareas | PR #80 → dev | .opencode/workflow/history/US-043.md |
+| US-044 | ✅ Done | feat/US-044-timer-horas | PR #81 → dev (merged) | .opencode/workflow/history/US-044.md |
+| US-045 | ✅ Done | feat/US-045-gantt | PR #82 → dev (merged) | .opencode/workflow/history/US-045.md |
+| US-046 | ✅ Done | feat/US-046-evidencia-pentesting | PR #83 → dev (merged) | .opencode/workflow/history/US-046.md |
+| US-047 | ✅ Done | feat/US-047-theme | PR #84 → dev | .opencode/workflow/history/US-047.md |
+| US-048 | ✅ Done | feat/US-048-transiciones | PR #85 → dev (merged) | .opencode/workflow/history/US-048.md |
+| US-049 | ✅ Done | feat/US-049-actividad-dashboard | PR #86 → dev (merged) | .opencode/workflow/history/US-049.md |
+| US-050 | ✅ Done | feat/US-050-tests | PR #87 → dev | .opencode/workflow/history/US-050.md |
+| US-051 | ✅ Done | feat/US-051-logging-estructurado | PR #88 → dev | .opencode/workflow/history/US-051.md |
+| US-052 | ✅ Done | feat/US-052-limpieza-codigo-muerto | PR #89 → dev | .opencode/workflow/history/US-052.md |
+| US-053 | ✅ Done | fix/US-53-rutas-rotas-busqueda-csp | PR #90 → dev (merged) | .opencode/workflow/history/US-053.md |
+| US-054 | ✅ Done | feat/US-054-fix-comentarios-seed | PR #91 → dev (merged) | .opencode/workflow/history/US-054.md |
+| US-055 | ✅ Done | feat/US-055-servicios-modal-crear | PR #92 → dev | .opencode/workflow/history/US-055.md |
+| US-056 | ✅ Done | feat/US-056-certificados-pdf | PR #93 → dev | .opencode/workflow/history/US-056.md |
+| US-057 | ✅ Done | feat/US-057-navbar-accesibilidad | PR #94 → dev | .opencode/workflow/history/US-057.md |
+| US-058 | ✅ Done | feat/US-058-evidencia-pentesting-fix | PR #95 → dev | .opencode/workflow/history/US-058.md |
+| US-059 | ✅ Done | feat/US-059-tests-regression-35-46 | PR #97 → dev (merged) | .opencode/workflow/history/US-059.md |
+| US-060 | ✅ Done | feat/US-060-tests-regression | PR #98 → dev | .opencode/workflow/history/US-060.md |
+| US-061 | ✅ Done | feat/US-061-qa-manual | PR → dev | docs/qa-manual.md |
+| US-064 | ✅ Done | fix/US-064-kanban-gantt-fixes | PR #96 → dev (merged) | .opencode/workflow/history/US-064.md |
+| US-063 | ✅ Done | feat/US-063-auditoria-navbar | PR #100 → dev | .opencode/workflow/history/US-063.md |
 
 ## Backlog
-| US | Status | Detail |
-|----|--------|--------|
-| US-032 | 📋 Backlog | Upload de Documentos PDF con Cloudflare R2 — .opencode/workflow/history/US-032.md |
+ Ninguna US en backlog.
+
+## Current
+**US-062** — Actualizar README + Documentación de usuario
+- Branch: `feat/US-062-documentacion`
+- PR #101 → dev (abierto)
+- Archivos: `README.md`, `docs/guia-usuario.md`
 
 ## Project Status
-✅ 30 US completadas (US-001 a US-031). Todas completadas.
-📋 1 US en Backlog (US-032).
+✅ 64 US completadas (US-001 a US-064, US-037 duplicada).
+📋 US-062 en revisión (PR #101).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
-✅ Lint: 0 errores, 0 warnings.
-✅ Typecheck: disponible y pasa sin errores.
+✅ Tests: 207 passing (25 archivos)
+✅ Lint: 0 errores nuevos.
+✅ Build: 62 páginas generadas exitosamente.
 
 ## Último Cambio
-**Portal del Cliente + Landing Page Marketing** — Branch `feat/admin-design-redesign`
-- **Landing page**: Hero rediseñado, sección contacto con formulario + Leaflet Map + email Nodemailer
-- **Portal del Cliente**: Login JWT (`/seguimiento`), dashboard con tabs (Resumen, Timeline, Hitos, Documentos, Auditoría, Pentesting)
-- **APIs Portal**: `/api/portal/acceso` (login), `/api/portal/proyecto` (datos), `/api/portal/clave` (cambio contraseña), `/api/portal/documento/[id]` (descarga)
-- **Email automático**: Al activar portal (credenciales) + al transicionar estado (si portal activo)
-- **Admin Portal Section**: Toggle activo + cambio de contraseña en detalle de proyecto
-- **Schema**: `portalClave` (bcrypt), `portalActivo` (boolean) en Proyecto + modelo `SesionPortal`
-- **Middleware**: `/seguimiento/*` y `/api/portal/*` rutas públicas
-- **PR #57**: https://github.com/FT-Key/LoBeMo_SI/pull/57
-
-## Plan: US-033 — Campo `codigo` para Proyecto (Portal-Friendly ID)
-
-### Objetivo
-Agregar un campo `codigo` único y legible al modelo `Proyecto` (formato `LBM-XXXX-YYYY`) para reemplazar los CUIDs expuestos a clientes en URLs, emails y formularios del portal. El `id` (CUID) se mantiene como PK/FK interno.
-
-### Archivos a crear
-- `src/lib/proyecto-codigo.ts` — Función `generarCodigoProyecto(nombre: string): Promise<string>`
-- `prisma/migrations/YYYYMMDDHHMMSS_add_proyecto_codigo/migration.sql` — Generado por `prisma migrate dev`
-
-### Archivos a modificar
-| # | Archivo | Cambio |
-|---|---------|--------|
-| 1 | `prisma/schema.prisma` | Agregar `codigo String @unique` a Proyecto |
-| 2 | `src/shared/validation/proyectos.ts` | Actualizar `portalAccesoSchema`: campo `codigo` en vez de `proyectoId` |
-| 3 | `src/app/api/proyectos/route.ts` | Generar `codigo` en POST, incluir en response, usar en email |
-| 4 | `src/app/api/proyectos/[id]/route.ts` | Incluir `codigo` en GET response, usar en email de activación portal |
-| 5 | `src/app/api/portal/acceso/route.ts` | Lookup por `codigo` en vez de `id` |
-| 6 | `src/app/api/portal/proyecto/route.ts` | JWT firma con `codigo` + `id`, retorno incluye `codigo` |
-| 7 | `src/app/api/portal/documento/[id]/route.ts` | JWT decode usa `id` interno (sin cambio funcional) |
-| 8 | `src/app/api/portal/clave/route.ts` | JWT decode usa `id` interno (sin cambio funcional) |
-| 9 | `src/app/seguimiento/page.tsx` | Input acepta `codigo` (placeholder `LBM-XXXX-YYYY`) |
-| 10 | `src/app/seguimiento/[id]/page.tsx` | Renombrar a `[codigo]/page.tsx`, lookup por `codigo` |
-| 11 | `src/app/seguimiento/[id]/portal-content.tsx` | Renombrar a `[codigo]/portal-content.tsx`, agregar `codigo` al type |
-| 12 | `src/components/modals/portal-login-modal.tsx` | Input acepta `codigo` |
-| 13 | `prisma/seed.ts` | Generar `codigo` para el proyecto demo |
-
-### Componentes
-No se crean componentes nuevos. Se modifican componentes existentes.
-
-### API Routes
-
-#### POST `/api/portal/acceso` (modificada)
-```typescript
-// ANTES
-{ proyectoId: string, clave: string }
-
-// DESPUÉS
-{ codigo: string, clave: string }
-```
-- Lookup: `prisma.proyecto.findUnique({ where: { codigo } })`
-- JWT payload: `{ proyectoId: proyecto.id, codigo: proyecto.codigo, tipo: "portal" }`
-- Response: `{ ok: true, codigo, nombre, cliente }`
-
-#### GET `/api/portal/proyecto` (modificada)
-- JWT decode extrae `proyectoId` (interno) para lookup
-- Response incluye `codigo` en el select
-
-#### GET `/api/portal/documento/[id]` (sin cambio funcional)
-- JWT decode extrae `proyectoId` para authorization check
-- El `[id]` del route sigue siendo el ID del documento, no del proyecto
-
-### Tipos e interfaces
-```typescript
-// src/lib/proyecto-codigo.ts
-export async function generarCodigoProyecto(nombre: string): Promise<string>
-export async function existeCodigo(codigo: string): Promise<boolean>
-
-// Type actualizado en portal-content.tsx y page.tsx
-type ProyectoData = {
-  id: string
-  codigo: string  // ← NUEVO
-  nombre: string
-  // ... resto igual
-}
-```
-
-### Dependencias
-No se agregan dependencias nuevas. Se usa `crypto` (built-in) para generación aleatoria.
-
-### Algoritmo de generación de código
-```
-1. Slugificar nombre: "Centro Hogar - Seguridad" → "centro-hogar-seguridad"
-2. Tomar primeros 4 chars del slug: "cent"
-3. Generar 4 chars alfanuméricos aleatorios: "A3K9"
-4. Combinar: "LBM-CENT-A3K9"
-5. Verificar uniqueness en DB; si existe, regenerar los 4 chars aleatorios
-6. Máximo 10 intentos; si falla, lanzar error
-```
-
-### Consideraciones
-
-#### Backward Compatibility (CRÍTICO)
-- **URLs viejas `/seguimiento/{id}`**: Crear redirect o aceptar ambos formatos
-  - Opción A (recomendada): El page `[codigo]/page.tsx` acepta tanto `codigo` como `id`
-  - Si el param empieza con `cl` (CUID pattern), buscar por `id`; si no, buscar por `codigo`
-  - Esto mantiene compatibilidad con emails viejos y bookmarks
-- **JWT viejos**: El JWT existente solo tiene `proyectoId`. El middleware debe manejar ambos formatos
-- **API `/api/portal/acceso`**: Aceptar `codigo` OR `proyectoId` en el body (transición gradual)
-
-#### Seguridad
-- `codigo` no es secreto — es un identificador público, no una contraseña
-- La autenticación sigue siendo por `portalClave` (bcrypt)
-- JWT firma incluye `id` interno para queries seguras
-- Rate limiting en `/api/portal/acceso` (ya debería existir)
-
-#### Performance
-- Índice único en `codigo` ya cubierto por `@unique`
-- Lookup por `codigo` es O(1) con índice
-- No hay cambio en número de queries
-
-### Orden de implementación
-
-#### Fase 1: Schema + Migration + Utility
-1. Modificar `prisma/schema.prisma` — agregar `codigo String @unique`
-2. Ejecutar `npx prisma migrate dev --name add_proyecto_codigo`
-3. Crear `src/lib/proyecto-codigo.ts` con la función de generación
-4. Crear test unitario básico para la función
-
-#### Fase 2: API Routes — Backend
-5. Modificar `src/shared/validation/proyectos.ts` — actualizar schemas
-6. Modificar `src/app/api/proyectos/route.ts` — generar código en POST
-7. Modificar `src/app/api/proyectos/[id]/route.ts` — incluir código en response
-8. Modificar `src/app/api/portal/acceso/route.ts` — lookup por código
-9. Modificar `src/app/api/portal/proyecto/route.ts` — JWT con código
-10. Verificar `src/app/api/portal/documento/[id]/route.ts` y `clave/route.ts`
-
-#### Fase 3: Frontend — Portal
-11. Modificar `src/app/seguimiento/page.tsx` — input de código
-12. Renombrar `src/app/seguimiento/[id]/` → `src/app/seguimiento/[codigo]/`
-13. Modificar `page.tsx` — dual lookup (codigo o id para compat)
-14. Modificar `portal-content.tsx` — agregar `codigo` al type
-15. Modificar `src/components/modals/portal-login-modal.tsx`
-
-#### Fase 4: Seed + Email Templates
-16. Modificar `prisma/seed.ts` — generar código para proyecto demo
-17. Verificar emails en `proyectos/route.ts` y `proyectos/[id]/route.ts`
-
-#### Fase 5: Quality Gates
-18. Build: `npm run build`
-19. Lint: `npm run lint`
-20. Typecheck: `npx tsc --noEmit`
-21. Test manual: crear proyecto, verificar código generado, login portal
-
-### Testing Strategy
-
-#### Unit Tests
-- `generarCodigoProyecto()` genera formato correcto `LBM-XXXX-YYYY`
-- Caracteres alfanuméricos válidos (A-Z, 0-9)
-- Uniqueness check funciona
-- Maneja nombres cortos / caracteres especiales
-
-#### Integration Tests
-- POST `/api/proyectos` genera código automáticamente
-- POST `/api/portal/acceso` acepta `codigo` y retorna JWT
-- GET `/api/portal/proyecto` retorna `codigo` en response
-- URLs viejas con `id` siguen funcionando (backward compat)
-
-#### Manual Testing
-1. Crear proyecto nuevo → verificar código en DB
-2. Login portal con código → acceder exitosamente
-3. Copiar URL con código → navegar directamente
-4. Email enviado muestra código en vez de ID
-5. Admin panel muestra código en lista de proyectos
-
-
+**US-062: Actualizar README + Guía de Usuario** — PR #101 → dev
+- README actualizado: versiones, módulos (31), env vars, scripts, estructura
+- Guía de usuario creada: 26 secciones, todos los módulos documentados
+- Quality gates: lint, typecheck y build pasan

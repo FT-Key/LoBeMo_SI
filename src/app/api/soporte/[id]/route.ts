@@ -1,30 +1,17 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES } from "@/lib/api-auth"
 import { validateBody } from "@/lib/api-validate"
 import { updateTicketSchema } from "@/shared/validation"
+import { logger } from "@/lib/logger"
 
 const ESTADOS = ["ABIERTO", "EN_PROCESO", "RESUELTO", "CERRADO"]
 const PRIORIDADES = ["BAJA", "MEDIA", "ALTA", "CRITICA"]
 const CATEGORIAS = ["INCIDENTE", "CONSULTA", "SOLICITUD"]
 
-const ROLES_PERMITIDOS = ["SOPORTE_TECNICO", "GERENTE_GENERAL", "CISO"]
-
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = withRole(ROLES.VIEW_SOPORTE, async (_request, ctx) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    if (!ROLES_PERMITIDOS.includes(session.user.rol)) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const ticket = await prisma.ticketSoporte.findUnique({
       where: { id },
@@ -41,29 +28,14 @@ export async function GET(
 
     return NextResponse.json(ticket)
   } catch (error) {
-    console.error("Error getting ticket:", error)
+    logger.error({ err: error }, "Error getting ticket")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const PATCH = withRole(ROLES.VIEW_SOPORTE, async (request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    if (!ROLES_PERMITIDOS.includes(session.user.rol)) {
-      return NextResponse.json(
-        { error: "No tienes permisos para modificar tickets de soporte" },
-        { status: 403 }
-      )
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const body = await request.json()
     const result = validateBody(updateTicketSchema, body)
     if (!result.success) return result.error
@@ -161,26 +133,14 @@ export async function PATCH(
 
     return NextResponse.json(actualizado)
   } catch (error) {
-    console.error("Error updating ticket:", error)
+    logger.error({ err: error }, "Error updating ticket")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = withRole(ROLES.VIEW_SOPORTE, async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    if (!ROLES_PERMITIDOS.includes(session.user.rol)) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const ticket = await prisma.ticketSoporte.findUnique({ where: { id } })
     if (!ticket) {
@@ -208,7 +168,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting ticket:", error)
+    logger.error({ err: error }, "Error deleting ticket")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

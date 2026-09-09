@@ -1,23 +1,11 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = withRole(ROLES.VIEW_METRICAS, async (_request, ctx) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const puedeVer = ["CISO", "GERENTE_GENERAL"].includes(session.user.rol)
-    if (!puedeVer) {
-      return NextResponse.json({ error: "Solo el CISO o Gerente General pueden ver métricas" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const proyecto = await prisma.proyecto.findUnique({
       where: { id },
@@ -28,7 +16,7 @@ export async function GET(
       return NextResponse.json({ error: "Proyecto no encontrado" }, { status: 404 })
     }
 
-    const [tareas, hitos, asignaciones] = await Promise.all([
+    const [tareas, hitos, asignaciones, registrosHoras] = await Promise.all([
       prisma.tarea.findMany({
         where: { proyectoId: id },
         select: { estado: true, prioridad: true },
@@ -42,6 +30,17 @@ export async function GET(
         include: {
           empleado: { select: { id: true, nombre: true, apellido: true, rol: true } },
           _count: { select: { tareas: true } },
+        },
+      }),
+      prisma.registroHoras.findMany({
+        where: {
+          tarea: { proyectoId: id },
+          fin: { not: null },
+        },
+        select: {
+          duracionMin: true,
+          empleadoId: true,
+          empleado: { select: { nombre: true, apellido: true } },
         },
       }),
     ])
@@ -61,6 +60,15 @@ export async function GET(
     const totalHitos = hitos.length
     const porcentajeHitos = totalHitos > 0 ? Math.round((hitosCompletados / totalHitos) * 100) : 0
 
+    const totalMinutos = registrosHoras.reduce((sum, r) => sum + r.duracionMin, 0)
+    const horasPorEmpleado: Record<string, { nombre: string; apellido: string; minutos: number }> = {}
+    for (const r of registrosHoras) {
+      if (!horasPorEmpleado[r.empleadoId]) {
+        horasPorEmpleado[r.empleadoId] = { nombre: r.empleado.nombre, apellido: r.empleado.apellido, minutos: 0 }
+      }
+      horasPorEmpleado[r.empleadoId].minutos += r.duracionMin
+    }
+
     return NextResponse.json({
       proyecto,
       tareas: {
@@ -77,6 +85,11 @@ export async function GET(
         pendientes: totalHitos - hitosCompletados,
         porcentaje: porcentajeHitos,
       },
+      horas: {
+        totalMinutos,
+        registros: registrosHoras.length,
+        porEmpleado: Object.values(horasPorEmpleado),
+      },
       asignaciones: asignaciones.map((a) => ({
         id: a.id,
         empleado: `${a.empleado.nombre} ${a.empleado.apellido}`,
@@ -85,7 +98,7 @@ export async function GET(
       })),
     })
   } catch (error) {
-    console.error("Error getting metricas:", error)
+    logger.error({ err: error }, "Error getting metricas")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

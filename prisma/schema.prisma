@@ -89,6 +89,7 @@ model Proyecto {
   hallazgosPentesting HallazgoPentesting[]
   ticketsSoporte TicketSoporte[]
   sesionesPortal SesionPortal[]
+  comentarios Comentario[]
 
   @@map("proyectos")
 }
@@ -144,6 +145,9 @@ model Empleado {
   hallazgosPentesting HallazgoPentesting[]
   ticketsCreados TicketSoporte[] @relation("CreadorTicket")
   ticketsAsignados TicketSoporte[] @relation("AsignadoTicket")
+  savedFilters SavedFilter[]
+  comentarios Comentario[]
+  registrosHoras RegistroHoras[]
 
   @@map("empleados")
 }
@@ -171,17 +175,37 @@ model Tarea {
   descripcion String?
   estado      String       @default("PENDIENTE")
   prioridad   String       @default("MEDIA")
+  orden       Int          @default(0)
   fechaLimite DateTime?    @map("fecha_limite")
   proyectoId  String?      @map("proyecto_id")
   asignacionId String?     @map("asignacion_id")
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
   documentos  Documento[]
+  comentarios Comentario[]
+  registrosHoras RegistroHoras[]
 
   proyecto   Proyecto?   @relation(fields: [proyectoId], references: [id])
   asignacion Asignacion? @relation(fields: [asignacionId], references: [id])
 
   @@map("tareas")
+}
+
+model RegistroHoras {
+  id           String    @id @default(cuid())
+  inicio       DateTime  @default(now())
+  fin          DateTime?
+  duracionMin  Int       @default(0)
+  descripcion  String?
+  tareaId      String    @map("tarea_id")
+  empleadoId   String    @map("empleado_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  tarea    Tarea    @relation(fields: [tareaId], references: [id])
+  empleado Empleado @relation(fields: [empleadoId], references: [id])
+
+  @@map("registros_horas")
 }
 
 model Hito {
@@ -201,14 +225,17 @@ model Hito {
 }
 
 model Documento {
-  id           String   @id @default(cuid())
-  nombreArchivo String  @map("nombre_archivo")
-  tipo         String
-  url          String
-  proyectoId   String?  @map("proyecto_id")
-  tareaId      String?  @map("tarea_id")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(cuid())
+  nombreArchivo String   @map("nombre_archivo")
+  tipo          String
+  url           String?
+  mimeType      String?  @map("mime_type")
+  tamanio       Int?
+  storageKey    String?  @unique @map("storage_key")
+  proyectoId    String?  @map("proyecto_id")
+  tareaId       String?  @map("tarea_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   proyecto Proyecto? @relation(fields: [proyectoId], references: [id])
   tarea    Tarea?    @relation(fields: [tareaId], references: [id])
@@ -317,8 +344,23 @@ model HallazgoPentesting {
 
   proyecto Proyecto @relation(fields: [proyectoId], references: [id])
   creador  Empleado @relation(fields: [creadorId], references: [id])
+  evidencias EvidenciaPentest[]
 
   @@map("hallazgos_pentesting")
+}
+
+model EvidenciaPentest {
+  id            String   @id @default(cuid())
+  hallazgoId    String   @map("hallazgo_id")
+  nombreArchivo String   @map("nombre_archivo")
+  mimeType      String?  @map("mime_type")
+  tamanio       Int?
+  storageKey    String   @unique @map("storage_key")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  hallazgo HallazgoPentesting @relation(fields: [hallazgoId], references: [id], onDelete: Cascade)
+
+  @@map("evidencias_pentest")
 }
 
 model TicketSoporte {
@@ -338,6 +380,7 @@ model TicketSoporte {
   proyecto  Proyecto? @relation(fields: [proyectoId], references: [id])
   creador   Empleado  @relation("CreadorTicket", fields: [creadorId], references: [id])
   asignadoA Empleado? @relation("AsignadoTicket", fields: [asignadoAId], references: [id])
+  comentarios Comentario[]
 
   @@map("tickets_soporte")
 }
@@ -363,6 +406,39 @@ model AuditLog {
   empleado Empleado? @relation(fields: [empleadoId], references: [id])
 
   @@map("audit_logs")
+}
+
+model SavedFilter {
+  id         String   @id @default(cuid())
+  nombre     String
+  modulo     String
+  filtros    Json
+  empleadoId String   @map("empleado_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  empleado Empleado @relation(fields: [empleadoId], references: [id])
+
+  @@unique([empleadoId, modulo, nombre])
+  @@map("saved_filters")
+}
+
+model Comentario {
+  id         String   @id @default(cuid())
+  contenido  String
+  autorId    String   @map("autor_id")
+  tareaId    String?  @map("tarea_id")
+  proyectoId String?  @map("proyecto_id")
+  ticketId   String?  @map("ticket_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  autor    Empleado    @relation(fields: [autorId], references: [id])
+  tarea    Tarea?      @relation(fields: [tareaId], references: [id])
+  proyecto Proyecto?   @relation(fields: [proyectoId], references: [id])
+  ticket   TicketSoporte? @relation(fields: [ticketId], references: [id])
+
+  @@map("comentarios")
 }
 
 model SesionPortal {

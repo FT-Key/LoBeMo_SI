@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { FileDown } from "lucide-react"
 
 const ESTADO_LABELS: Record<string, string> = {
   PLANIFICADA: "Planificada",
@@ -498,6 +499,15 @@ export function CapacitacionDetalle({
                       min="1"
                       max="10"
                       value={asis.evaluacion ?? ""}
+                      onChange={(e) => {
+                        const val = e.target.value ? parseInt(e.target.value) : null
+                        setCapacitacion((prev) => ({
+                          ...prev,
+                          asistentes: prev.asistentes.map((a) =>
+                            a.id === asis.id ? { ...a, evaluacion: val } : a
+                          ),
+                        }))
+                      }}
                       onBlur={(e) => actualizarAsistente(asis.id, { evaluacion: e.target.value ? parseInt(e.target.value) : null })}
                       className="flex h-8 w-20 rounded-md border border-input bg-background px-2 py-1 text-xs"
                     />
@@ -523,13 +533,22 @@ export function CapacitacionDetalle({
               )}
 
               {asis.certificado && (
-                <div className="rounded-md bg-green-500/10 border border-green-500/25 p-3">
-                  <p className="text-xs font-medium text-green-400">
-                    Certificado: {asis.certificado.codigoCertificado}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Emitido: {new Date(asis.certificado.fechaEmision).toLocaleDateString("es-AR")}
-                  </p>
+                <div className="rounded-md bg-green-500/10 border border-green-500/25 p-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-green-400">
+                      Certificado: {asis.certificado.codigoCertificado}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Emitido: {new Date(asis.certificado.fechaEmision).toLocaleDateString("es-AR")}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => window.open(`/api/exportar/certificado/${asis.certificado!.id}`, "_blank")}
+                    className="inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 transition-colors"
+                  >
+                    <FileDown className="h-3.5 w-3.5" />
+                    Descargar PDF
+                  </button>
                 </div>
               )}
             </div>

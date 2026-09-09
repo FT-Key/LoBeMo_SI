@@ -1,21 +1,14 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES } from "@/lib/api-auth"
 import { validateBody } from "@/lib/api-validate"
 import { updateEmpleadoSchema } from "@/shared/validation"
+import { logger } from "@/lib/logger"
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = withRole(ROLES.MANAGE_EMPLEADOS, async (_request, ctx) => {
   try {
-    const session = await auth()
-    if (!session?.user || session.user.rol !== "GERENTE_GENERAL") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const empleado = await prisma.empleado.findUnique({
       where: { id },
       select: {
@@ -36,25 +29,17 @@ export async function GET(
 
     return NextResponse.json(empleado)
   } catch (error) {
-    console.error("Error fetching employee:", error)
+    logger.error({ err: error }, "Error fetching employee")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
     )
   }
-}
+})
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const PUT = withRole(ROLES.MANAGE_EMPLEADOS, async (request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user || session.user.rol !== "GERENTE_GENERAL") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const body = await request.json()
     const result = validateBody(updateEmpleadoSchema, body)
     if (!result.success) return result.error
@@ -106,25 +91,17 @@ export async function PUT(
       rol: empleado.rol,
     })
   } catch (error) {
-    console.error("Error updating employee:", error)
+    logger.error({ err: error }, "Error updating employee")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
     )
   }
-}
+})
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = withRole(ROLES.MANAGE_EMPLEADOS, async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user || session.user.rol !== "GERENTE_GENERAL") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
     const empleado = await prisma.empleado.findUnique({ where: { id } })
 
     if (!empleado) {
@@ -165,10 +142,10 @@ export async function DELETE(
 
     return NextResponse.json(updated)
   } catch (error) {
-    console.error("Error toggling employee status:", error)
+    logger.error({ err: error }, "Error toggling employee status")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
     )
   }
-}
+})

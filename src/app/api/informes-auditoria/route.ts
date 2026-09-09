@@ -1,76 +1,50 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { createInformeSchema } from "@/shared/validation"
+import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
+export const GET = withRole(ROLES.VIEW_METRICAS, async (request) => {
+  const { searchParams } = new URL(request.url)
+  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
+  const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
+  const proyectoId = searchParams.get("proyectoId") ?? ""
+  const estado = searchParams.get("estado") ?? ""
+  const search = searchParams.get("search") ?? ""
 
-    const { searchParams } = new URL(request.url)
-    const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
-    const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
-    const proyectoId = searchParams.get("proyectoId") ?? ""
-    const estado = searchParams.get("estado") ?? ""
-    const search = searchParams.get("search") ?? ""
-
-    const where: Record<string, unknown> = {}
-    if (proyectoId) where.proyectoId = proyectoId
-    if (estado) where.estado = estado
-    if (search) {
-      where.OR = [
-        { alcance: { contains: search, mode: "insensitive" } },
-        { proyecto: { nombre: { contains: search, mode: "insensitive" } } },
-      ]
-    }
-
-    if (session.user.rol !== "GERENTE_GENERAL" && session.user.rol !== "CISO") {
-      where.creadorId = session.user.id
-    }
-
-    const [informes, total] = await Promise.all([
-      prisma.informeAuditoria.findMany({
-        where,
-        orderBy: { createdAt: "desc" },
-        skip: (page - 1) * limit,
-        take: limit,
-        include: {
-          proyecto: { select: { id: true, nombre: true, estado: true } },
-          creador: { select: { id: true, nombre: true, apellido: true, rol: true } },
-        },
-      }),
-      prisma.informeAuditoria.count({ where }),
-    ])
-
-    return NextResponse.json({
-      data: informes,
-      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
-    })
-  } catch (error) {
-    console.error("Error listing informes de auditoría:", error)
-    return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
+  const where: Record<string, unknown> = {}
+  if (proyectoId) where.proyectoId = proyectoId
+  if (estado) where.estado = estado
+  if (search) {
+    where.OR = [
+      { alcance: { contains: search, mode: "insensitive" } },
+      { proyecto: { nombre: { contains: search, mode: "insensitive" } } },
+    ]
   }
-}
 
-export async function POST(request: Request) {
+  const [informes, total] = await Promise.all([
+    prisma.informeAuditoria.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * limit,
+      take: limit,
+      include: {
+        proyecto: { select: { id: true, nombre: true, estado: true } },
+        creador: { select: { id: true, nombre: true, apellido: true, rol: true } },
+      },
+    }),
+    prisma.informeAuditoria.count({ where }),
+  ])
+
+  return NextResponse.json({
+    data: informes,
+    pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+  })
+})
+
+export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const esAuditorOGerente = session.user.rol === "AUDITOR" || session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
-    if (!esAuditorOGerente) {
-      return NextResponse.json(
-        { error: "Solo el Auditor, CISO o Gerente General pueden crear informes de auditoría" },
-        { status: 403 }
-      )
-    }
-
     const body = await request.json()
     const result = validateBody(createInformeSchema, body)
     if (!result.success) return result.error
@@ -120,7 +94,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(informe, { status: 201 })
   } catch (error) {
-    console.error("Error creating informe de auditoría:", error)
+    logger.error({ err: error }, "Error creating informe de auditoría")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

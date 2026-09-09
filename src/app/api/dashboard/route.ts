@@ -1,23 +1,10 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
-const ROLES_PERMITIDOS = ["GERENTE_GENERAL", "CISO", "ADMINISTRACION"]
-
-export async function GET(request: NextRequest) {
+export const GET = withRole(ROLES.VIEW_DASHBOARD, async (request) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    if (!ROLES_PERMITIDOS.includes(session.user.rol)) {
-      return NextResponse.json(
-        { error: "No tienes permiso para ver el dashboard" },
-        { status: 403 }
-      )
-    }
-
     const { searchParams } = new URL(request.url)
     const desdeParam = searchParams.get("desde")
     const hastaParam = searchParams.get("hasta")
@@ -100,10 +87,10 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error("Error fetching dashboard data:", error)
+    logger.error({ err: error }, "Error fetching dashboard data")
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
     )
   }
-}
+})

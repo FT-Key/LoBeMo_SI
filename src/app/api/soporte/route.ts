@@ -1,16 +1,12 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
 import { validateBody } from "@/lib/api-validate"
 import { createTicketSchema } from "@/shared/validation"
+import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
-export async function GET(request: NextRequest) {
+export const GET = withRole(ROLES.VIEW_SOPORTE, async (request) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
     const { searchParams } = new URL(request.url)
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"))
     const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") ?? "10")))
@@ -29,11 +25,6 @@ export async function GET(request: NextRequest) {
         { clienteNombre: { contains: search, mode: "insensitive" } },
         { proyecto: { nombre: { contains: search, mode: "insensitive" } } },
       ]
-    }
-
-    const puedeVer = ["SOPORTE_TECNICO", "GERENTE_GENERAL", "CISO"].includes(session.user.rol)
-    if (!puedeVer) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
     }
 
     const [tickets, total] = await Promise.all([
@@ -56,26 +47,13 @@ export async function GET(request: NextRequest) {
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {
-    console.error("Error listing tickets:", error)
+    logger.error({ err: error }, "Error listing tickets")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})
 
-export async function POST(request: Request) {
+export const POST = withRole(ROLES.VIEW_SOPORTE, async (request, _ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const puedeCrear = ["SOPORTE_TECNICO", "GERENTE_GENERAL", "CISO"].includes(session.user.rol)
-    if (!puedeCrear) {
-      return NextResponse.json(
-        { error: "No tienes permisos para crear tickets de soporte" },
-        { status: 403 }
-      )
-    }
-
     const body = await request.json()
     const result = validateBody(createTicketSchema, body)
     if (!result.success) return result.error
@@ -125,7 +103,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(ticket, { status: 201 })
   } catch (error) {
-    console.error("Error creating ticket:", error)
+    logger.error({ err: error }, "Error creating ticket")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

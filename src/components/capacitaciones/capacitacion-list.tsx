@@ -4,6 +4,9 @@ import { useState, useCallback } from "react"
 import { FormModal } from "@/components/ui/form-modal"
 import { TableActionLink } from "@/components/ui/table-actions"
 import { CapacitacionForm } from "@/components/capacitaciones/capacitacion-form"
+import { Pagination, type PaginationInfo } from "@/components/ui/pagination"
+import { SearchInput } from "@/components/ui/search-input"
+import { FilterSelect } from "@/components/ui/filter-select"
 
 const ESTADOS = ["PLANIFICADA", "EN_CURSO", "COMPLETADA", "CANCELADA"]
 
@@ -38,13 +41,6 @@ type Capacitacion = {
   _count: { asistentes: number }
 }
 
-type Pagination = {
-  page: number
-  limit: number
-  total: number
-  totalPages: number
-}
-
 export function CapacitacionList({
   initialData,
   initialTotal,
@@ -57,7 +53,7 @@ export function CapacitacionList({
   puedeCrear?: boolean
 }) {
   const [capacitaciones, setCapacitaciones] = useState<Capacitacion[]>(initialData)
-  const [pagination, setPagination] = useState<Pagination>({
+  const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     limit: 10,
     total: initialTotal,
@@ -93,10 +89,9 @@ export function CapacitacionList({
     <div className="space-y-4">
       <div className="flex flex-wrap gap-4">
         <div className="flex gap-2">
-          <input
-            type="text"
+          <SearchInput
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={setSearch}
             onKeyDown={(e) => { if (e.key === "Enter") handleSearch() }}
             placeholder="Buscar capacitaciones..."
             className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm w-64"
@@ -108,19 +103,15 @@ export function CapacitacionList({
             Buscar
           </button>
         </div>
-        <select
+        <FilterSelect
           value={estado}
-          onChange={(e) => {
-            setEstado(e.target.value)
-            fetchCapacitaciones(1, search, e.target.value)
+          onChange={(v) => {
+            setEstado(v)
+            fetchCapacitaciones(1, search, v)
           }}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
-          <option value="">Todos los estados</option>
-          {ESTADOS.map((e) => (
-            <option key={e} value={e}>{ESTADO_LABELS[e]}</option>
-          ))}
-        </select>
+          options={ESTADOS.map((e) => ({ value: e, label: ESTADO_LABELS[e] }))}
+          allLabel="Todos los estados"
+        />
         {puedeCrear && (
           <button
             onClick={() => setModalOpen(true)}
@@ -183,29 +174,10 @@ export function CapacitacionList({
         </table>
       </div>
 
-      {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            Mostrando {(pagination.page - 1) * pagination.limit + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total}
-          </span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => { const np = Math.max(1, pagination.page - 1); fetchCapacitaciones(np, search, estado) }}
-              disabled={pagination.page <= 1}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => { const np = Math.min(pagination.totalPages, pagination.page + 1); fetchCapacitaciones(np, search, estado) }}
-              disabled={pagination.page >= pagination.totalPages}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        pagination={pagination}
+        onPageChange={(p) => fetchCapacitaciones(p, search, estado)}
+      />
 
       <FormModal open={modalOpen} onClose={() => setModalOpen(false)} title="Nueva capacitación" maxWidth="max-w-xl">
         <CapacitacionForm

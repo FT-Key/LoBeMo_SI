@@ -9,7 +9,10 @@ import {
   UserPlus,
   TrendingUp,
   BarChart3,
+  Download,
+  ChevronDown,
 } from "lucide-react"
+import { ActividadReciente } from "@/components/dashboard/actividad-reciente"
 
 const MAPA_ESTADOS: Record<string, { label: string; color: string }> = {
   RELEVAMIENTO: { label: "Relevamiento", color: "bg-info" },
@@ -41,6 +44,8 @@ type DashboardData = {
 export function DashboardContent({ initialData }: { initialData: DashboardData }) {
   const [desde, setDesde] = useState(initialData.periodo.desde.split("T")[0])
   const [hasta, setHasta] = useState(initialData.periodo.hasta.split("T")[0])
+  const [exportOpen, setExportOpen] = useState(false)
+  const [exportando, setExportando] = useState(false)
 
   const { data, isFetching } = useQuery<{ data: DashboardData }>({
     queryKey: ["dashboard", desde, hasta],
@@ -56,6 +61,30 @@ export function DashboardContent({ initialData }: { initialData: DashboardData }
   })
 
   const dashboard = data?.data ?? initialData
+
+  async function handleExport(formato: "xlsx" | "csv") {
+    setExportando(true)
+    setExportOpen(false)
+    try {
+      const params = new URLSearchParams({ formato })
+      if (desde) params.set("desde", desde)
+      if (hasta) params.set("hasta", hasta)
+      const res = await fetch(`/api/exportar/dashboard?${params}`)
+      if (!res.ok) throw new Error("Error al exportar")
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `dashboard-${desde}.${formato}`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      alert("Error al exportar el dashboard")
+    } finally {
+      setExportando(false)
+    }
+  }
+
   const maxProyectos = Math.max(
     1,
     ...dashboard.proyectosPorEstado.map((p) => p._count)
@@ -130,6 +159,36 @@ export function DashboardContent({ initialData }: { initialData: DashboardData }
               <TrendingUp className="size-3" /> Actualizando...
             </span>
           )}
+          <div className="relative">
+            <button
+              onClick={() => setExportOpen(!exportOpen)}
+              disabled={exportando}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-foreground px-3 text-sm font-medium text-background hover:bg-foreground/90 disabled:opacity-50"
+            >
+              <Download className="size-4" />
+              {exportando ? "Exportando..." : "Exportar"}
+              <ChevronDown className="size-3" />
+            </button>
+            {exportOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setExportOpen(false)} />
+                <div className="absolute right-0 top-full mt-1 z-50 w-40 rounded-lg border border-border bg-surface shadow-lg">
+                  <button
+                    onClick={() => handleExport("xlsx")}
+                    className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted/50 rounded-t-lg"
+                  >
+                    Descargar XLSX
+                  </button>
+                  <button
+                    onClick={() => handleExport("csv")}
+                    className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-muted/50 rounded-b-lg"
+                  >
+                    Descargar CSV
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -226,6 +285,9 @@ export function DashboardContent({ initialData }: { initialData: DashboardData }
           </div>
         </div>
       </div>
+
+      {/* Recent Activity */}
+      <ActividadReciente />
     </div>
   )
 }

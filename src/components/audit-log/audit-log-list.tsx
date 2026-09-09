@@ -1,6 +1,9 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { Pagination, type PaginationInfo } from "@/components/ui/pagination"
+import { SearchInput } from "@/components/ui/search-input"
+import { FilterSelect } from "@/components/ui/filter-select"
 
 const ACCION_BADGES: Record<string, string> = {
   CREATE: "bg-green-500/15 text-green-400 border border-green-500/25",
@@ -18,13 +21,6 @@ type AuditEntry = {
   createdAt: string
 }
 
-type Pagination = {
-  page: number
-  limit: number
-  total: number
-  totalPages: number
-}
-
 export function AuditLogList({
   initialData,
   initialTotal,
@@ -33,7 +29,7 @@ export function AuditLogList({
   initialTotal: number
 }) {
   const [logs, setLogs] = useState<AuditEntry[]>(initialData)
-  const [pagination, setPagination] = useState<Pagination>({
+  const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     limit: 10,
     total: initialTotal,
@@ -67,29 +63,28 @@ export function AuditLogList({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-4">
-        <input
-          type="text"
+        <SearchInput
           placeholder="Filtrar por entidad..."
           value={entidad}
-          onChange={(e) => {
-            setEntidad(e.target.value)
-            fetchLogs(1, e.target.value, accion)
+          onChange={(v) => {
+            setEntidad(v)
+            fetchLogs(1, v, accion)
           }}
           className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
         />
-        <select
+        <FilterSelect
           value={accion}
-          onChange={(e) => {
-            setAccion(e.target.value)
-            fetchLogs(1, entidad, e.target.value)
+          onChange={(v) => {
+            setAccion(v)
+            fetchLogs(1, entidad, v)
           }}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-        >
-          <option value="">Todas las acciones</option>
-          <option value="CREATE">CREATE</option>
-          <option value="UPDATE">UPDATE</option>
-          <option value="DELETE">DELETE</option>
-        </select>
+          options={[
+            { value: "CREATE", label: "CREATE" },
+            { value: "UPDATE", label: "UPDATE" },
+            { value: "DELETE", label: "DELETE" },
+          ]}
+          allLabel="Todas las acciones"
+        />
       </div>
 
       <div className="rounded-md border">
@@ -153,29 +148,10 @@ export function AuditLogList({
         </table>
       </div>
 
-      {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            Mostrando {(pagination.page - 1) * pagination.limit + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} de {pagination.total}
-          </span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => { const np = Math.max(1, pagination.page - 1); fetchLogs(np, entidad, accion) }}
-              disabled={pagination.page <= 1}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Anterior
-            </button>
-            <button
-              onClick={() => { const np = Math.min(pagination.totalPages, pagination.page + 1); fetchLogs(np, entidad, accion) }}
-              disabled={pagination.page >= pagination.totalPages}
-              className="px-3 py-1 rounded-md border border-input hover:bg-muted disabled:opacity-50"
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
-      )}
+      <Pagination
+        pagination={pagination}
+        onPageChange={(p) => fetchLogs(p, entidad, accion)}
+      />
     </div>
   )
 }

@@ -1,26 +1,11 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+import { withRole, ROLES } from "@/lib/api-auth"
+import { logger } from "@/lib/logger"
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = withRole(ROLES.MANAGE_PROYECTOS, async (_request, ctx, session) => {
   try {
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const puedeEliminar = session.user.rol === "GERENTE_GENERAL" || session.user.rol === "CISO"
-    if (!puedeEliminar) {
-      return NextResponse.json(
-        { error: "Solo el CISO o Gerente General pueden eliminar asignaciones" },
-        { status: 403 }
-      )
-    }
-
-    const { id } = await params
+    const { id } = await ctx.params
 
     const asignacion = await prisma.asignacion.findUnique({
       where: { id },
@@ -57,7 +42,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Error deleting asignacion:", error)
+    logger.error({ err: error }, "Error deleting asignacion")
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 })
   }
-}
+})

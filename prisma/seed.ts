@@ -40,7 +40,7 @@ function log(msg: string) {
 
 const EMPLEADOS = [
   { id: id(), nombre: "Super", apellido: "Admin", email: "superadmin@lobemo.com", rol: "GERENTE_GENERAL", area: "GERENCIA" },
-  { id: id(), nombre: "Franco Nicolás", apellido: "Toledo", email: "fr4nc0t2@gmail.com", rol: "DESARROLLADOR", area: "SISTEMAS" },
+  { id: id(), nombre: "Franco Nicolás", apellido: "Toledo", email: "fr4nc0t2@gmail.com", rol: "GERENTE_GENERAL", area: "SISTEMAS" },
   { id: id(), nombre: "Mario", apellido: "Villarreal", email: "mariovillarreal.isj@gmail.com", rol: "CISO", area: "SISTEMAS" },
   { id: id(), nombre: "Juan", apellido: "Robles", email: "roblesreinosojuan@gmail.com", rol: "DESARROLLADOR", area: "SISTEMAS" },
   { id: id(), nombre: "Julián", apellido: "Molicia", email: "julimolicia7@gmail.com", rol: "ANALISTA_SEGURIDAD", area: "SISTEMAS" },
@@ -49,6 +49,7 @@ const EMPLEADOS = [
   { id: id(), nombre: "Diego", apellido: "Ramirez", email: "diego.ramirez@lobemo.com", rol: "ESPECIALISTA_REDES", area: "SISTEMAS" },
   { id: id(), nombre: "Laura", apellido: "Mendez", email: "laura.mendez@lobemo.com", rol: "SOPORTE_TECNICO", area: "SISTEMAS" },
   { id: id(), nombre: "Carlos", apellido: "Peralta", email: "carlos.peralta@lobemo.com", rol: "ADMINISTRACION", area: "ADMINISTRACION" },
+  { id: id(), nombre: "Lucía", apellido: "Fernández", email: "lucia.fernandez@lobemo.com", rol: "VENTAS", area: "COMERCIAL" },
 ];
 
 const SERVICIOS = [
@@ -76,33 +77,33 @@ const ASIGNACIONES = [
 ];
 
 const TAREAS = [
-  // Fase 1: Auditoría
-  { id: id(), titulo: "Revisar arquitectura y controles de acceso", estado: "COMPLETADA", prioridad: "ALTA", fase: "auditoria" },
-  { id: id(), titulo: "Evaluar políticas de contraseñas y autenticación", estado: "COMPLETADA", prioridad: "ALTA", fase: "auditoria" },
-  { id: id(), titulo: "Analizar configuración JWT", estado: "COMPLETADA", prioridad: "MEDIA", fase: "auditoria" },
-  { id: id(), titulo: "Revisar sistema de logs y auditoría", estado: "COMPLETADA", prioridad: "ALTA", fase: "auditoria" },
-  { id: id(), titulo: "Generar informe de auditoría", estado: "COMPLETADA", prioridad: "CRITICA", fase: "auditoria" },
-  // Fase 2: Pentesting
-  { id: id(), titulo: "Identificar vectores OWASP Top 10", estado: "COMPLETADA", prioridad: "ALTA", fase: "pentesting" },
-  { id: id(), titulo: "Evaluar endpoints de autenticación", estado: "COMPLETADA", prioridad: "ALTA", fase: "pentesting" },
-  { id: id(), titulo: "Probar inyección SQL y XSS", estado: "COMPLETADA", prioridad: "CRITICA", fase: "pentesting" },
-  { id: id(), titulo: "Generar reporte de hallazgos", estado: "COMPLETADA", prioridad: "ALTA", fase: "pentesting" },
-  // Fase 3: Desarrollo Seguro
-  { id: id(), titulo: "Revisar código fuente del backend", estado: "COMPLETADA", prioridad: "ALTA", fase: "desarrollo" },
-  { id: id(), titulo: "Evaluar validación de inputs (Zod)", estado: "COMPLETADA", prioridad: "MEDIA", fase: "desarrollo" },
-  { id: id(), titulo: "Documentar vulnerabilidades de código", estado: "COMPLETADA", prioridad: "ALTA", fase: "desarrollo" },
-  // Fase 4: Hardening Redes
-  { id: id(), titulo: "Evaluar configuración vs CIS Benchmarks", estado: "COMPLETADA", prioridad: "ALTA", fase: "hardening" },
-  { id: id(), titulo: "Revisar configuración de MySQL", estado: "COMPLETADA", prioridad: "MEDIA", fase: "hardening" },
-  { id: id(), titulo: "Documentar recomendaciones de hardening", estado: "COMPLETADA", prioridad: "MEDIA", fase: "hardening" },
-  // Fase 5: Capacitación
-  { id: id(), titulo: "Diseñar temario de capacitación", estado: "COMPLETADA", prioridad: "MEDIA", fase: "capacitacion" },
-  { id: id(), titulo: "Capacitar equipo de Centro Hogar", estado: "COMPLETADA", prioridad: "ALTA", fase: "capacitacion" },
-  { id: id(), titulo: "Evaluar resultados y generar certificados", estado: "COMPLETADA", prioridad: "MEDIA", fase: "capacitacion" },
-  // Fase 6: Consultoría
-  { id: id(), titulo: "Analizar cumplimiento Ley 25.326", estado: "COMPLETADA", prioridad: "ALTA", fase: "consultoria" },
-  { id: id(), titulo: "Definir roadmap de compliance", estado: "COMPLETADA", prioridad: "MEDIA", fase: "consultoria" },
-  { id: id(), titulo: "Generar informe final con recomendaciones", estado: "COMPLETADA", prioridad: "CRITICA", fase: "consultoria" },
+  // Fase 1: Auditoría (días 0-20)
+  { id: id(), titulo: "Revisar arquitectura y controles de acceso", estado: "COMPLETADA", prioridad: "ALTA", fase: "auditoria", createdAt: date(-2), fechaLimite: date(5) },
+  { id: id(), titulo: "Evaluar políticas de contraseñas y autenticación", estado: "COMPLETADA", prioridad: "ALTA", fase: "auditoria", createdAt: date(-1), fechaLimite: date(8) },
+  { id: id(), titulo: "Analizar configuración JWT", estado: "COMPLETADA", prioridad: "MEDIA", fase: "auditoria", createdAt: date(1), fechaLimite: date(12) },
+  { id: id(), titulo: "Revisar sistema de logs y auditoría", estado: "COMPLETADA", prioridad: "ALTA", fase: "auditoria", createdAt: date(2), fechaLimite: date(15) },
+  { id: id(), titulo: "Generar informe de auditoría", estado: "COMPLETADA", prioridad: "CRITICA", fase: "auditoria", createdAt: date(10), fechaLimite: date(20) },
+  // Fase 2: Pentesting (días 15-40)
+  { id: id(), titulo: "Identificar vectores OWASP Top 10", estado: "COMPLETADA", prioridad: "ALTA", fase: "pentesting", createdAt: date(15), fechaLimite: date(22) },
+  { id: id(), titulo: "Evaluar endpoints de autenticación", estado: "COMPLETADA", prioridad: "ALTA", fase: "pentesting", createdAt: date(18), fechaLimite: date(28) },
+  { id: id(), titulo: "Probar inyección SQL y XSS", estado: "COMPLETADA", prioridad: "CRITICA", fase: "pentesting", createdAt: date(22), fechaLimite: date(35) },
+  { id: id(), titulo: "Generar reporte de hallazgos", estado: "COMPLETADA", prioridad: "ALTA", fase: "pentesting", createdAt: date(30), fechaLimite: date(40) },
+  // Fase 3: Desarrollo Seguro (días 35-55)
+  { id: id(), titulo: "Revisar código fuente del backend", estado: "COMPLETADA", prioridad: "ALTA", fase: "desarrollo", createdAt: date(35), fechaLimite: date(42) },
+  { id: id(), titulo: "Evaluar validación de inputs (Zod)", estado: "COMPLETADA", prioridad: "MEDIA", fase: "desarrollo", createdAt: date(38), fechaLimite: date(48) },
+  { id: id(), titulo: "Documentar vulnerabilidades de código", estado: "COMPLETADA", prioridad: "ALTA", fase: "desarrollo", createdAt: date(42), fechaLimite: date(55) },
+  // Fase 4: Hardening Redes (días 50-70)
+  { id: id(), titulo: "Evaluar configuración vs CIS Benchmarks", estado: "COMPLETADA", prioridad: "ALTA", fase: "hardening", createdAt: date(50), fechaLimite: date(58) },
+  { id: id(), titulo: "Revisar configuración de MySQL", estado: "COMPLETADA", prioridad: "MEDIA", fase: "hardening", createdAt: date(53), fechaLimite: date(62) },
+  { id: id(), titulo: "Documentar recomendaciones de hardening", estado: "COMPLETADA", prioridad: "MEDIA", fase: "hardening", createdAt: date(58), fechaLimite: date(70) },
+  // Fase 5: Capacitación (días 65-82)
+  { id: id(), titulo: "Diseñar temario de capacitación", estado: "COMPLETADA", prioridad: "MEDIA", fase: "capacitacion", createdAt: date(65), fechaLimite: date(72) },
+  { id: id(), titulo: "Capacitar equipo de Centro Hogar", estado: "COMPLETADA", prioridad: "ALTA", fase: "capacitacion", createdAt: date(70), fechaLimite: date(78) },
+  { id: id(), titulo: "Evaluar resultados y generar certificados", estado: "COMPLETADA", prioridad: "MEDIA", fase: "capacitacion", createdAt: date(75), fechaLimite: date(82) },
+  // Fase 6: Consultoría (días 78-92)
+  { id: id(), titulo: "Analizar cumplimiento Ley 25.326", estado: "COMPLETADA", prioridad: "ALTA", fase: "consultoria", createdAt: date(78), fechaLimite: date(84) },
+  { id: id(), titulo: "Definir roadmap de compliance", estado: "COMPLETADA", prioridad: "MEDIA", fase: "consultoria", createdAt: date(82), fechaLimite: date(88) },
+  { id: id(), titulo: "Generar informe final con recomendaciones", estado: "COMPLETADA", prioridad: "CRITICA", fase: "consultoria", createdAt: date(86), fechaLimite: date(92) },
 ];
 
 const HALLAZGOS = [
@@ -129,6 +130,29 @@ const ASISTENTES = [
   { nombre: "Maria Villarreal", email: "villarreal.centrohogar@gmail.com", evaluacion: 10, completado: true },
 ];
 
+// ── Segundo cliente + proyecto activo (para US-054) ──
+
+const CLIENTE_2_ID = id();
+
+const PROYECTO_ACTIVO_ID = id();
+
+const ASIGNACIONES_ACTIVAS = [
+  { id: id(), empleadoIdx: 10, rol: "Ejecutivo de Ventas" },  // Lucía Fernández (VENTAS)
+  { id: id(), empleadoIdx: 2, rol: "Líder Técnico" },         // Mario Villarreal (CISO)
+];
+
+const TAREAS_ACTIVAS = [
+  { id: id(), titulo: "Relevamiento inicial de requerimientos", estado: "COMPLETADA", prioridad: "ALTA", createdAt: date(-5), fechaLimite: date(5) },
+  { id: id(), titulo: "Diseño de propuesta técnica", estado: "EN_PROGRESO", prioridad: "ALTA", createdAt: date(-2), fechaLimite: date(10) },
+  { id: id(), titulo: "Presentación de propuesta al cliente", estado: "PENDIENTE", prioridad: "MEDIA", createdAt: date(0), fechaLimite: date(15) },
+];
+
+const COMENTARIOS_SEED = [
+  { contenido: "El relevamiento se completó exitosamente. El cliente necesita soporte 24/7.", tareaIdx: 0, autorIdx: 10 },
+  { contenido: "Estoy diseñando la propuesta técnica. Revisaré los requisitos de SLA con el equipo.", tareaIdx: 1, autorIdx: 2 },
+  { contenido: "Agendar reunión con el cliente para el viernes para presentar la propuesta.", tareaIdx: 2, autorIdx: 10 },
+];
+
 // ============================================================
 // Main
 // ============================================================
@@ -152,6 +176,7 @@ async function main() {
   await prisma.informeAuditoria.deleteMany();
   await prisma.documento.deleteMany();
   await prisma.hito.deleteMany();
+  await prisma.comentario.deleteMany();
   await prisma.tarea.deleteMany();
   await prisma.asignacion.deleteMany();
   await prisma.propuesta.deleteMany();
@@ -314,6 +339,8 @@ async function main() {
         prioridad: tarea.prioridad,
         proyectoId: PROYECTO_ID,
         asignacionId: ASIGNACIONES[asigIdx].id,
+        createdAt: tarea.createdAt,
+        fechaLimite: tarea.fechaLimite,
       },
     });
     log(`[${tarea.fase}] ${tarea.titulo}`);
@@ -561,12 +588,95 @@ async function main() {
     log(`${c.clave} = ${c.valor}`);
   }
 
+  // ── Segundo cliente (para proyecto activo) ──
+  console.log("\n🏢 Creando segundo cliente...");
+  await prisma.cliente.create({
+    data: {
+      id: CLIENTE_2_ID,
+      razonSocial: "TechStore S.R.L.",
+      cuit: "30-98765432-1",
+      emailContacto: "contacto@techstore.com",
+      telefono: "+54 11 5555-1234",
+      direccion: "Av. Corrientes 4567, Buenos Aires",
+      sector: "Comercio / Retail",
+      activo: true,
+    },
+  });
+  log("TechStore S.R.L.");
+
+  // ── Proyecto activo (EN_EJECUCION) ──
+  console.log("\n📁 Creando proyecto activo...");
+  const proyectoActivoServicio = SERVICIOS[5]; // Soporte Técnico
+  const codigoActivo = await generarCodigoProyecto("TechStore - Soporte Técnico Premium");
+  await prisma.proyecto.create({
+    data: {
+      id: PROYECTO_ACTIVO_ID,
+      codigo: codigoActivo,
+      nombre: "TechStore - Soporte Técnico Premium",
+      descripcion: "Servicio de soporte técnico premium para TechStore S.R.L. Incluye monitoreo 24/7, respuesta ante incidentes y mantenimiento preventivo.",
+      estado: "EN_EJECUCION",
+      fechaInicio: date(-10),
+      fechaEstimadaFin: date(80),
+      montoAcordado: 1800000,
+      clienteId: CLIENTE_2_ID,
+      servicioId: proyectoActivoServicio.id,
+    },
+  });
+  log("TechStore - Soporte Técnico Premium (EN_EJECUCION)");
+
+  // ── Asignaciones del proyecto activo ──
+  console.log("\n👥 Creando asignaciones del proyecto activo...");
+  for (const asig of ASIGNACIONES_ACTIVAS) {
+    await prisma.asignacion.create({
+      data: {
+        id: asig.id,
+        rolEnProyecto: asig.rol,
+        proyectoId: PROYECTO_ACTIVO_ID,
+        empleadoId: EMPLEADOS[asig.empleadoIdx].id,
+      },
+    });
+    log(`${EMPLEADOS[asig.empleadoIdx].nombre} ${EMPLEADOS[asig.empleadoIdx].apellido} — ${asig.rol}`);
+  }
+
+  // ── Tareas del proyecto activo ──
+  console.log("\n✅ Creando tareas del proyecto activo...");
+  for (const tarea of TAREAS_ACTIVAS) {
+    await prisma.tarea.create({
+      data: {
+        id: tarea.id,
+        titulo: tarea.titulo,
+        estado: tarea.estado,
+        prioridad: tarea.prioridad,
+        proyectoId: PROYECTO_ACTIVO_ID,
+        asignacionId: ASIGNACIONES_ACTIVAS[0].id,
+        createdAt: tarea.createdAt,
+        fechaLimite: tarea.fechaLimite,
+      },
+    });
+    log(`${tarea.titulo} (${tarea.estado})`);
+  }
+
+  // ── Comentarios de ejemplo (US-054) ──
+  console.log("\n💬 Creando comentarios de ejemplo...");
+  for (const c of COMENTARIOS_SEED) {
+    await prisma.comentario.create({
+      data: {
+        id: id(),
+        contenido: c.contenido,
+        tareaId: TAREAS_ACTIVAS[c.tareaIdx].id,
+        autorId: EMPLEADOS[c.autorIdx].id,
+      },
+    });
+    log(`${EMPLEADOS[c.autorIdx].nombre}: "${c.contenido.slice(0, 50)}..."`);
+  }
+
   console.log("\n🎉 Seed completado exitosamente!");
-  console.log(`   ${EMPLEADOS.length} empleados | ${SERVICIOS.length} servicios | 1 cliente | 1 proyecto`);
-  console.log(`   ${TAREAS.length} tareas | ${HALLAZGOS.length} hallazgos | ${hitos.length} hitos`);
+  console.log(`   ${EMPLEADOS.length} empleados | ${SERVICIOS.length} servicios | 2 clientes | 2 proyectos`);
+  console.log(`   ${TAREAS.length + TAREAS_ACTIVAS.length} tareas | ${HALLAZGOS.length} hallazgos | ${hitos.length} hitos`);
   console.log(`   ${CAPACITACIONES.length} capacitaciones | ${ASISTENTES.length} asistentes`);
   console.log(`   ${tickets.length} tickets | ${notificaciones.length} notificaciones`);
   console.log(`   ${auditActions.length} audit logs | ${configs.length} configuraciones`);
+  console.log(`   ${COMENTARIOS_SEED.length} comentarios de ejemplo`);
 }
 
 main()
