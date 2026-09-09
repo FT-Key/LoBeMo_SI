@@ -768,6 +768,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                   type="date"
                   value={tareaFechaLimite}
                   onChange={(e) => setTareaFechaLimite(e.target.value)}
+                  min={new Date().toISOString().split("T")[0]}
                   className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
                 />
               </div>
@@ -857,6 +858,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                         type="date"
                         value={editandoFechaLimite}
                         onChange={(e) => setEditandoFechaLimite(e.target.value)}
+                        min={new Date().toISOString().split("T")[0]}
                         className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
                       />
                       <div className="flex gap-2">
@@ -959,6 +961,7 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                 type="date"
                 value={hitoFechaPrevista}
                 onChange={(e) => setHitoFechaPrevista(e.target.value)}
+                min={new Date().toISOString().split("T")[0]}
                 className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
               />
               <button
@@ -1001,12 +1004,14 @@ export function ProyectoDetalle({ proyecto, sessionRol, sessionUserId, estadoLab
                           type="date"
                           value={editHitoFechaPrevista}
                           onChange={(e) => setEditHitoFechaPrevista(e.target.value)}
+                          min={new Date().toISOString().split("T")[0]}
                           className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
                         />
                         <input
                           type="date"
                           value={editHitoFechaReal}
                           onChange={(e) => setEditHitoFechaReal(e.target.value)}
+                          min={new Date().toISOString().split("T")[0]}
                           placeholder="Fecha real"
                           className="w-full rounded-md border bg-background px-3 py-1.5 text-sm"
                         />

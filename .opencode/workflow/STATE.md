@@ -66,26 +66,23 @@
 | US-061 | ✅ Done | feat/US-061-qa-manual | PR → dev | docs/qa-manual.md |
 | US-064 | ✅ Done | fix/US-064-kanban-gantt-fixes | PR #96 → dev (merged) | .opencode/workflow/history/US-064.md |
 | US-063 | ✅ Done | feat/US-063-auditoria-navbar | PR #100 → dev | .opencode/workflow/history/US-063.md |
+| US-062 | ✅ Done | feat/US-062-documentacion | PR #101 → dev (merged) | .opencode/workflow/history/US-062.md |
 
 ## Backlog
- Ninguna US en backlog.
+| US | Trello# | Tipo | Prioridad | Detail |
+|----|---------|------|-----------|--------|
+| US-065 | — | Fix | Alta | Validación integral de inputs frontend+backend: fechas pasadas, campos vacíos, límites de caracteres, restricciones de selección. Implica: (1) min date en inputs type="date", (2) Zod refactor con regex/transforms para fechas, (3) max-length en textareas, (4) helper compartido `dateUtils.ts` |
 
 ## Current
-**US-062** — Actualizar README + Documentación de usuario
-- Branch: `feat/US-062-documentacion`
-- PR #101 → dev (abierto)
-- Archivos: `README.md`, `docs/guia-usuario.md`
+Ninguna US activa.
 
 ## Project Status
-✅ 64 US completadas (US-001 a US-064, US-037 duplicada).
-📋 US-062 en revisión (PR #101).
+✅ 65 US completadas (US-001 a US-065, US-037 duplicada).
+📋 1 tarea en backlog (US-065).
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Tests: 207 passing (25 archivos)
 ✅ Lint: 0 errores nuevos.
 ✅ Build: 62 páginas generadas exitosamente.
 
 ## Último Cambio
-**US-062: Actualizar README + Guía de Usuario** — PR #101 → dev
-- README actualizado: versiones, módulos (31), env vars, scripts, estructura
-- Guía de usuario creada: 26 secciones, todos los módulos documentados
-- Quality gates: lint, typecheck y build pasan
+**US-065: Validación integral de inputs** — Branch `fix/500-transactions-neon-http`, PR #103 → dev
