@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { withRole, ROLES } from "@/lib/api-auth"
-import { createTransporter, getLogoAttachment, propuestaEmail } from "@/lib/email-templates"
+import { createTransporter, getLogoAttachment, propuestaEmail, resolverDestinatario } from "@/lib/email-templates"
 import { logger } from "@/lib/logger"
 
 export const POST = withRole(ROLES.CREATE_PROPUESTAS, async (_request, ctx, session) => {
@@ -46,7 +46,7 @@ export const POST = withRole(ROLES.CREATE_PROPUESTAS, async (_request, ctx, sess
 
     await transport.sendMail({
       from: `"LoBeMo Seguridad" <${process.env.SMTP_USER}>`,
-      to: propuesta.proyecto.cliente.emailContacto,
+      to: resolverDestinatario(propuesta.proyecto.cliente.emailContacto),
       subject: `Propuesta ${propuesta.proyecto.nombre} — LoBeMo Seguridad Informática`,
       html: propuestaEmail({
         nombreCliente: propuesta.proyecto.cliente.razonSocial,

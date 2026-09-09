@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { updateTareaSchema } from "@/shared/validation"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
-import { createTransporter, getLogoAttachment, tareaAsignada } from "@/lib/email-templates"
+import { createTransporter, getLogoAttachment, tareaAsignada, resolverDestinatario } from "@/lib/email-templates"
 import { logger } from "@/lib/logger"
 
 const ESTADOS_VALIDOS = ["PENDIENTE", "EN_PROGRESO", "COMPLETADA", "CANCELADA"]
@@ -168,7 +168,7 @@ export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, sessi
 
             await transport.sendMail({
               from: `"LoBeMo Seguridad" <${process.env.SMTP_USER}>`,
-              to: ciso.email,
+              to: resolverDestinatario(ciso.email),
               subject: `Tarea crítica completada - ${proyectoNombre}`,
               html: tareaAsignada({
                 nombreEmpleado: `${ciso.nombre} ${ciso.apellido}`,

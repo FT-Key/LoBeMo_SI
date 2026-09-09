@@ -67,22 +67,24 @@
 | US-064 | ✅ Done | fix/US-064-kanban-gantt-fixes | PR #96 → dev (merged) | .opencode/workflow/history/US-064.md |
 | US-063 | ✅ Done | feat/US-063-auditoria-navbar | PR #100 → dev | .opencode/workflow/history/US-063.md |
 | US-062 | ✅ Done | feat/US-062-documentacion | PR #101 → dev (merged) | .opencode/workflow/history/US-062.md |
+| US-065 | ✅ Done | feat/US-065-validacion-inputs | PR #104 → dev | .opencode/workflow/history/US-065.md |
+| US-066 | ✅ Done | fix/email-redirect-lobemo | PR #105 → dev | .opencode/workflow/history/US-066.md |
 
 ## Backlog
 | US | Trello# | Tipo | Prioridad | Detail |
 |----|---------|------|-----------|--------|
-| US-065 | — | Fix | Alta | Validación integral de inputs frontend+backend: fechas pasadas, campos vacíos, límites de caracteres, restricciones de selección. Implica: (1) min date en inputs type="date", (2) Zod refactor con regex/transforms para fechas, (3) max-length en textareas, (4) helper compartido `dateUtils.ts` |
+| (vacío) | — | — | — | — |
 
 ## Current
 Ninguna US activa.
 
 ## Project Status
-✅ 65 US completadas (US-001 a US-065, US-037 duplicada).
-📋 1 tarea en backlog (US-065).
+✅ 67 US completadas (US-001 a US-066, US-037 duplicada).
+📋 Backlog vacío.
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Tests: 207 passing (25 archivos)
 ✅ Lint: 0 errores nuevos.
 ✅ Build: 62 páginas generadas exitosamente.
 
 ## Último Cambio
-**US-065: Validación integral de inputs** — Branch `fix/500-transactions-neon-http`, PR #103 → dev
+**US-066: Fix email redirect @lobemo.com** — Branch `fix/email-redirect-lobemo`, PR #105 → dev
