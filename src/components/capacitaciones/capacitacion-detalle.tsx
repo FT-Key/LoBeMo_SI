@@ -288,6 +288,7 @@ export function CapacitacionDetalle({
             <textarea
               value={editGeneral.temario}
               onChange={(e) => setEditGeneral((p) => ({ ...p, temario: e.target.value }))}
+              maxLength={2000}
               className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
             />
           </div>
@@ -321,6 +322,7 @@ export function CapacitacionDetalle({
                 type="date"
                 value={editGeneral.fechaInicio}
                 onChange={(e) => setEditGeneral((p) => ({ ...p, fechaInicio: e.target.value }))}
+                min={new Date().toISOString().split("T")[0]}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               />
             </div>
@@ -330,6 +332,7 @@ export function CapacitacionDetalle({
                 type="date"
                 value={editGeneral.fechaFin}
                 onChange={(e) => setEditGeneral((p) => ({ ...p, fechaFin: e.target.value }))}
+                min={new Date().toISOString().split("T")[0]}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               />
             </div>
@@ -339,6 +342,7 @@ export function CapacitacionDetalle({
             <textarea
               value={editGeneral.materiales}
               onChange={(e) => setEditGeneral((p) => ({ ...p, materiales: e.target.value }))}
+              maxLength={2000}
               className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
             />
           </div>

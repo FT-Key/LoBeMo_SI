@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { z } from "zod"
 import { createPropuestaSchema } from "@/shared/validation"
+import { getMinDateForInput } from "@/shared/utils/date-utils"
 
 type ProyectoOption = {
   id: string
@@ -113,12 +114,12 @@ export function NuevaPropuestaForm({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="text-sm font-medium text-foreground mb-1.5 block">Fecha de emisión</label>
-          <input {...register("fechaEmision")} type="date" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+          <input {...register("fechaEmision")} type="date" min={getMinDateForInput()} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
           {errors.fechaEmision && <p className="text-xs text-destructive">{errors.fechaEmision.message}</p>}
         </div>
         <div>
           <label className="text-sm font-medium text-foreground mb-1.5 block">Fecha de vencimiento *</label>
-          <input {...register("fechaVencimiento")} type="date" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+          <input {...register("fechaVencimiento")} type="date" min={getMinDateForInput()} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
           {errors.fechaVencimiento && <p className="text-xs text-destructive">{errors.fechaVencimiento.message}</p>}
         </div>
       </div>

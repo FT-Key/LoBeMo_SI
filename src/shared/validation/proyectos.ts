@@ -1,11 +1,12 @@
 import { z } from "zod"
+import { isValidDateFormat } from "@/shared/utils/date-utils"
 
 export const ESTADOS_PROYECTO = [
   "RELEVAMIENTO", "PROPUESTA", "APROBADO", "EN_EJECUCION",
   "EN_REVISION", "ENTREGADO", "CERRADO",
 ] as const
 
-export const createProyectoSchema = z.object({
+const createProyectoBase = z.object({
   nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres").max(100, "El nombre no puede exceder 100 caracteres"),
   descripcion: z.string().max(500, "La descripción no puede exceder 500 caracteres").optional().or(z.literal("")),
   clienteId: z.string().min(1, "Debe seleccionar un cliente"),
@@ -16,7 +17,12 @@ export const createProyectoSchema = z.object({
   portalActivo: z.boolean().optional(),
 })
 
-export const updateProyectoSchema = createProyectoSchema.partial().extend({
+export const createProyectoSchema = createProyectoBase.refine(
+  (val) => !val.fechaEstimadaFin || isValidDateFormat(val.fechaEstimadaFin),
+  { message: "Formato de fecha inválido (usá AAAA-MM-DD)", path: ["fechaEstimadaFin"] }
+)
+
+export const updateProyectoSchema = createProyectoBase.partial().extend({
   estado: z.enum(ESTADOS_PROYECTO).optional(),
 })
 

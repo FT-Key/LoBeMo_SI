@@ -50,7 +50,7 @@ export function NuevoServicioForm({ onSuccess }: { onSuccess?: () => void }) {
 
       <div className="space-y-2">
         <label htmlFor="descripcion" className="text-sm font-medium">Descripción</label>
-        <textarea id="descripcion" {...register("descripcion")} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]" placeholder="Descripción del servicio..." />
+        <textarea id="descripcion" {...register("descripcion")} maxLength={500} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]" placeholder="Descripción del servicio..." />
         {errors.descripcion && <p className="text-xs text-destructive">{errors.descripcion.message}</p>}
       </div>
 

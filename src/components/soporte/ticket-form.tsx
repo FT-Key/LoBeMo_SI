@@ -76,7 +76,7 @@ export function TicketForm({
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Descripción</label>
-        <textarea {...register("descripcion")} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]" placeholder="Describa el incidente o solicitud..." />
+        <textarea {...register("descripcion")} maxLength={1000} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]" placeholder="Describa el incidente o solicitud..." />
         {errors.descripcion && <p className="text-xs text-destructive">{errors.descripcion.message}</p>}
       </div>
 

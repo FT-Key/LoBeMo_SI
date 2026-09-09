@@ -209,6 +209,7 @@ export function InformeAuditoriaDetalle({
           <textarea
             value={alcance}
             onChange={(e) => setAlcance(e.target.value)}
+            maxLength={5000}
             className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
           />
         ) : (
@@ -222,6 +223,7 @@ export function InformeAuditoriaDetalle({
           <textarea
             value={criteriosAuditoria}
             onChange={(e) => setCriteriosAuditoria(e.target.value)}
+            maxLength={5000}
             className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]"
           />
         ) : (
@@ -332,6 +334,7 @@ export function InformeAuditoriaDetalle({
                       value={nc.descripcion}
                       onChange={(e) => actualizarNoConformidad(i, "descripcion", e.target.value)}
                       placeholder="Descripción de la no conformidad"
+                      maxLength={5000}
                       className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[60px]"
                     />
                     <select
@@ -347,6 +350,7 @@ export function InformeAuditoriaDetalle({
                       value={nc.accionCorrectiva || ""}
                       onChange={(e) => actualizarNoConformidad(i, "accionCorrectiva", e.target.value)}
                       placeholder="Acción correctiva (opcional)"
+                      maxLength={5000}
                       className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[60px]"
                     />
                   </>
