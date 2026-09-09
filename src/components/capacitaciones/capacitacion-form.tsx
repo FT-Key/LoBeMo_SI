@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { z } from "zod"
 import { createCapacitacionSchema } from "@/shared/validation"
+import { getMinDateForInput } from "@/shared/utils/date-utils"
 
 type Proyecto = { id: string; nombre: string }
 
@@ -70,7 +71,7 @@ export function CapacitacionForm({ proyectos, onSuccess }: { proyectos: Proyecto
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Temario *</label>
-        <textarea {...register("temario")} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[120px]" placeholder="Describa el contenido de la capacitación..." />
+        <textarea {...register("temario")} maxLength={2000} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[120px]" placeholder="Describa el contenido de la capacitación..." />
         {errors.temario && <p className="text-xs text-destructive">{errors.temario.message}</p>}
       </div>
 
@@ -94,13 +95,13 @@ export function CapacitacionForm({ proyectos, onSuccess }: { proyectos: Proyecto
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">Fecha de inicio *</label>
-          <input {...register("fechaInicio")} type="date" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+          <input {...register("fechaInicio")} type="date" min={getMinDateForInput()} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
           {errors.fechaInicio && <p className="text-xs text-destructive">{errors.fechaInicio.message}</p>}
         </div>
 
         <div className="space-y-2">
           <label className="text-sm font-medium">Fecha de finalización</label>
-          <input {...register("fechaFin")} type="date" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+          <input {...register("fechaFin")} type="date" min={getMinDateForInput()} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
           {errors.fechaFin && <p className="text-xs text-destructive">{errors.fechaFin.message}</p>}
         </div>
       </div>
@@ -118,7 +119,7 @@ export function CapacitacionForm({ proyectos, onSuccess }: { proyectos: Proyecto
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Materiales (URLs o referencias)</label>
-        <textarea {...register("materiales")} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]" placeholder="Enlaces a materiales, documentos, presentaciones..." />
+        <textarea {...register("materiales")} maxLength={2000} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px]" placeholder="Enlaces a materiales, documentos, presentaciones..." />
         {errors.materiales && <p className="text-xs text-destructive">{errors.materiales.message}</p>}
       </div>
 

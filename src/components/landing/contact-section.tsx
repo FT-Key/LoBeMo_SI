@@ -251,6 +251,7 @@ export function ContactSection() {
                   <textarea
                     id="mensaje"
                     rows={4}
+                    maxLength={500}
                     {...register("mensaje")}
                     className={errors.mensaje ? `${inputError} resize-none` : `${inputNormal} resize-none`}
                     placeholder="Contanos sobre tu empresa y qué necesitás..."

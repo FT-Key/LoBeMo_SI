@@ -183,6 +183,7 @@ export function TicketDetalle({
             <textarea
               value={editGeneral.descripcion}
               onChange={(e) => setEditGeneral((p) => ({ ...p, descripcion: e.target.value }))}
+              maxLength={1000}
               className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]"
             />
           </div>

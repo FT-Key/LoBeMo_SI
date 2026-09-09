@@ -66,26 +66,25 @@
 | US-061 | ✅ Done | feat/US-061-qa-manual | PR → dev | docs/qa-manual.md |
 | US-064 | ✅ Done | fix/US-064-kanban-gantt-fixes | PR #96 → dev (merged) | .opencode/workflow/history/US-064.md |
 | US-063 | ✅ Done | feat/US-063-auditoria-navbar | PR #100 → dev | .opencode/workflow/history/US-063.md |
+| US-062 | ✅ Done | feat/US-062-documentacion | PR #101 → dev (merged) | .opencode/workflow/history/US-062.md |
+| US-065 | ✅ Done | feat/US-065-validacion-inputs | PR #104 → dev | .opencode/workflow/history/US-065.md |
+| US-066 | ✅ Done | fix/email-redirect-lobemo | PR #105 → dev | .opencode/workflow/history/US-066.md |
 
 ## Backlog
- Ninguna US en backlog.
+| US | Trello# | Tipo | Prioridad | Detail |
+|----|---------|------|-----------|--------|
+| (vacío) | — | — | — | — |
 
 ## Current
-**US-062** — Actualizar README + Documentación de usuario
-- Branch: `feat/US-062-documentacion`
-- PR #101 → dev (abierto)
-- Archivos: `README.md`, `docs/guia-usuario.md`
+Ninguna US activa.
 
 ## Project Status
-✅ 64 US completadas (US-001 a US-064, US-037 duplicada).
-📋 US-062 en revisión (PR #101).
+✅ 67 US completadas (US-001 a US-066, US-037 duplicada).
+📋 Backlog vacío.
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Tests: 207 passing (25 archivos)
 ✅ Lint: 0 errores nuevos.
 ✅ Build: 62 páginas generadas exitosamente.
 
 ## Último Cambio
-**US-062: Actualizar README + Guía de Usuario** — PR #101 → dev
-- README actualizado: versiones, módulos (31), env vars, scripts, estructura
-- Guía de usuario creada: 26 secciones, todos los módulos documentados
-- Quality gates: lint, typecheck y build pasan
+**US-066: Fix email redirect @lobemo.com** — Branch `fix/email-redirect-lobemo`, PR #105 → dev

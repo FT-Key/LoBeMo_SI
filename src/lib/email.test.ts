@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
-import { resolverDestinatario } from "@/lib/email"
+import { resolverDestinatario } from "@/lib/email-templates"
 
-describe("resolverDestinatario (email.ts)", () => {
+describe("resolverDestinatario", () => {
   it("devuelve el email original cuando no hay redirect", () => {
     delete process.env.SMTP_REDIRECT_TO
     expect(resolverDestinatario("test@lobemo.com")).toBe("test@lobemo.com")

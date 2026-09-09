@@ -61,13 +61,13 @@ export function InformeAuditoriaForm({ proyectos, onSuccess }: { proyectos: Proy
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Alcance de la auditoría *</label>
-        <textarea {...register("alcance")} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]" placeholder="Describa el alcance de la auditoría..." />
+        <textarea {...register("alcance")} maxLength={5000} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]" placeholder="Describa el alcance de la auditoría..." />
         {errors.alcance && <p className="text-xs text-destructive">{errors.alcance.message}</p>}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Criterios de auditoría *</label>
-        <textarea {...register("criteriosAuditoria")} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]" placeholder="Describa los criterios utilizados para la auditoría..." />
+        <textarea {...register("criteriosAuditoria")} maxLength={5000} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[100px]" placeholder="Describa los criterios utilizados para la auditoría..." />
         {errors.criteriosAuditoria && <p className="text-xs text-destructive">{errors.criteriosAuditoria.message}</p>}
       </div>
 
