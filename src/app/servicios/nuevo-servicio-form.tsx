@@ -56,7 +56,7 @@ export function NuevoServicioForm({ onSuccess }: { onSuccess?: () => void }) {
 
       <div className="space-y-2">
         <label htmlFor="precioBase" className="text-sm font-medium">Precio base (ARS)</label>
-        <input id="precioBase" {...register("precioBase")} type="number" step="0.01" min="0" placeholder="0.00" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+        <input id="precioBase" {...register("precioBase", { valueAsNumber: true })} type="number" step="0.01" min="0" placeholder="0.00" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
         {errors.precioBase && <p className="text-xs text-destructive">{errors.precioBase.message}</p>}
       </div>
 

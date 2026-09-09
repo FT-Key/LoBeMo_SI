@@ -77,7 +77,7 @@
 | (vacío) | — | — | — | — |
 
 ## Current
-Ninguna US activa.
+US-068 | 🔄 In Progress | fix/US-068-precio-string-bug | — | .opencode/workflow/history/US-068.md
 
 ## Project Status
 ✅ 68 US completadas (US-001 a US-067, US-037 duplicada).
