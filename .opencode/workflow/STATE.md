@@ -70,6 +70,7 @@
 | US-065 | ✅ Done | feat/US-065-validacion-inputs | PR #104 → dev | .opencode/workflow/history/US-065.md |
 | US-066 | ✅ Done | fix/email-redirect-lobemo | PR #105 → dev | .opencode/workflow/history/US-066.md |
 | US-067 | ✅ Done | fix/US-067-encoding-docs-nav | PR #107 → dev | .opencode/workflow/history/US-067.md |
+| US-068 | ✅ Done | fix/US-068-precio-string-bug | PR #109 → dev | .opencode/workflow/history/US-068.md |
 
 ## Backlog
 | US | Trello# | Tipo | Prioridad | Detail |
@@ -77,10 +78,10 @@
 | (vacío) | — | — | — | — |
 
 ## Current
-US-068 | 🔄 In Progress | fix/US-068-precio-string-bug | — | .opencode/workflow/history/US-068.md
+Ninguna US activa.
 
 ## Project Status
-✅ 68 US completadas (US-001 a US-067, US-037 duplicada).
+✅ 69 US completadas (US-001 a US-068, US-037 duplicada).
 📋 Backlog vacío.
 🛠️ Seed demo "Centro Hogar" completado — `npm run db:seed`
 ✅ Tests: 207 passing (25 archivos)
@@ -88,4 +89,4 @@ US-068 | 🔄 In Progress | fix/US-068-precio-string-bug | — | .opencode/workf
 ✅ Build: 62 páginas generadas exitosamente.
 
 ## Último Cambio
-**US-067: Fix encoding, documentos nueva pestaña y hrefs** — Branch `fix/US-067-encoding-docs-nav`, PR #107 → dev
+**US-068: Fix precio string bug en creación de servicios** — Branch `fix/US-068-precio-string-bug`, PR #109 → dev
