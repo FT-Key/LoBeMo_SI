@@ -102,7 +102,7 @@ export default function SeguimientoPage() {
 
         <p className="text-center text-[#475569] text-xs mt-6">
           ¿Olvidaste tus credenciales?{" "}
-          <a href="/solicitar-acceso" className="text-[#00d4ff] hover:underline">Recuperá tu acceso</a>
+          <Link href="/solicitar-acceso" className="text-[#00d4ff] hover:underline">Recuperá tu acceso</Link>
         </p>
       </div>
     </div>
