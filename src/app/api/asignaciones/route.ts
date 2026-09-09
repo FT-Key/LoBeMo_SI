@@ -71,7 +71,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
 
       if (esAuditoriaOCapacitacion) {
         return NextResponse.json(
-          { error: "Los proyectos de AuditorÃ­a y CapacitaciÃ³n deben ser asignados por Gerente General (RN-14)" },
+          { error: "Los proyectos de Auditoría y Capacitación deben ser asignados por Gerente General (RN-14)" },
           { status: 403 }
         )
       }
@@ -91,7 +91,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
 
     if (asignacionExistente) {
       return NextResponse.json(
-        { error: "El empleado ya estÃ¡ asignado a este proyecto" },
+        { error: "El empleado ya está asignado a este proyecto" },
         { status: 400 }
       )
     }
@@ -112,7 +112,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
 
     if (proyectosActivos >= maxActivos) {
       return NextResponse.json(
-        { error: `El empleado ya tiene ${maxActivos} proyectos activos. No puede asignarse a mÃ¡s (RN-08)` },
+        { error: `El empleado ya tiene ${maxActivos} proyectos activos. No puede asignarse a más (RN-08)` },
         { status: 400 }
       )
     }
