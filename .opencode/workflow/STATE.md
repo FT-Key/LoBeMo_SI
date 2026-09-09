@@ -71,6 +71,7 @@
 | US | Trello# | Tipo | Prioridad | Detail |
 |----|---------|------|-----------|--------|
 | US-062 | 62 | Docs | — | Actualizar README + Documentación usuario — módulos nuevos, variables R2, screenshots, guía de usuario |
+| US-065 | — | Fix | Alta | Validación integral de inputs frontend+backend: fechas pasadas, campos vacíos, límites de caracteres, restricciones de selección. Implica: (1) min date en inputs type="date", (2) Zod refactor con regex/transforms para fechas, (3) max-length en textareas, (4) helper compartido `dateUtils.ts` |
 
 ## Current
 Ninguna US activa.

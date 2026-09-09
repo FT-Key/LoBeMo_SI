@@ -1,15 +1,23 @@
 import { z } from "zod"
 
+const todayISO = new Date().toISOString().split("T")[0]
+
 export const createHitoSchema = z.object({
   proyectoId: z.string().min(1, "Debe seleccionar un proyecto"),
   nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres").max(100, "El nombre no puede exceder 100 caracteres"),
   descripcion: z.string().max(500, "La descripción no puede exceder 500 caracteres").optional().or(z.literal("")),
-  fechaPrevista: z.string().min(1, "La fecha prevista es obligatoria"),
+  fechaPrevista: z.string().min(1, "La fecha prevista es obligatoria").refine(
+    (val) => val >= todayISO,
+    { message: "La fecha prevista no puede ser anterior a hoy" }
+  ),
 })
 
 export const updateHitoSchema = createHitoSchema.partial().extend({
   completado: z.boolean().optional(),
-  fechaReal: z.string().optional().or(z.literal("")),
+  fechaReal: z.string().optional().or(z.literal("")).refine(
+    (val) => !val || val >= todayISO,
+    { message: "La fecha real no puede ser anterior a hoy" }
+  ),
 })
 
 export type CreateHitoFormData = z.infer<typeof createHitoSchema>
