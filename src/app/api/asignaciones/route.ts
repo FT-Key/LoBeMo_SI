@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { validateBody } from "@/lib/api-validate"
 import { createAsignacionSchema } from "@/shared/validation"
 import { withRole, ROLES, Rol } from "@/lib/api-auth"
-import { createTransporter, getLogoAttachment, asignacionProyecto } from "@/lib/email-templates"
+import { createTransporter, getLogoAttachment, asignacionProyecto, resolverDestinatario } from "@/lib/email-templates"
 import { logger } from "@/lib/logger"
 
 export const GET = withRole(ROLES.MANAGE_PROYECTOS, async (request) => {
@@ -149,7 +149,7 @@ export const POST = withRole(ROLES.MANAGE_PROYECTOS, async (request, _ctx, sessi
 
         await transport.sendMail({
           from: `"LoBeMo Seguridad" <${process.env.SMTP_USER}>`,
-          to: empleado.email,
+          to: resolverDestinatario(empleado.email),
           subject: `Nueva asignación a proyecto - ${proyecto.nombre}`,
           html: asignacionProyecto({
             nombreEmpleado: `${empleado.nombre} ${empleado.apellido}`,
