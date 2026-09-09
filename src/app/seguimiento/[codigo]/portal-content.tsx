@@ -262,6 +262,8 @@ export function PortalContent({ proyecto }: { proyecto: ProyectoData }) {
                 <a
                   key={d.id}
                   href={`/api/portal/documento/${d.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-4 bg-[#111827] border border-[#1e293b] rounded-xl p-4 hover:border-[#00d4ff]/25 transition-colors"
                 >
                   <div className="h-10 w-10 rounded-lg bg-[#1e293b] flex items-center justify-center flex-shrink-0">

@@ -109,13 +109,13 @@ export const PATCH = withRole(ROLES.MANAGE_PROYECTOS, async (request, ctx, sessi
 
           const asunto = portalActivado
             ? `Acceso al portal de seguimiento - ${proyecto.nombre}`
-            : `ContraseÃ±a actualizada - ${proyecto.nombre}`
+            : `Contraseña actualizada - ${proyecto.nombre}`
           const titulo = portalActivado
             ? "Portal de seguimiento habilitado"
-            : "Tu contraseÃ±a fue actualizada"
+            : "Tu contraseña fue actualizada"
           const subtitulo = portalActivado
-            ? "Se habilitÃ³ el acceso al portal para tu proyecto"
-            : "Se actualizÃ³ la contraseÃ±a de acceso a tu proyecto"
+            ? "Se habilitó el acceso al portal para tu proyecto"
+            : "Se actualizó la contraseña de acceso a tu proyecto"
 
           await transport.sendMail({
             from: `"LoBeMo Seguridad" <${process.env.SMTP_USER}>`,

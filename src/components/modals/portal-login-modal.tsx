@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 type PortalLoginModalProps = {
   open: boolean
@@ -128,7 +129,7 @@ export function PortalLoginModal({ open, onClose }: PortalLoginModalProps) {
 
         <p className="text-center text-[#475569] text-[11px] mt-4">
           ¿Olvidaste tus credenciales?{" "}
-          <a href="/solicitar-acceso" className="text-[#00d4ff] hover:underline">Recuperá tu acceso</a>
+          <Link href="/solicitar-acceso" className="text-[#00d4ff] hover:underline">Recuperá tu acceso</Link>
         </p>
       </div>
     </div>

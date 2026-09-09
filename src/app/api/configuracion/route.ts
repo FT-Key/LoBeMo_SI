@@ -10,7 +10,7 @@ const configItemSchema = z.object({
 })
 
 const updateConfigSchema = z.object({
-  configuraciones: z.array(configItemSchema).min(1, "Se requiere al menos una configuraciÃ³n"),
+  configuraciones: z.array(configItemSchema).min(1, "Se requiere al menos una configuración"),
 })
 
 export const GET = withRole(ROLES.MANAGE_CONFIG, async () => {
@@ -34,12 +34,12 @@ export const PATCH = withRole(ROLES.MANAGE_CONFIG, async (request, _ctx, session
 
   for (const c of result.data.configuraciones) {
     if (!CLAVES_VALIDAS.includes(c.clave)) {
-      return NextResponse.json({ error: `Clave invÃ¡lida: ${c.clave}` }, { status: 400 })
+      return NextResponse.json({ error: `Clave inválida: ${c.clave}` }, { status: 400 })
     }
     const num = Number(c.valor)
     if (isNaN(num) || num < 1 || num > 100) {
       return NextResponse.json(
-        { error: `"${c.clave}" debe ser un nÃºmero entre 1 y 100` },
+        { error: `"${c.clave}" debe ser un número entre 1 y 100` },
         { status: 400 }
       )
     }
